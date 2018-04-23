@@ -1,0 +1,41 @@
+button,
+a.button {
+    cursor: pointer;
+    -webkit-border-radius: 5;
+    -moz-border-radius: 5;
+    border-radius: 5px;
+    text-shadow: 1px 1px 3px #666666;
+    color: #ffffff;
+    background: #077ebc;
+    padding: 10px 20px 10px 20px;
+    text-decoration: none;
+    margin-bottom: 1em;
+    border: none;
+}
+
+button:hover,
+a.button:hover {
+    background: #3cb0fd;
+    text-decoration: none;
+}
+
+.showHideButton {
+    float: right;
+    position: relative;
+    font-size: 2em;
+    padding: 0;
+    clear: both;
+    background-image: url('../image/icon-show-less-white.png') !important;
+    background-size: 28px !important;
+    background-repeat: no-repeat !important;
+    background-position: center center !important;
+    width: 40px;
+    height: 40px;
+}
+
+.showHideButton.hiding {
+    background-image: url('../image/icon-show-more-white.png') !important;
+    background-size: 28px !important;
+    background-repeat: no-repeat !important;
+    background-position: center center !important;
+}

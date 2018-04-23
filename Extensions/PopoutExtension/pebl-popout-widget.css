@@ -1,0 +1,112 @@
+.popout {
+    box-sizing: border-box;
+    position: relative;
+    float: none;
+    width: 67%;
+    margin: 1em auto;
+    background-color: #e1f3fa;
+    border-radius: 8px;
+}
+
+.popout.inactive {
+    float: right;
+    width: 40px;
+    height: 40px;
+    margin-top: 5px;
+    clear: both;
+}
+
+.popout .popout-icon {
+    display: none;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    z-index: 100;
+    position: relative;
+}
+
+.popout.inactive .popout-icon {
+    display: block;
+}
+
+.popout.popout-book .popout-icon {
+    background-size: 30px;
+    background-color: #077ebc;
+}
+
+.popout.popout-book .popout-icon {
+    background: url(../image/icon-book.png) center no-repeat;
+    background-size: 30px;
+    background-color: #077ebc;
+}
+
+.popout.popout-note .popout-icon {
+    background: url(../image/icon-note.png) center no-repeat;
+    background-size: 30px;
+    background-color: #077ebc;
+}
+
+.popout.popout-info .popout-icon {
+    background: url(../image/icon-info2.png) center no-repeat;
+    background-size: 30px;
+    background-color: #077ebc;
+}
+
+.popout.popout-link .popout-icon {
+    background: url(../image/icon-link.png) center no-repeat;
+    background-size: 30px;
+    background-color: #077ebc;
+}
+
+.popout.popout-file .popout-icon {
+    background: url(../image/icon-file.png) center no-repeat;
+    background-size: 30px;
+    background-color: #077ebc;
+}
+
+.popout.popout-chat .popout-icon {
+    background: url(../image/icon-speech1.png) center no-repeat;
+    background-size: 30px;
+    background-color: #077ebc;
+}
+
+.popout .popout-content {
+    padding: 1em;
+    border-left: 12px solid #077ebc;
+    border-radius: 8px;
+    /*    background: url(../image/icon-book.png) center no-repeat;*/
+    background-size: 30%;
+    line-height: 1.3em;
+    /*    font-family: "Helvetica Neue", sans-serif;*/
+}
+
+.popout .popout-content h4 {
+    font-family: "Helvetica Neue", sans-serif;
+    margin-bottom: 0.5em;
+    color: #1a569c;
+}
+
+.popout .popout-content .close {
+    float: right;
+    margin-left: 0.5em;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: "Helvetica Neue", sans-serif;
+    font-size: 1.5rem;
+    color: #077ebc;
+}
+
+.popout .popout-content .close:hover {
+    color: #fff;
+}
+
+.popout.inactive .popout-content {
+    display: none;
+}
+
+.popout.active .popout-content {
+    display: block !important;
+}

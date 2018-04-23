@@ -1,0 +1,75 @@
+@keyframes opacityNoneToFull {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+@keyframes overlayTransitionOut {
+    from {opacity: 0.6;}
+    to {opacity: 0;}
+}
+
+.lightBox {
+    display: block;
+    position: fixed;
+    z-index: 1002;
+    left: 25%;
+    top: 10%;
+    width: 50%;
+    height: auto;
+    overflow: auto;
+    background-color: rgb(240, 240, 240);
+    border-radius: 15px;
+    min-height: 15em;
+    max-height: 31em;
+}
+
+.lightBoxContent {
+    position: relative;
+    background-color: rgb(240, 240, 240);
+    margin: auto;
+    padding: 0;
+    width: 90%;
+}
+
+.lightBoxContentImage {
+    width: 100% !important;
+}
+
+.lightBoxImage {
+    display: block;
+    position: fixed;
+    opacity: 0;
+    left: 5%;
+    top: 5%;
+    right: 5%;
+    bottom: 5%;
+    margin: auto;
+    z-index: 1002;
+    background-color: rgb(240, 240, 240);
+    overflow: auto;
+    border-radius: 15px;
+    max-height: 90%;
+    max-width: 90%;
+    animation-name: opacityNoneToFull;
+    animation-duration: 0.1s;
+    animation-delay: 0.2s;
+    animation-fill-mode: forwards;
+}
+
+.dimOverlay {
+    display: block;
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    opacity: 0.6;
+}
+
+.dimOverlayTransitionOut {
+    animation-name: overlayTransitionOut;
+    animation-duration: 0.2s;
+    animation-fill-mode: forwards;
+}

@@ -1,0 +1,121 @@
+.adjustable-content {
+    box-sizing: border-box;
+    /*    position: relative;*/
+}
+
+.adjustable-content .level2,
+.adjustable-content .level3 {
+    display: none;
+}
+
+.adjustable-content .level-options {
+    float: right;
+    position: relative;
+}
+
+.level-options .current-level {
+    display: block;
+    opacity: 1;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    background: url(../image/icon-white-speed0.png) center no-repeat;
+    background-size: 34px;
+    background-color: #077ebc !important;
+    border-radius: 5px;
+}
+
+.level-options .current-level:hover {
+    opacity: 1;
+}
+
+.level-options .current-level.set-level1 {
+    background: url(../image/icon-white-speed0.png) center no-repeat;
+    background-size: 34px;
+}
+
+.level-options .current-level.set-level2 {
+    background: url(../image/icon-white-speed3.png) center no-repeat;
+    background-size: 34px;
+}
+
+.level-options .current-level.set-level3 {
+    background: url(../image/icon-white-speed3.png) center no-repeat;
+    background-size: 34px;
+}
+
+.level-options ul {
+    box-sizing: border-box;
+    padding: 0.5em;
+    display: none;
+    position: absolute;
+    top: -1.25em;
+    right: 2.5em;
+    background-color: #fff;
+    color: #000;
+    background: black;
+    opacity: 0.8;
+    border-radius: 5px;
+}
+
+.level-options ul:after,
+.level-options ul:before {
+    left: 100%;
+    top: 25%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+}
+
+.level-options ul:after {
+    border-color: rgba(232, 232, 232, 0);
+    border-left-color: rgba(0,0,0,0.8);
+    border-width: 10px;
+    margin-top: -10px;
+}
+
+.level-options ul:before {
+    border-color: rgba(0, 0, 0, 0);
+    border-left-color: rgba(0,0,0,0.8);
+    border-width: 11px;
+    margin-top: -11px;
+}
+
+.level-options ul.active {
+    display: block;
+}
+
+.level-options li {
+    display: block;
+    white-space: nowrap;
+    cursor: pointer;
+    padding-left: 1.5em;
+    list-style: none;
+    color: white;
+}
+
+.level-options li.select-level1 {
+    background: url(../image/icon-white-speed0.png) center left no-repeat;
+    background-size: contain;
+}
+
+.level-options li.select-level2 {
+    background: url(../image/icon-white-speed3.png) center left no-repeat;
+    background-size: contain;
+}
+
+.level-options li.select-level3 {
+    background: url(../image/icon-white-speed3.png) center left no-repeat;
+    background-size: contain;
+}
+
+.level-options li.selected {
+    color: orange;
+}
+
+.level-options li:hover {
+    color: yellow;
+}

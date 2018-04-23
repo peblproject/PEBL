@@ -1,0 +1,256 @@
+button,
+a.button {
+    cursor: pointer;
+    -webkit-border-radius: 5;
+    -moz-border-radius: 5;
+    border-radius: 5px;
+    text-shadow: 1px 1px 3px #666666;
+    color: #ffffff;
+    background: #077ebc;
+    padding: 10px 20px 10px 20px;
+    text-decoration: none;
+    margin-bottom: 1em;
+    border: none;
+}
+
+button.chat {
+    padding-left: 3em;
+    background-image: url(../image/icon-speech1.png);
+    background-size: 1.75em;
+    background-position: 10px center;
+    background-repeat: no-repeat;
+}
+
+.messageDeleteButtonWrapper {
+    position: absolute;
+    top: 0;
+    right: 20px;
+}
+
+.messageDeleteButton {
+    font-size: 30px;
+    color: red;
+}
+
+.chatSubmit {
+    float: right;
+    margin-bottom: 10px !important;
+}
+
+.discussionCloseButton {
+    background-color: gray;
+}
+
+.chatInput .chatSubmit {
+    margin: 0;
+}
+
+.chatInput label {
+    display: block;
+    margin: 1em 0 0 0;
+}
+
+.chatInput textarea {
+    margin: .5em 0;
+    width: 100%;
+    height: 5em;
+}
+
+.chatResponses {
+    display: block;
+    max-height: 280px;
+    box-sizing: border-box;
+    padding: 0;
+    margin-top: 1em;
+    margin-left: -1em;
+    margin-right: -1em;
+    overflow: auto;
+    font-family: "Helvetica Neue", sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    border-top: 1px solid #ddd;
+}
+
+.chatResponses .response {
+    padding: .8em 1em .5em 3em;
+    margin: 0;
+    background: transparent url(../image/icon-user.png) 6px 6px no-repeat;
+    background-size: 2em;
+    border-bottom: 1px solid #ddd;
+}
+
+.chatResponses .showMore {
+    display: block;
+    padding: 1em;
+    padding-left: 80px;
+    margin: 0;
+    font-style: italic;
+}
+
+.chatResponses .your.response {
+    position: relative;
+    background-color: #fff;
+}
+
+.chatResponses .response .userId {
+    font-weight: bold;
+}
+
+.chatResponses .response .timestamp {
+    margin-left: .5em;
+    /*    letter-spacing: .5em;*/
+    font-size: .75em;
+    color: #999;
+}
+
+.chatResponses .response .message {
+    font-style: normal;
+    font-weight: normal;
+    margin: .5em 0;
+}
+
+/* Notes styles */
+.notesSubmit {
+    float: right;
+    margin-bottom: 10px !important;
+}
+
+.notesInput .notesSubmit {
+    margin: 0;
+}
+
+.notesInput label {
+    display: block;
+    margin: 1em 0 0 0;
+}
+
+.notesInput textarea {
+    margin: .5em 0;
+    width: 100%;
+    height: 5em;
+}
+
+.notesResponses {
+    display: block;
+    box-sizing: border-box;
+    padding: 0;
+    margin-top: 1em;
+    margin-left: -1em;
+    margin-right: -1em;
+    max-height: none;
+    overflow: auto;
+    font-family: "Helvetica Neue", sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    border-top: 1px solid #ddd;
+}
+
+.notesResponses .response {
+    padding: .8em 1em .5em 3em;
+    margin: 0;
+    background: transparent url(../image/icon-user.png) 6px 6px no-repeat;
+    background-size: 2em;
+    border-bottom: 1px solid #ddd;
+}
+
+.notesResponses .showMore {
+    display: block;
+    padding: 1em;
+    padding-left: 80px;
+    margin: 0;
+    font-style: italic;
+}
+
+.notesResponses .your.response {
+    position: relative;
+    background-color: #fff;
+}
+
+.notesResponses .response .userId {
+    font-weight: bold;
+}
+
+.notesResponses .response .timestamp {
+    margin-left: .5em;
+    /*    letter-spacing: .5em;*/
+    font-size: .75em;
+    color: #999;
+}
+
+.notesResponses .response .message {
+    font-style: normal;
+    font-weight: normal;
+    margin: .5em 0;
+}
+
+@keyframes opacityNoneToFull {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+@keyframes overlayTransitionOut {
+    from {opacity: 0.6;}
+    to {opacity: 0;}
+}
+
+.lightBox {
+    display: block;
+    position: fixed;
+    z-index: 1002;
+    -webkit-box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    left: 25%;
+    top: 10%;
+    width: 50%;
+    max-height: 600px;
+    overflow: hidden;
+    background-color: rgb(240, 240, 240);
+    border-radius: 15px;
+    min-height: 15em;
+    max-height: 31em;
+}
+
+.lightBoxTitle {
+    position: relative;
+    background-color: rgb(240, 240, 240);
+    margin: auto;
+    padding: 0;
+    width: 90%;
+}
+
+.lightBoxContent {
+    position: relative;
+    background-color: rgb(240, 240, 240);
+    margin: auto;
+    padding: 0;
+    width: 90%;
+}
+
+.dimOverlay {
+    display: block;
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    opacity: 0.4;
+}
+
+.dimOverlayTransitionOut {
+    animation-name: overlayTransitionOut;
+    animation-duration: 0.2s;
+    animation-fill-mode: forwards;
+}
+
+.discussionQuestionBoxText {
+    font-style: italic;
+    font-weight: bolder;
+}
+
+.discussionQuestionBox {
+    margin-top: 1em;
+}

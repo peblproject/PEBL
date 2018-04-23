@@ -1,0 +1,994 @@
+.title {
+    font-size: 35px;
+
+    font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
+    line-height: 40px;
+}
+
+.p {
+    font-size: 28px;
+    font-family: palatino, "Palatino Linotype", "Book Antiqua", Palatino, serif;
+    line-height: 1.3;
+}
+
+p.discussionQuestionBoxText {
+    font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
+}
+
+.contentContainerWrapper {
+    position: relative;
+    height: auto;
+    top: 40%;
+    transform: translateY(-50%);
+}
+
+.contentContainerWrapper.landscape {
+    top: 33%;
+}
+
+.contentContainer.flatBottom {
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
+.contentContainer.landscape {
+    max-height: 300px;
+}
+
+.contentContainer {
+    border-radius: 10px;
+    padding: 1em;
+    padding-left: 2em;
+    padding-right: 2em;
+    margin-left: 1em;
+    margin-right: 1em;
+    position: relative;
+    /*top: 40%;*/
+    max-height: 600px;
+    /*transform: translateY(-50%);*/
+    -webkit-box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    z-index: 10;
+    background-color: white;
+}
+
+.peblOverlay {
+    display: block;
+    position: fixed;
+    z-index: 10000;
+    width: auto;
+    left: 0;
+    right: 0;
+    height: 50px;
+    background-color: white;
+}
+
+.iconContainer {
+    position: relative;
+    float: left;
+    height: 45px;
+    width: auto;
+    display: none;
+    left: -150px;
+    bottom: 5px;
+}
+
+.peblFooter {
+    display: block;
+    position: fixed;
+    z-index: 1000;
+    width: auto;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    height: 15%;
+    background-color: white;
+}
+
+.footerIconContainer {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    bottom: 20px;
+}
+
+.footerIcon {
+    position: relative;
+    padding-bottom: 15px;
+    font-size: 8vmin !important;
+}
+
+
+@keyframes slideResourceButtonContainer {
+    from {
+        bottom: 100px;
+    }
+    to {
+        bottom: 5px;
+    }
+}
+
+
+/*Footer Buttons*/
+
+.findButtonContainer,
+.discussButtonContainer,
+.contributeButtonContainer,
+.notesButtonContainer {
+    white-space: nowrap;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.discussButtonContainer {
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+.findButtonContainer {
+    margin-left: 25px;
+}
+
+.notesButtonContainer {
+    margin-right: 25px;
+}
+
+.addedResourcesButtonContainer.hidden {
+    bottom: 100px !important;
+    animation-name: slideResourceButtonContainer;
+    animation-duration: 0s;
+}
+
+.addedResourcesButtonContainer {
+    background-color: rgb(7, 126, 188);
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    height: 50px;
+    margin-left: 16px;
+    margin-right: 16px;
+    position: relative;
+    bottom: 5px;
+    z-index: 5;
+    text-align: center;
+    animation-name: slideResourceButtonContainer;
+    animation-duration: 1s;
+}
+
+.findButton, .discussButton, .notesButton {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 100%;
+    color: rgb(7, 126, 188);
+    background-color: white;
+    text-shadow: none;
+    border: none;
+    border-radius: 5px;
+    font-size: 20px;
+    padding: 0 !important;
+    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    z-index: 4999;
+}
+
+.findMenuContainer {
+    position: absolute;
+    background-color: rgb(7, 126, 188);
+    width: 100%;
+    height: 100%;
+    color: white;
+    z-index: 5000;
+    top: 0;
+    left: 0;
+    border-radius: 5px;
+}
+
+.findMenuList {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    list-style-type: none;
+    -webkit-padding-start: 5px;
+    font-size: 18px;
+    -webkit-margin-before: .0;
+    -webkit-margin-after: .0;
+    font-family: Helvetica;
+    display: table;
+}
+
+.findMenuListElement {
+    cursor: pointer;
+    display: table-row;
+}
+
+.findMenuListElementText {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.contributeButton {
+    -webkit-appearance: none;
+    width: 150px;
+    height: 40px;
+    color: white;
+    background-color: rgb(7, 126, 188);
+    border: none;
+    border-radius: 5px;
+    font-size: 20px;
+    padding: 0 !important;
+}
+
+.addedResourcesButton {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 100%;
+    color: white;
+    background-color: transparent;
+    border: none;
+    border-radius: 10px;
+    font-size: 20px;
+    padding: 0 !important;
+}
+
+.addedResourcesBadgeContainer {
+    float: right;
+    height: 100%;
+    width: 35px;
+    background-color: rgba(0, 0, 0, 0.25);
+    text-align: center;
+}
+
+.addedResourcesBadge {
+    margin-right: 0.5rem;
+    margin-left: 0.5rem;
+    color: white;
+}
+
+.addedResourcesContainer.landscape {
+    top: 12%;
+}
+
+.addedResourcesContainer {
+    width: 70%;
+    height: 50%;
+    background-color: white;
+    padding: 20px;
+    left: 12%;
+    top: 25%;
+    position: fixed;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 5px;
+    box-shadow: 2px 10px 23px -2px rgba(0, 0, 0, 0.58);
+    z-index: 500;
+}
+
+
+
+
+
+/*Overlay Buttons*/
+
+.expandButtonContainerUnderlay {
+    cursor: pointer;
+    position: relative;
+    float: left;
+    height: 50px;
+    width: 135px;
+    z-index: 3000;
+    background-color: inherit;
+}
+
+.expandButtonContainer {
+    position: relative;
+    float: left;
+    height: 40px;
+    width: 40px;
+    top: 5px;
+}
+
+.expandButton {
+    cursor: pointer;
+    position: relative;
+    height: auto;
+    width: 40px;
+    left: 10px;
+}
+
+.expandText {
+    position: relative;
+    float: left;
+    font-size: 19px;
+    line-height: 50px;
+    margin-left: 20px;
+    color: rgb(7, 126, 188);
+    font-family: "Helvetica Neue", sans-serif;
+}
+
+.closeButton {
+    float: left;
+    margin-left: 0.5em;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: "Helvetica Neue", sans-serif;
+    font-size: 3rem !important;
+    line-height: 30px !important;
+    color: #077ebc;
+    display: none;
+    margin-right: 50px;
+}
+
+.tocButton.hidden,
+.askButton.hidden,
+.searchButton.hidden {
+    display: none;
+}
+
+.tocButtonLabel,
+.askButtonLabel,
+.searchButtonLabel {
+    float: right;
+    font-size: 19px;
+    position: relative;
+    margin-top: 13px;
+    padding-left: 10px;
+    color: rgb(7, 126, 188);
+    font-family: 'Helvetica Neue', sans-serif;
+}
+
+.tocButtonLabel.active,
+.askButtonLabel.active,
+.searchButtonLabel.active {
+    color: rgb(244, 123, 40) !important;
+}
+
+.tocButton {
+    cursor: pointer;
+    position: relative;
+    width: 35px;
+    height: 20px;
+    top: 15px;
+}
+
+.tocButtonContainer {
+    position: relative;
+    cursor: pointer;
+    float: right;
+    height: 45px;
+    right: 20px;
+    margin-left: 1em;
+    margin-right: 1em;
+}
+
+.tocButtonContainer.active {
+    border-bottom: 3px solid rgb(7, 126, 188);
+}
+
+.searchButtonContainer {
+    position: relative;
+    cursor: pointer;
+    float: right;
+    height: 45px;
+    right: 20px;
+    margin-left: 1em;
+    margin-right: 1em;
+}
+
+.searchButtonContainer.active {
+    border-bottom: 3px solid rgb(7, 126, 188);
+}
+
+.searchButton {
+    cursor: pointer;
+    position: relative;
+    width: auto;
+    height: 25px;
+    top: 13px;
+}
+
+.askButtonContainer {
+    position: relative;
+    cursor: pointer;
+    float: right;
+    height: 45px;
+    right: 20px;
+    margin-right: 1em;
+    margin-left: 1em;
+}
+
+.askButtonContainer.active {
+    border-bottom: 3px solid rgb(7, 126, 188);
+}
+
+.askButton {
+    cursor: pointer;
+    position: relative;
+    width: auto;
+    height: 25px;
+    top: 13px;
+}
+
+.accountButtonContainer {
+    position: relative;
+    float: right;
+    margin-right: 1em;
+    margin-left: 0.5em;
+    height: 50px;
+    width: auto;
+}
+
+.accountIcon {
+    position: relative;
+    height: 36px;
+    top: 7px;
+}
+
+.accountName {
+    font-size: 20px;
+    position: relative;
+    margin-left: 0.5em;
+    top: -5%;
+}
+
+.accountLogoutButton {
+    display: none;
+    position: relative;
+    margin-left: 0.5em;
+    top: -10%;
+    font-size: 15px !important;
+}
+
+.peblNotificationButtonContainer {
+    position: relative;
+    float: right;
+    height: 45px;
+    right: 10px;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+}
+
+.peblNotificationButtonContainer.active {
+    border-bottom: 3px solid rgb(7, 126, 188);
+}
+
+.peblNotificationButton {
+    cursor: pointer;
+    position: relative;
+    width: 30px;
+    height: auto;
+    top: 7px;
+    font-size: 30px !important;
+    color: rgb(7, 126, 188);
+}
+
+.peblNotificationBadge {
+    position: absolute;
+    display: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 12px !important;
+    font-family: "Helvetica Neue", sans-serif;
+    font-weight: bold;
+    color: white;
+    top: 5px;
+    left: 15px;
+    line-height: 20px;
+    text-align: center;
+    background: red;
+    z-index: 2000;
+}
+
+.helpButtonContainer {
+    position: relative;
+    float: right;
+    height: 45px;
+    right: 20px;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+}
+
+.helpButtonContainer.active {
+    border-bottom: 3px solid rgb(7, 126, 188);
+}
+
+.helpButton {
+    cursor: pointer;
+    font-weight: bold;
+    font-family: "Helvetica Neue", sans-serif;
+    font-size: 3rem !important;
+    line-height: 50px !important;
+    color: #077ebc;
+}
+
+
+
+
+
+/*Overlay sections*/
+
+.helpContainer {
+    height: 85%;
+    overflow: auto;
+}
+
+.helpSectionDiv {}
+
+.helpSectionHeading {
+    background-color: #ddd !important;
+    color: #444;
+    padding: 18px;
+    width: 100%;
+    text-align: left;
+    border: none;
+    outline: none;
+    text-shadow: none;
+    font-size: 20px;
+    border-radius: 0px;
+}
+
+.helpSectionHeading:hover {
+    background-color: #ddd !important;
+}
+
+.helpSectionHeading:after {
+    content: '\02795';
+    font-size: 13px;
+    color: #777;
+    float: right;
+    margin-left: 5px;
+}
+
+.helpSectionHeading.active:after {
+    content: '\2796';
+}
+
+.helpSectionBody {
+    display: none;
+    padding: 0 40px;
+}
+
+.askContainer,
+.registryContainer {
+    height: 100%;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
+    box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
+    width: 98%;
+    margin: 5px;
+}
+
+.responsive-wrapper {
+    position: relative;
+    height: 100%;
+    -webkit-overflow-scrolling: touch;
+    overflow: auto;
+}
+
+.askFrame,
+.registryFrame {
+    /*  width: 100%;
+    height: 100%;
+    border: none;*/
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100% !important;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+.tocContainer {
+    width: 98%;
+    height: 100%;
+    position: relative;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    background-color: white;
+    z-index: 10001;
+    margin: 5px;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
+    box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
+}
+
+.tocSection::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+.tocSectionPrefix {
+    position: relative;
+    width: auto;
+    float: left;
+}
+
+.tocSectionPrefixText {
+    position: absolute;
+    height: auto;
+    width: 100%;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 30px;
+    text-decoration: none;
+    color: rgb(7, 126, 188);
+}
+
+.tocSectionTitleTextWrapper {
+    position: relative;
+    padding-left: 40px;
+    width: auto;
+    float: left;
+}
+
+.tocSectionTitle {
+    padding: 10px;
+    clear: both;
+}
+
+.tocSectionTitleText {
+    font-family: "Helvetica Neue", sans-serif;
+    font-size: 30px;
+    text-decoration: none;
+    color: rgb(7, 126, 188);
+}
+
+.tocSubsectionTitle {
+    cursor: pointer;
+    padding-top: 10px;
+    padding-bottom: 5px;
+    background-color: white;
+    width: 100%;
+    clear: both;
+}
+
+.tocSubsectionPrefix {
+    position: relative;
+    width: 10%;
+    float: left;
+}
+
+.tocSubsectionPrefixText {
+    position: absolute;
+    height: auto;
+    width: 100%;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 20px;
+    text-decoration: none;
+    color: rgb(7, 126, 188);
+    padding-left: 50px;
+}
+
+.tocSubsectionTitleTextWrapper {
+    width: auto;
+    padding-left: 100px;
+}
+
+.tocSubsectionTitleText {
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 20px;
+    text-decoration: none;
+    color: rgb(7, 126, 188);
+}
+
+.tocPage {
+    cursor: pointer;
+    background-color: white;
+    width: 100%;
+    clear: both;
+}
+
+.tocPage.header {
+    padding-top: 5px;
+}
+
+.tocPagePrefixWrapper {
+    position: relative;
+    width: 10%;
+    float: left;
+}
+
+.tocPagePrefix {
+    position: absolute;
+    height: auto;
+    width: 100%;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 20px;
+    text-decoration: none;
+    color: rgb(7, 126, 188);
+    padding-left: 100px;
+}
+
+.tocPageIconWrapper {
+    position: relative;
+    width: 5%;
+    float: left;
+}
+
+.tocPageIcon {
+    position: absolute;
+    height: auto;
+    width: 20px;
+    margin-top: 8px;
+    padding-left: 122px;
+}
+
+.tocPageTextWrapper,
+.tocPageTextWrapperWide,
+.tocPageTextWrapperDynamic {
+    position: relative;
+    padding-left: 10px;
+    width: 90%;
+    float: left;
+}
+
+.tocPageTextWrapperWide {
+    width: auto;
+    padding-left: 160px;
+    padding-bottom: 5px;
+}
+
+.tocPageTextWrapperDynamic {
+    width: 60%;
+    padding-left: 160px;
+}
+
+.tocPageTextWrapper {
+    width: 80%;
+}
+
+.tocPageText {
+    font-family: "Helvetica Neue", sans-serif;
+    font-size: 20px;
+    text-decoration: none;
+    color: rgb(7, 126, 188);
+}
+
+.tocPageDeleteButtonWrapper {
+    position: relative;
+    width: auto;
+    float: right;
+    margin-right: 20px;
+}
+
+.tocPageDeleteButton {
+    position: relative;
+    color: red;
+    font-size: 40px;
+    line-height: 25px;
+    font-weight: bold;
+}
+
+.tocDeleteConfirmDialogContainer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 25%;
+    margin-left: auto;
+    margin-right: auto;
+    width: 300px;
+    height: 100px;
+    z-index: 15001;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 2px 10px 23px -2px rgba(0, 0, 0, 0.58);
+}
+
+.tocDeleteConfirmDialogText {
+    position: relative;
+    left: 25%;
+}
+
+.tocDeleteCancelButton {
+    position: relative;
+    height: 50px;
+    width: 50%;
+    top: 50px;
+    left: -143px;
+    background: transparent !important;
+    border: none;
+    border-top: 1px solid gray;
+    font-size: 17px;
+    color: rgb(7, 126, 188) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    text-shadow: none !important;
+    border-radius: 0 !important;
+}
+
+.tocDeleteConfirmButton {
+    position: relative;
+    height: 50px;
+    width: 50%;
+    right: -150px;
+    background: transparent !important;
+    border: none;
+    border-top: 1px solid gray;
+    border-left: 1px solid gray;
+    font-size: 17px;
+    color: rgb(7, 126, 188) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    text-shadow: none !important;
+    border-radius: 0 !important;
+}
+
+.tocDeleteConfirmDialogOverlay {
+    position: fixed;
+    width: auto;
+    left: 0;
+    right: 0;
+    height: 100%;
+    z-index: 15000;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.notificationsContainer {
+    position: fixed;
+    width: 50vmin;
+    max-height: 50vmin;
+    right: 10px;
+    top: 60px;
+    border-radius: 10px;
+    background: white;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
+    box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    z-index: 12000;
+}
+
+.notificationElementWrapper {
+    padding-left: 20px;
+    padding-right: 20px;
+    border-bottom: 1px solid gray;
+    cursor: pointer;
+}
+
+.notificationElement {
+    font-family: 'Helvetica Neue', sans-serif;
+}
+
+.notificationElementContentText {
+    color: rgb(7, 126, 188);
+}
+
+.notificationElementLocationText {
+    color: rgb(7, 126, 188);
+}
+
+.dynamicPageHeader {
+    position: fixed;
+    width: 98%;
+    left: 1%;
+    top: 50px;
+    background-color: rgb(228, 228, 228);
+    height: 50px;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
+    box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
+}
+
+.dynamicPageHeaderLink {
+    position: relative;
+    left: 25px;
+    top: 15px;
+    text-decoration: none;
+    color: blue;
+    display: block;
+    overflow: hidden;
+    width: 85%;
+}
+
+.dynamicPage {
+    position: fixed;
+    width: 98%;
+    left: 1%;
+    top: 100px;
+    bottom: 50px;
+    background-color: white;
+    height: 70%;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
+    box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
+}
+
+.dynamicPageFrame {
+    position: relative;
+    height: 99%;
+    border: none;
+    width: 98%;
+    margin: 5px;
+}
+
+.dynamicPageCloseButton, .overlayCloseButton {
+    cursor: pointer;
+    position: fixed;
+    top: 27px;
+    right: 20px;
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 80px;
+    font-weight: bold;
+}
+
+.overlayCloseButton {
+    top: 40px;
+    z-index: 10001;
+}
+
+
+.hidden {
+    display: none !important;
+}
+
+.clearLayer {
+    position: fixed;
+    width: auto;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background-color: transparent;
+    z-index: 499;
+}
+
+
+/*Tutorial*/
+
+.tutorialMessageContainer {
+    clear: both;
+    position: relative;
+    width: 250px;
+    height: auto;
+    min-height: 100px;
+    background-color: rgb(7, 126, 188);
+    left: 0;
+    top: 8px;
+    border-radius: 10px;
+    z-index: 3001;
+}
+
+.tutorialMessage {
+    color: white;
+    padding: 10px;
+    font-style: normal;
+    font-variant-caps: normal;
+    font-weight: normal;
+    font-size: 13px;
+    line-height: normal;
+    font-family: Helvetica;
+}
+
+.tutorialMessageNextButton {
+    padding: 10px;
+    position: relative;
+    left: 70%;
+    bottom: 5px;
+    color: white;
+    font-style: normal;
+    font-variant-caps: normal;
+    font-weight: normal;
+    font-size: 15px;
+    line-height: normal;
+    font-family: Helvetica;
+}
+
+.tutorialMessageArrow {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    margin-left: -80px;
+    margin-top: -10px;
+    width: 0;
+    height: 0;
+    border-bottom: 10px solid rgb(7, 126, 188);
+    border-right: 10px solid transparent;
+    border-left: 10px solid transparent;
+}
+
+/*Overrides*/
+
+.discussionQuestionBoxText {
+    font-style: normal !important;
+}
