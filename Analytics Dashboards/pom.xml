@@ -1,0 +1,118 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>es.pebl.interface</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>es.pebl.interface</name>
+  <url>http://maven.apache.org</url>
+  
+  <parent>
+    <groupId>com.eduworks</groupId>
+    <artifactId>es</artifactId>
+    <version>0.0.1</version>
+    <relativePath>../es</relativePath> 
+  </parent>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <stjs.version>3.3.0</stjs.version>
+    <tools_location>/usr/lib/jvm/java-8-openjdk/lib/tools.jar</tools_location>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.eduworks</groupId>
+      <artifactId>ec.base</artifactId>
+      <version>SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.eduworks</groupId>
+      <artifactId>ec.crypto</artifactId>
+      <version>SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.st-js</groupId>
+      <artifactId>stjs-maven-plugin</artifactId>
+      <version>${stjs.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.st-js.bridge</groupId>
+      <artifactId>html</artifactId>
+      <version>5.0.bv2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.eduworks</groupId>
+      <artifactId>es.pebl.libraries</artifactId>
+      <version>5.14-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+  
+  <build>
+    <finalName>es.pebl.interface</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+	<version>3.5.1</version>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <verbose>true</verbose>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.st-js</groupId>
+        <artifactId>stjs-maven-plugin</artifactId>
+        <version>${stjs.version}</version>
+        <executions>
+          <execution>
+            <id>main</id>
+            <phase>install</phase>
+            <goals>
+	      <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <includes>
+            <include>**/*.java</include>
+          </includes>
+	  <generatedSourcesDirectory>src/main/webapp/generated-js</generatedSourcesDirectory>
+          <pack>true</pack>
+        </configuration>
+      </plugin>
+      
+      <plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-dependency-plugin</artifactId>
+	<version>2.10</version>
+	<executions>
+          <execution>
+            <id>unpack-dependencies</id>
+            <phase>package</phase>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <includes>*.js</includes>
+              <excludes></excludes>
+              <outputDirectory>src/main/webapp/generated-js</outputDirectory>
+              <overWriteReleases>true</overWriteReleases>
+              <overWriteSnapshots>true</overWriteSnapshots>
+            </configuration>
+          </execution>
+	</executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

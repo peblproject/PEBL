@@ -1,0 +1,247 @@
+/* ---- Lightbox ---- */
+@keyframes opacityNoneToFull {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+@keyframes overlayTransitionOut {
+    from {opacity: 0.6;}
+    to {opacity: 0;}
+}
+
+.lightBox {
+    display: block;
+    position: fixed;
+    z-index: 1002;
+    left: 25%;
+    top: 10%;
+    width: 50%;
+    height: auto;
+    overflow: auto;
+    background-color: rgb(240, 240, 240);
+    border-radius: 15px;
+    min-height: 15em;
+    max-height: 31em;
+}
+
+.lightBoxContent {
+    position: relative;
+    background-color: rgb(240, 240, 240);
+    margin: auto;
+    padding: 0;
+    width: 90%;
+}
+
+#loginUserNameSelector {
+    display: block;
+}
+
+.lightBoxContentImage {
+    width: 100% !important;
+}
+
+.lightBoxImage {
+    display: block;
+    position: fixed;
+    opacity: 0;
+    left: 5%;
+    top: 5%;
+    right: 5%;
+    bottom: 5%;
+    margin: auto;
+    z-index: 1002;
+    background-color: rgb(240, 240, 240);
+    overflow: auto;
+    border-radius: 15px;
+    max-height: 90%;
+    max-width: 90%;
+    animation-name: opacityNoneToFull;
+    animation-duration: 0.1s;
+    animation-delay: 0.2s;
+    animation-fill-mode: forwards;
+}
+
+/*.imageInLightBox {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    max-width: 90%;
+}*/
+
+.dimOverlay {
+    display: block;
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    opacity: 0.6;
+}
+
+.dimOverlayTransitionOut {
+    animation-name: overlayTransitionOut;
+    animation-duration: 0.2s;
+    animation-fill-mode: forwards;
+}
+
+.discussionQuestionBoxText {
+    font-style: italic;
+    font-weight: bolder;
+}
+
+.discussionQuestionBox {
+    margin-top: 1em;
+}
+
+/* ---- discussions ---- */
+
+button.chat,
+a.button.chat {
+    padding-left: 3em;
+    background-image: url(../image/icon-speech1.png);
+    background-size: 1.75em;
+    background-position: 10px center;
+    background-repeat: no-repeat;
+}
+
+.chatInput .chatSubmit,
+.ratingFeedback .ratingSubmit {
+    margin: 0;
+}
+
+.exercise > p:before {
+    content: "Practical Exercise ";
+    border-bottom: 1px solid #ddd;
+    padding-bottom: .5em;
+    margin-bottom: .5em;
+    font-style: normal;
+    display: block;
+    text-transform: uppercase;
+    font-family: "Helvetica Neue", sans-serif;
+    font-size: .7em;
+    color: #666;
+}
+
+.chatInput label,
+.ratingFeedback label {
+    display: block;
+    margin: 1em 0 0 0;
+}
+
+.chatInput textarea,
+.ratingFeedback textarea {
+    margin: .5em 0;
+    width: 100%;
+    height: 5em;
+}
+
+.chatResponses {
+    display: block;
+    box-sizing: border-box;
+    padding: 0;
+    margin-top: 1em;
+    margin-left: -1em;
+    margin-right: -1em;
+    max-height: none;
+    overflow: auto;
+    font-family: "Helvetica Neue", sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    border-top: 1px solid #ddd;
+}
+
+.chatResponses .response {
+    padding: .8em 1em .5em 3em;
+    margin: 0;
+    background: transparent url(../image/icon-user.png) 6px 6px no-repeat;
+    background-size: 2em;
+    border-bottom: 1px solid #ddd;
+}
+
+.chatResponses .showMore {
+    display: block;
+    padding: 1em;
+    padding-left: 80px;
+    margin: 0;
+    font-style: italic;
+}
+
+.chatResponses .your.response {
+    background-color: #fff;
+}
+
+.chatResponses .response .userId {
+    font-weight: bold;
+}
+
+.chatResponses .response .timestamp {
+    margin-left: .5em;
+    /*    letter-spacing: .5em;*/
+    font-size: .75em;
+    color: #999;
+}
+
+.chatResponses .response .message {
+    font-style: normal;
+    font-weight: normal;
+    margin: .5em 0;
+}
+
+.chatResponses .rating {
+    color: #aaa;
+    font-size: 18px;
+    unicode-bidi: bidi-override;
+    direction: rtl;
+    width: 150px;
+    float: right;
+}
+
+.chatResponses .rating > span {
+    display: inline-block;
+    position: relative;
+    width: 1em;
+    cursor: pointer;
+}
+
+.chatResponses .rating > span:hover:before,
+.chatResponses .rating > span:hover ~ span:before {
+    color: goldenrod;
+    content: "\2605";
+    position: absolute;
+}
+
+.ratingResponses .message {
+    padding: .5em 1em;
+    font-size: .85em;
+    margin: 0 !important;
+}
+
+.ratingResponses .message .userId {
+    margin-right: .5em;
+    display: block;
+}
+
+.ratingResponses .you {
+    background-color: lightyellow;
+    border-radius: 4px;
+}
+
+.ratingResponses .userRating {
+    display: inline-block;
+    float: right;
+    margin-left: 1em;
+    color: goldenrod;
+    clear: both;
+}
+
+.timestamp {    float: right;    opacity: 0.75;    display: block;    font-size: .75em;}
+
+#userDiscussionPrompt, #userDiscussionPromptReply {    font-size: 1.25em;    font-style: italic;    font-weight: bold; }
+
+#threadButtonWrapper { width: 100%;text-align: center;padding-bottom: 1.5em; }

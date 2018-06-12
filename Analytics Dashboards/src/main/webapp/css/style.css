@@ -1,0 +1,140 @@
+/* Custom Stylesheet */
+/**
+ * Use this file to override Materialize files so you can update
+ * the core Materialize files in the future
+ *
+ * Made By MaterializeCSS.com
+ */
+
+.icon-block {
+  padding: 0 15px;
+}
+.icon-block .material-icons {
+	font-size: inherit;
+}
+
+.badge {
+    font-weight: 500;
+    font-size: .7em !important;
+}
+
+.table-badge {
+	font-size: 1rem !important;
+}
+
+#userAssessments ol li {
+    list-style-type: circle;
+}
+
+li {
+	padding: 5px;
+	border-radius: 5px;
+	margin-bottom: 5px;
+}
+
+.correctAnswer {
+	background-color: palegreen;
+}
+
+.wrongAnswer {
+	background-color: orange;
+}
+
+.expandable:hover {
+	background-color: rgba(0,0,0,0.05);
+	cursor: pointer;
+}
+
+.promptBlockQuote {
+	border-left: 10px solid #ffb74d;
+	padding-top: 1em;
+	padding-bottom: 1em;
+}
+
+.replyTextArea:focus:not([readonly]) {
+	border-bottom: 1px solid #ffb74d !important;
+	box-shadow: 0 1px 0 0 #ffb74d !important;
+}
+
+.replyTextArea:focus:not([readonly])+label {
+	color: #ffb74d !important;
+}
+
+input:not([type]):focus:not([readonly]) {
+	border-bottom: 1px solid #29b6f6 !important;
+	box-shadow: 0 1px 0 0 #29b6f6 !important;
+}
+
+ul.dropdown-content.select-dropdown li:not(.disabled) span, input:not([type]):focus:not([readonly])+label {
+	color: #29b6f6 !important;
+}
+
+.discussionThreadList a {
+	display: inline-table !important;
+	line-height: 2em !important;
+}
+
+.donutContainer {
+	width: 30%;
+	float: left;
+}
+
+.clearFloat {
+	clear: both;
+}
+
+.questionContainer {
+	border-bottom-style: solid;
+	border-bottom-width: 3px;
+	border-bottom-color: #29b6f6;
+	margin-bottom: 10px;
+	padding: 10px;
+}
+
+.collapsible-header i {
+	font-size: 1.6rem !important;
+}
+
+.collapsible-header {
+	border-radius: 5px;
+}
+
+.collapsible-body {
+	padding: 1rem;
+	position: relative;
+}
+
+.card-no-shadow {
+	box-shadow: none !important;
+}
+
+.card-reveal {
+	padding: 0px !important;
+}
+
+.badge-no-margin {
+	margin: 0px !important;
+}
+
+.badge-large {
+	font-size: 1rem !important;
+}
+
+.spinner-layer {
+	border-color: #fff;
+}
+
+.preloader-wrapper {
+	margin-top: 0.5%;
+}
+
+.hoverable {
+	cursor: pointer;
+	border-radius: 5px;
+}
+
+@media print {
+	.no-print, .no-print * {
+		display: none !important;
+	}
+}

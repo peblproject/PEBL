@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+    <title>PEBL Teacher Dashboard</title>
+
+    <!-- CSS  -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" media="all">
+    <link href="css/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection,print" />
+    <link href="css/font-awesome.min.css" type="text/css" rel="stylesheet" media="screen,projection,print" />
+    <link href="css/pebl.css" type="text/css" rel="stylesheet" media="screen,projection,print" />
+    <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection,print" />
+  </head>
+
+  <body onload="Dashboard.init(true)">
+    <div class="navbar-fixed no-print" id="topNav">
+      <nav class="light-blue lighten-1" role="navigation">
+        <div class="nav-wrapper container">
+          <ul class="right">
+            <li><span id="userName" style="float:right"></span><i class="material-icons left">perm_identity</i></li>
+            <li><a id="userLogout" style="display:none" href="#">Logout</a></li>
+          </ul>
+          <a id="logo-container" class="brand-logo center"><img style="width:80px; vertical-align:middle;" src="image/logo-pebl.png"> <small>Teacher Dashboard</small></a>
+          <ul class="left">
+            <li><a id="booksButton" data-activates="slide-out" href="#" class="slide-out-trigger btn waves-effect waves-light orange lighten-2">Books</a></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <div class="fixed-action-btn click-to-toggle no-print" id="fixedMenuButton" style="display:none">
+      <a class="btn-floating btn-large light-blue lighten-1">
+        <i class="material-icons">menu</i>
+      </a>
+      <ul>
+        <li><a class="btn-floating light-blue lighten-1" onclick="printGraphs()"><i class="material-icons">print</i></a></li>
+        <li><a class="btn-floating light-blue lighten-1" onclick="displayDownloadOptions()" id="downloadButton"><i class="material-icons">play_for_work</i></a></li>
+      </ul>
+    </div>
+
+    <ul id="slide-out" class="side-nav">
+      <li><a class="subheader">Select a book:</a></li>
+      <!--<li><a class="user waves-effect"><i class="material-icons">group</i>All Books</a></li>-->
+      <li>
+        <div class="divider"></div>
+      </li>
+<!--       <li><a class="waves-effect" data-book="pebl://TorandHTTPS_RFL.epub">tor and https</a></li>
+      <li><a class="waves-effect" data-book="pebl://The_Phishing_Guide_C66_FXL.epub">phishing guide</a></li>
+      <li><a class="waves-effect" data-book="pebl://InstallingOpenVPNAccessServeronUbuntu_RFL.epub">installing openvpn</a></li> -->
+      <li><a class="waves-effect" data-book="pebl://PEBL_CyberSec_v12b.epub">PEBL Cyber Security</a></li>
+<!--       <li><a class="waves-effect" data-book="pebl://C101__UnmaskingTheSocialEngineer-Ch1-Hadnagy_RFL.epub">unmasking social engineer</a></li>
+      <li><a class="waves-effect" data-book="pebl://C13_Art_of_Human_Hacking_FXL.epub">art of human</a></li>
+      <li><a class="waves-effect" data-book="pebl://C-12_SocialEngineeringFramework-Hadnagy-RFL.epub">social engineering framework</a></li>
+      <li><a class="waves-effect" data-book="pebl://C33_Phishing_Vishing_SMiShing_Oh_My_RFL.epub">phishing vishing smishing</a></li>
+      <li><a class="waves-effect" data-book="pebl://WhatisDoxingandHowitisDone_RFL.epub">what is doxing</a></li>
+      <li><a class="waves-effect" data-book="pebl://C31_Dont_make_that_face_RFL.epub">dont make that face</a></li>
+      <li><a class="waves-effect" data-book="pebl://TLO2-ELO2N-EmotionalConnection.epub">tlo2-elo2n emotional connection</a></li>
+      <li><a class="waves-effect" data-book="pebl://HowtofindSubdomainsofaDomaininMinutes_RFL.epub">find subdomains</a></li>
+      <li><a class="waves-effect" data-book="pebl://MSTechnet-Tracert_RFL.epub">mstechnet tracert</a></li> -->
+    </ul>
+
+    <!-- LOADING -->
+    <!-- <div id="loading" class="section no-pad-bot"> -->
+    <!--   <div class="container"> -->
+    <!--     <h1 class="header center orange-text">Loading...</h1> -->
+
+    <!--     <div class="progress light-blue lighten-5"> -->
+    <!--       <div class="indeterminate light-blue"></div> -->
+    <!--     </div> -->
+
+    <!--     <div class="row center"> -->
+    <!--       <h5 class="header col s12 light"></h5> -->
+    <!--       <\!-- <a id="download-button" class="btn waves-effect waves-light orange">done (debug)</a> -\-> -->
+    <!--     </div> -->
+
+    <!--   </div> -->
+    <!-- </div>  -->
+
+    <!-- MAIN CONTENT -->
+    
+    <div class="container" id="noBookSelectedDiv" style="display:none;">
+      <div class="row">
+        <div class="col s12 l10 offset-l1">
+          <h5 class="center">Welcome to your PEBL Teacher Dashboard</h5>
+        </div>
+      </div>
+      <div class="row">
+        <div class="icon-block">
+          <div class="col s12 m4">
+            <h2 class="center light-blue-text"><i class="material-icons">chrome_reader_mode</i></h2>
+            <h5 class="center">Track progression</h5>
+            <p class="light">Take full advantage of the advanced reporting and analytics baked into every PEBL-enabled eBook and get detailed information on your students' progress through a given book.</p>
+          </div>
+          <div class="col s12 m4">
+            <h2 class="center light-blue-text"><i class="material-icons">assessment</i></h2>
+            <h5 class="center">View performance</h5>
+            <p class="light">Review tests and quizzes your students have taken to track their performance.</p>
+          </div>
+          <div class="col s12 m4">
+            <h2 class="center light-blue-text"><i class="material-icons">chat</i></h2>
+            <h5 class="center">Participate in discussions</h5></div>
+            <p class="light">Communicate directly with students as they work through the material.</p>
+          </div>
+        </div>
+        <br>
+        <br>
+        <div class="row">
+          <div class="col s12">
+            <h5 class="center">Select one of your PEBL-enabled eBooks to get started!</h5>
+          </div>
+        </div>
+    </div>
+    
+
+    <div class="section no-pad-bot" id="index-banner" style="display:none">
+      <div class="container">
+        <h5 class="thin">Showing <strong id="BookName"></strong></h5>
+      </div>
+    </div>
+
+    <div id="mainContent" class="container" style="display:none">
+      <div class="row">
+
+        <div class="col s12 l10 offset-l1">
+          <div class="icon-block">
+            <h2 class="center light-blue-text no-print"><i class="material-icons">chrome_reader_mode</i></h2>
+            <h5 class="center no-print">Content</h5>
+            <ul class="collapsible popout" data-collapsible="expandable">
+              <!-- <li id="contentPushing" class="no-print">
+                <div class="collapsible-header orange lighten-2 white-text">
+                  <i class="material-icons">publish</i>Push Content
+
+                </div>
+                <div class="collapsible-body">
+                  <div class="section" style="padding-top: 2rem !important;">
+                    <div id="pushForm" class="row">
+                      <form class="col s12">
+                        <div class="row">
+                          <div class="input-field col s6">
+                            <select id="pushTarget">
+                              <option value="" disabled selected>Select a push target</option>
+                            </select>
+                            <label class="active">Push Target</label>
+                          </div>
+                          <div class="input-field col s6">
+                            <select id="pushLocation">
+                              <option value="" disabled selected>(Optional) Select a location</option>
+                              <option value="1">Option 1</option>
+                              <option value="2">Option 2</option>
+                              <option value="3">Option 3</option>
+                            </select>
+                            <label class="active">Insertion Location</label>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="input-field col s6">
+                            <input spellcheck="false" placeholder="www.example.com/file.pdf" id="pushURL">
+                            <label class="active" for="pushURL">Document URL</label>
+                          </div>
+                          <div class="input-field col s6">
+                            <a href="javascript:void(0)" id="pushTargetSubmitButton" class="btn light-blue lighten-1 waves-effect waves-light right" style="margin-right: 30%;"><i class="material-icons right" style="font-size: 1.3rem !important;">send</i>Push</a>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </li> -->
+              <li id="studentActivitySection">
+                <div class="collapsible-header orange lighten-2 white-text">
+                  <i class="material-icons">trending_up</i>Student Activity
+                  <div id="studentActivityLoader" class="preloader-wrapper small active right tooltipped" data-position="top" data-delay="50" data-tooltip="Data is still streaming in, information displayed will not be accurate until this process is complete.">
+                    <div class="spinner-layer">
+                      <div class="circle-clipper left">
+                        <div class="circle"></div>
+                      </div><div class="gap-patch">
+                        <div class="circle"></div>
+                      </div><div class="circle-clipper right">
+                        <div class="circle"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="collapsible-body">
+                  <div class="section">
+                    <table class="bordered">
+                      <tbody>
+                        <tr>
+                          <td>Time / Section</td>
+                          <td><span id="timePerSection" class="badge table-badge orange-text text-darken-4 timeCounts">0 min</span></td>
+                        </tr>
+                        <tr>
+                          <td>Time / Session</td>
+                          <td><span id="timePerSession" class="badge table-badge orange-text text-darken-4 timeCounts">0 min</span></td>
+                        </tr>
+                        <tr>
+                          <td>Total time</td>
+                          <td><span id="totalTime" class="badge table-badge orange-text text-darken-4 timeCounts">0 min</span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <a id="rosterButton" class="slide-out-trigger btn-floating btn-large waves-effect waves-light light-blue lighten-1 pulse no-print" href="javascript:void(0)" data-activates="slide-out-roster" style="margin-bottom: 10px;position: absolute;left: -35px;"><i class="material-icons" style="font-size: 1.6rem;">recent_actors</i></a>
+                  <div id="activityTimesWrapper">
+                    <canvas id="activityTimesLineChart" width="400px" height="200px"></canvas>
+                  </div>
+                </div>
+              </li>
+              <li id="classProgressSection">
+                <div class="collapsible-header orange lighten-2 white-text">
+                  <i class="material-icons">assignment</i>Class Progress
+                  <div id="classProgressLoader" class="preloader-wrapper small active right tooltipped" data-position="top" data-delay="50" data-tooltip="Data is still streaming in, information displayed will not be accurate until this process is complete.">
+                    <div class="spinner-layer">
+                      <div class="circle-clipper left">
+                        <div class="circle"></div>
+                      </div><div class="gap-patch">
+                        <div class="circle"></div>
+                      </div><div class="circle-clipper right">
+                        <div class="circle"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="collapsible-body" id="progressDonutCharts">
+                  <p class="center">Percentage of Book Completion by Lesson</p>
+                </div>
+              </li>
+            </ul>
+            <div class="section" id="bookSections" style="display: none">
+              <!-- <h5>Sections Completed <span class="badge orange-text text-darken-4">82%</span></h5> -->
+              <!-- <strong>Missed 4 Sections</strong> -->
+              <!-- <ol> -->
+              <!--   <li>Header or learning objective</li> -->
+              <!--   <li>Another Header or learning objective</li> -->
+              <!--   <li>Some title here</li> -->
+              <!--   <li>Yet another one here</li> -->
+              <!-- </ol> -->
+	      
+            </div>
+            
+            <div class="divider"></div>
+          </div>
+        </div>
+
+        <div class="col s12 l10 offset-l1">
+          <div class="icon-block">
+            <h2 class="center light-blue-text no-print"><i class="material-icons">assessment</i></h2>
+            <h5 class="center no-print">Assessment</h5>
+            <ul class="collapsible popout" data-collapsible="expandable">
+              <li id="quizStatisticsSection">
+                <div class="collapsible-header orange lighten-2 white-text">
+                  <i class="material-icons">assessment</i>Quiz Statistics
+                  <div id="quizStatisticsLoader" class="preloader-wrapper small active right tooltipped" data-position="top" data-delay="50" data-tooltip="Data is still streaming in, information displayed will not be accurate until this process is complete.">
+                    <div class="spinner-layer">
+                      <div class="circle-clipper left">
+                        <div class="circle"></div>
+                      </div><div class="gap-patch">
+                        <div class="circle"></div>
+                      </div><div class="circle-clipper right">
+                        <div class="circle"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="collapsible-body">
+                  <div class="section">
+                    <table class="bordered">
+                      <tbody>
+                        <tr>
+                          <td>Average Score</td>
+                          <td><span id="averageScore" class="badge table-badge orange-text text-darken-4"></span></td>
+                        </tr>
+                        <tr>
+                          <td>Standard Deviation</td>
+                          <td><span id="standardDeviation" class="badge table-badge orange-text text-darken-4"></span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div id="quizDistributionWrapper">
+                    <canvas id="quizDistributionChart" width="400px" height="200px"></canvas>
+                  </div>
+                </div>
+              </li>
+              <li id="questionSection">
+                <div class="collapsible-header orange lighten-2 white-text">
+                  <i class="material-icons">subtitles</i>Question Analysis
+                  <div id="questionAnalysisLoader" class="preloader-wrapper small active right tooltipped" data-position="top" data-delay="50" data-tooltip="Data is still streaming in, information displayed will not be accurate until this process is complete.">
+                    <div class="spinner-layer">
+                      <div class="circle-clipper left">
+                        <div class="circle"></div>
+                      </div><div class="gap-patch">
+                        <div class="circle"></div>
+                      </div><div class="circle-clipper right">
+                        <div class="circle"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="collapsible-body" id="teacherQuizSummary">
+                  
+                </div>
+              </li>
+            </ul>
+            <div class="section" id="userAssessments" style="display: none">
+              
+	      
+            </div>
+            <div class="divider"></div>
+            <!-- <div class="divider"></div> -->
+          </div>
+	</div>
+
+
+	<div class="col s12 l10 offset-l1 no-print" id="discussionSection">
+          <div class="icon-block">
+            <h2 class="center light-blue-text"><i class="material-icons">chat</i></h2>
+            <h5 class="center">Discussions</h5>
+	    <div id="threadButtonWrapper">
+	      <ul>
+		<li><a data-activates="slide-out-discussion" href="#" class="slide-out-trigger btn waves-effect waves-light orange lighten-2">select a thread</a>
+		  <a href="#discussionSubmit" id="userDiscussionModalTrigger" class="modal-trigger btn waves-effect waves-light grey" style="display:none">Reply to thread...</a></li>
+              </ul>
+	    </div>
+	    <blockquote class="promptBlockQuote"><label for="userDiscussionPrompt"></label>
+	    <span id="userDiscussionPrompt"></span></blockquote>
+            <div class="section chatResponses" id="userDiscussions">
+              <div class="divider"></div>
+	      
+            </div>
+            <!-- <div class="divider"></div> -->
+          </div>
+	</div>
+      </div>
+      
+    </div>
+    
+    <br>
+    <br>
+    
+    <footer class="page-footer orange no-print" id="footer">
+      <div class="footer-copyright">
+        <div class="container">
+          v5.24a, Made by <a class="orange-text text-lighten-3" href="">Eduworks</a>
+        </div>
+      </div>
+    </footer>
+
+    <div id="discussionSubmit" class="modal">
+      <div class="modal-content">
+	<p>
+	  <blockquote class="promptBlockQuote"><label for="userDiscussionPromptReply"></label>
+	  <span id="userDiscussionPromptReply"></span></blockquote>
+	  <div class="row">
+      <form class="col s12">
+        <div class="row">
+          <div class="input-field col s12">
+            <input type="hidden" id="userDiscussionThreadReply" />
+        	  <textarea class="materialize-textarea replyTextArea" id="userDiscussionSubmission"></textarea>
+            <label for="userDiscussionSubmission">Reply</label>
+          </div>
+        </div>
+      </form>
+    </div>
+	</p>
+      </div>
+      <div class="modal-footer">
+	<a href="#!" class="modal-action modal-close waves-effect waves-orange btn-flat">Submit</a>
+	<a href="#!" class="modal-action modal-close waves-effect waves-grey btn-flat">Cancel</a>
+      </div>
+    </div>
+
+    <ul id="slide-out-discussion" class="side-nav discussionThreadList">
+      <li><a class="subheader">Select a discussion:</a></li>
+      <li>
+	       <div class="divider"></div>
+      </li>
+      <li><a class="waves-effect" data-discussion="f9cb7846-dae2-49b9-951f-03d187d10987">What might make this email attack effective where others fail&#63;</a></li>
+      <div class="divider"></div>
+      <li><a class="waves-effect" data-discussion="296f279d-8f72-44ba-b9ec-89882f7fe100">What makes this whaling attack more likely to succeed than a generic phishing email&#63;</a></li>
+      <div class="divider"></div>
+      <li><a class="waves-effect" data-discussion="7b149871-63b3-4102-aa03-28afd62e492f">Can you think of an SE scenario involving phishing that is not unethical or malicious&#63;</a></li>
+      <div class="divider"></div>
+      <li><a class="waves-effect" data-discussion="5cb9e81d-86d8-4c4a-8bbc-fa44f0a09365">What aspects of your life might a spear phisherman hone in on? How might they create an attack, and how would you know it was truly an attack&#63;</a></li>
+      <div class="divider"></div>
+      <li><a class="waves-effect" data-discussion="c1538026-9099-4ddb-bf52-476ff3469890">Were you ever notified by a friend that he or she received a cloned email from you? How did they know&#63; What did you do in response&#63;</a></li>
+      <div class="divider"></div>
+      <li><a class="waves-effect" data-discussion="beb38c17-f460-4988-9c01-4c3cf3630634">What research would you have to do on potential targets in order to be able to launch a whaling attack in a workplace that you are not already familiar with&#63;</a></li>
+      <div class="divider"></div>
+      <li><a class="waves-effect" data-discussion="59d7b224-f0ca-4bf9-b215-dc6d16b3eb9b">What do you or would you look for to verify a suspicion that you are looking at a website forgery&#63;</a></li>
+      <div class="divider"></div>
+      <li><a class="waves-effect" data-discussion="32ae58f0-efba-4965-881b-efdd6a186edb">Share your experience of a vishing attack and how you knew (or didn’t know) that the attacker was vishing&#63;</a></li>
+      <div class="divider"></div>
+      <li><a class="waves-effect" data-discussion="64d75fdf-6372-4532-b41e-35a71b71942c">How would you craft a SMiShing message differently than a phishing message? How would the content, format, and tone be different&#63;</a></li>
+      <div class="divider"></div>
+      <li><a class="waves-effect" data-discussion="b54102d2-a4e1-42a9-a13d-e66301078446">What questions would you ask someone who claimed to be an IT person in your organization to determine that they were impersonating&#63;</a></li>
+      <div class="divider"></div>
+      <li><a class="waves-effect" data-discussion="3435f3be-2043-43da-990d-adb475a1e2c7">What kind of diversion scenario would have the best chance of working in your work environment&#63;</a></li>
+      <div class="divider"></div>
+      <li><a class="waves-effect" data-discussion="dfedbf6c-d2f2-4689-8971-93814d0c80dd">What label would you use for media in a baiting attack in your work environment and where would you leave the bait&#63;</a></li>
+      <div class="divider"></div>
+      <li><a class="waves-effect" data-discussion="05157d24-f73b-4510-a64b-57def4243c9d">Think of someone whose position or knowledge could make them a phishing attack target. What makes them a good target&#63;</a></li>
+      <div class="divider"></div>
+      <li><a class="waves-effect" data-discussion="4f69f897-e8d1-4728-956b-868ea7d1d4fb">Using your knowledge of your target, what approach would you choose and why&#63;</a></li>
+      <div class="divider"></div>
+      <li><a class="waves-effect" data-discussion="cca05161-db2a-4ff2-805d-5a294b39065e">How would you collect potentially compromising information about your target&#63;</a></li>
+      <div class="divider"></div>
+      <li><a class="waves-effect" data-discussion="add306de-35c4-4c20-a417-3e0ed0bc67e6">Using what you’ve gathered about your target, what details would you use to architect your attack&#63;</a></li>
+      <div class="divider"></div>
+      <li><a class="waves-effect" data-discussion="6e85f6d8-1f0b-48d6-877c-4d4f7728cde3">What would your attack execution look like&#63;</a></li>
+      <div class="divider"></div>
+      <li><a class="waves-effect" data-discussion="1c020e1b-ade5-45d2-bf80-38bf3c34f3a9">Share and discuss other cybersecurity techniques that you know that might allow for exploitation after a successful phishing attack.</a></li>
+      <div class="divider"></div>
+      <li><a class="waves-effect" data-discussion="19343368-3df5-4651-bf4f-0885a8b6cc6b">What would you do with control of your target’s network&#63;</a></li>
+      <div class="divider"></div>
+      <li><a class="waves-effect" data-discussion="d8909a3d-b948-42dd-9699-b018571d54f7">This is obviously a very elaborate attack requiring a lot of patience and hard work. What elements of this could have been done with less effort, using email phishing or vishing&#63; Are there ways to do it that could have minimized the risk of detection even further&#63;</a></li>
+      <div class="divider"></div>
+      <li><a class="waves-effect" data-discussion="8b70ad7a-7709-44e1-b065-dfc65045dbd0">Think of an SE objective. What barriers would you need to compromise to achieve it, and how would you do it&#63;</a></li>
+      <div class="divider"></div>
+      <li><a class="waves-effect" data-discussion="ef1d3966-9f20-46a4-9f48-c324841d98bf">Under what circumstances would you be most likely to get away with shoulder surfing&#63;</a></li>
+      <div class="divider"></div>
+      <li><a class="waves-effect" data-discussion="4318ace9-f1cc-4914-a300-76d91fb579af">What would a phisher find in your trash if he or she picked it up for a couple of weeks&#63;</a></li>
+      <div class="divider"></div>
+      <li><a class="waves-effect" data-discussion="df086676-bb25-4e11-9b8e-8386046faea2">Describe your overall goal for the phishing attack and its implications for your choice of target. Then describe your target and their characteristics and/or role that led you to select that target.</a></li>
+      <div class="divider"></div>
+      <li><a class="waves-effect" data-discussion="f9b35097-0ac5-44f8-b90f-ff0f6585d7ad">Describe your approach and why you selected it. Include the pros, cons, risks, and opportunities of your approach.</a></li>
+      <div class="divider"></div>
+      <li><a class="waves-effect" data-discussion="aa40ecd4-ace6-46e5-9732-82babbb1122a">Describe the actions you have taken (if describing a real phishing attack), plan to take or would take (in a fictitious attack) in the Reconnaissance phase. Include what you learned from it or expect to learn from it, and pros, cons, risks, and opportunities of your reconnaissance activities.</a></li>
+      <div class="divider"></div>
+      <li><a class="waves-effect" data-discussion="9eec7544-688d-4536-a064-93826e2ffc5e">Describe how you will conduct your attack, or what your plan was (for a real attack).</a></li>
+      <div class="divider"></div>
+      <li><a class="waves-effect" data-discussion="7dcfa9c1-7654-4ae7-9040-7482353f7eef">Describe how you will or actually did reap the benefits of the attack. What could or did happen during the Exploitation phase to negate and of the benefits you reaped? Did your plan for exploitation account for all of them&#63;</a></li>
+    </ul>
+
+    <ul id="slide-out-roster" class="side-nav">
+      <li><a class="subheader">Select a student:</a></li>
+      <li>
+        <div class="divider"></div>
+      </li>
+    </ul>
+
+    <div id="studentQuizDetailModal" class="modal bottom-sheet">
+      <div id="studentQuizDetailContent" class="modal-content">
+
+      </div>
+    </div>
+
+    <div id="downloadOptionsModal" class="modal">
+      <div class="modal-content">
+        <h4>Download as CSV</h4>
+        <div class="collection" id="downloadLinks">
+          
+        </div>
+      </div>
+    </div>
+    
+    <!--  Scripts-->
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="js/materialize.min.js"></script>
+
+    <script type="text/javascript" src="generated-js/stjs.js"></script>
+    <script type="text/javascript" src="js/xapiwrapper.min.js"></script>
+    <script type="text/javascript" src="js/Lightbox.js"></script>
+    <script type="text/javascript" src="js/forge.min.js"></script>
+    <script type="text/javascript" src="js/keycloak.js"></script>
+    <script type="text/javascript" src="js/IndexedDBInterop.js"></script>
+    <script type="text/javascript" src="generated-js/ec.base.js"></script>
+    <script type="text/javascript" src="generated-js/ec.crypto.js"></script>
+    <script type="text/javascript" src="generated-js/es.pebl.libraries.js"></script>
+    <script type="text/javascript" src="js/Chart.min.js"></script>
+    <script src="js/init.js"></script>
+
+    <script>
+      $('.modal').modal();
+
+      // Initialize slide-out menu
+      $('.slide-out-trigger').sideNav({
+      menuWidth: 300, // Default is 300
+      closeOnClick: true, // Closes side-nav on <a> clicks, useful for Angular/Meteor
+        draggable: true // Choose whether you can drag to open on touch screens
+        });
+    </script>
+    
+    <script type="text/javascript" src="generated-js/es.pebl.interface.js"></script>
+  </body>
+
+</html>
