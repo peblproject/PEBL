@@ -20,7 +20,7 @@ function toggleVisibility(event, programInvoked) {
     state = "hiding";
     }
     $('#' + id).slideToggle(400, function () {
-        if (window.top.ReadiumSDK != null)
+        if (window.top.ReadiumSDK != null && window.top.ReadiumSDK.reader.plugins.highlights != null)
             window.top.ReadiumSDK.reader.plugins.highlights.redrawAnnotations();
     });
 
@@ -37,12 +37,25 @@ function toggleVisibility(event, programInvoked) {
     }   
 }
 
-function createShowHide(buttonText1, buttonText2, id, cassMapping, cassTarget, cassLevel) {
-    cassMapping = typeof cassMapping !== 'undefined' ? cassMapping : false;
-    cassTarget = typeof cassTarget !== 'undefined' ? cassTarget : false;
-    cassLevel = typeof cassLevel !== 'undefined' ? cassLevel : false;
+$(document).ready(function() {
+    $('.showHide_showHideExtension').each(function() {
+        var insertID = $(this)[0].getAttribute('id');
+        var buttonText1 = $(this)[0].getAttribute('data-buttonText1');
+        var buttonText2 = $(this)[0].getAttribute('data-buttonText2');
+        var id = $(this)[0].getAttribute('data-id');
+        var cassMapping = $(this)[0].hasAttribute('data-cassMapping') ? $(this)[0].getAttribute('data-cassMapping') : null;
+        var cassTarget = $(this)[0].hasAttribute('data-cassTarget') ? $(this)[0].getAttribute('data-cassTarget') : null;
+        var cassLevel = $(this)[0].hasAttribute('data-cassLevel') ? $(this)[0].getAttribute('data-cassLevel') : null;
+        var isInline = false;
+        if ($(this)[0].hasAttribute('data-displayBtnInline') && $(this)[0].getAttribute('data-displayBtnInline') == 'true') {
+            isInline = true;
+        }
+        createShowHide(insertID, buttonText1, buttonText2, id, isInline,cassMapping, cassTarget, cassLevel);
+    });
+});
+
+function createShowHide(insertID, buttonText1, buttonText2, id, isInline, cassMapping, cassTarget, cassLevel) {
     var button,
-        scripts,
         insertLocation,
         handleButtonClick;
 
@@ -51,23 +64,25 @@ function createShowHide(buttonText1, buttonText2, id, cassMapping, cassTarget, c
     button.otherId = id;
     button.classList.add('showHideButton');
     button.classList.add('hiding');
+    if (isInline == true) {
+        button.classList.add('inline');
+    }
     button.buttonText1 = buttonText1;
     button.buttonText2 = buttonText2;
     button.addEventListener('click', toggleVisibility);
     //button.innerHTML = buttonText1;
 
-    if (cassMapping !== false) {
+    if (cassMapping) {
         button.setAttribute('data-cassMapping', cassMapping);
     }
-    if (cassTarget !== false) {
+    if (cassTarget) {
         button.setAttribute('data-cassTarget', cassTarget);
     }
-    if (cassLevel !== false) {
+    if (cassLevel) {
         button.setAttribute('data-cassLevel', cassLevel);
     }
 
-    scripts = document.getElementsByTagName('script');
-    insertLocation = scripts[scripts.length - 1];
+    insertLocation = document.getElementById(insertID);
 
     insertLocation.parentNode.insertBefore(button, insertLocation);
     insertLocation.remove();

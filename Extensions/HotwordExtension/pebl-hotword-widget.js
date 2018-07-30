@@ -1,7 +1,15 @@
-function createHotword(tooltip, tooltipText) {
+$(document).ready(function() {
+    $('.hotword_hotwordExtension').each(function() {
+        var insertID = $(this)[0].getAttribute('id');
+        var hotword = $(this)[0].getAttribute('data-hotword');
+        var hotwordText = $(this)[0].getAttribute('data-hotwordText');
+        createHotword(insertID, hotword, hotwordText);
+    });
+});
+
+function createHotword(insertID, tooltip, tooltipText) {
     var tooltipSpan,
         tooltipTextSpan,
-        scripts,
         insertLocation;
 
     tooltipSpan = document.createElement('span');
@@ -9,13 +17,102 @@ function createHotword(tooltip, tooltipText) {
     tooltipSpan.textContent = tooltip;
     tooltipSpan.setAttribute('definition', tooltipText);
 
-    scripts = document.getElementsByTagName('script');
-    insertLocation = scripts[scripts.length - 1];
+    insertLocation = document.getElementById(insertID);
 
     insertLocation.parentNode.insertBefore(tooltipSpan, insertLocation);
     insertLocation.remove();
     $('.tooltip').off();
     $('.tooltip').on('click', handleTooltipClick);
+}
+
+function hotword_offsetTop(elem) {
+    elem.removeAttr('style');
+    elem.css('margin', 0);
+
+    var adjustTop = false;
+    var topStyleString = null;
+
+    var tooltiptextHeight = elem.height();
+    var elemRect = elem.parent()[0].getBoundingClientRect();
+    var rect = elem[0].getBoundingClientRect();
+
+    if (tooltiptextHeight > elemRect.top || rect.top < 0) {
+        elem.css('bottom', 'inherit');
+        var newMarginTop = (-4 - elem.innerHeight());
+        topStyleString = "border-top-width: 0px;border-bottom-width: 8px;border-bottom-style: solid;border-bottom-color: rgb(85, 85, 85);margin-top: " + newMarginTop + "px;";
+        adjustTop = true;
+    }
+
+    setTimeout(function() {
+        hotword_offsetRight(elem, adjustTop, topStyleString);
+    }, 10);
+
+}
+
+function hotword_offsetRight(elem, adjustTop, topStyleString) {
+    var adjustRight = false;
+    var rightStyleString = null;
+
+    var rect = elem[0].getBoundingClientRect();
+    var w = $(window).width();
+    var marginLeft = parseInt(elem.css('marginLeft'));
+
+    if (rect.right > w) {
+        var offset = w - rect.right;
+        elem.css('margin-left', offset);
+        var newMarginLeft = -8 + (marginLeft - offset);
+        rightStyleString = "margin-left: " + newMarginLeft + 'px;';
+        adjustRight = true;
+    }
+
+    setTimeout(function() {
+        hotword_offsetLeft(elem, adjustTop, topStyleString, adjustRight, rightStyleString);
+    }, 10);
+}
+
+function hotword_offsetLeft(elem, adjustTop, topStyleString, adjustRight, rightStyleString) {
+    var adjustLeft = false;
+    var leftStyleString = null;
+
+    var rect = elem[0].getBoundingClientRect();
+    var w = $(window).width();
+    var h = $(window).height();
+    var originalLeft = elem.css('left');
+
+    var isPortrait = h > w ? true : false;
+    
+    if (rect.left < 0 || (!isPortrait && rect.left < w / 2 && rect.right > w / 2)) {
+        elem.css('left', 0);
+        var newMarginLeft = -8 + parseInt(originalLeft);
+        leftStyleString = "margin-left: " + newMarginLeft + 'px;';
+        
+        adjustLeft = true;
+    }
+
+    setTimeout(function() {
+        hotword_offsetArrow(elem, adjustTop, topStyleString, adjustRight, rightStyleString, adjustLeft, leftStyleString);
+    }, 10);
+
+}
+
+function hotword_offsetArrow(elem, adjustTop, topStyleString, adjustRight, rightStyleString, adjustLeft, leftStyleString) {
+
+    var arrowElement = $('<div id="tooltipArrow" class="tooltipArrow"></div>');
+    if (adjustTop && adjustLeft) {
+        arrowElement = $('<div id="tooltipArrow" class="tooltipArrow" style="' + leftStyleString + topStyleString + '"></div>');
+    } else if (adjustTop && adjustRight) {
+        arrowElement = $('<div id="tooltipArrow" class="tooltipArrow" style="' + rightStyleString + topStyleString + '"></div>');
+    } else if (adjustTop) {
+        arrowElement = $('<div id="tooltipArrow" class="tooltipArrow" style="' + topStyleString + '"></div>');
+    } else if (adjustLeft) {
+        arrowElement = $('<div id="tooltipArrow" class="tooltipArrow" style="' + leftStyleString + '"></div>');
+    } else if (adjustRight) {
+        arrowElement = $('<div id="tooltipArrow" class="tooltipArrow" style="' + rightStyleString + '"></div>');
+    }
+    elem.append(arrowElement);
+
+    if (window.top.ReadiumSDK != null && window.top.ReadiumSDK.reader.plugins.highlights != null)
+        window.top.ReadiumSDK.reader.plugins.highlights.redrawAnnotations();
 }
 
 
@@ -63,68 +160,8 @@ function handleTooltipClick() {
         tooltipTextSpan.classList.add('tooltiptext');
         tooltipTextSpan.textContent = $(this).attr('definition');
 
-
         $(this).append(tooltipTextSpan);
 
-        tip = $(this).children('.tooltiptext');
-        
-        tip.removeAttr('style'); // reset offsets
-        tip.css('margin', 0); // reset
-        originalMarginLeft = tip.css('margin-left');
-        originalLeft = tip.css('left');
-        rect = tip[0].getBoundingClientRect();
-        w = $(window).width();
-        h = $(window).height();
-        //Determine how device is oriented
-        if (h > w) {
-            isPortrait = true;
-        }
-        //console.log(rect);
-        //console.log(w);
-        tooltiptextHeight = tip.height();
-        elemRect = this.getBoundingClientRect();
-        
-        if (rect.right > w) {
-            offset = w - rect.right;
-            tip.css('margin-left', offset);
-            newMarginLeft = -8 + (originalMarginLeft - offset);
-            rightStyleString = "margin-left: " + newMarginLeft + 'px;';
-            adjustRight = true;
-            //console.log('offset left: ' + offset);
-        }
-        if (rect.left < 0 || (!isPortrait && rect.left < w / 2 && rect.right > w / 2)) {
-            tip.css('left', 0);
-            newMarginLeft = -8 + parseInt(originalLeft);
-            leftStyleString = "margin-left: " + newMarginLeft + 'px;';
-            
-            adjustLeft = true;
-            //console.log('offset right: ' + offset);
-        }
-        if (tooltiptextHeight > elemRect.top || rect.top < 0) {
-            tip.css('bottom', 'inherit');
-            newMarginTop = (-4 - tip.innerHeight());
-            topStyleString = "border-top-width: 0px;border-bottom-width: 8px;border-bottom-style: solid;border-bottom-color: rgb(85, 85, 85);margin-top: " + newMarginTop + "px;";
-            adjustTop = true;
-            //console.log('offset top: ' + offset);
-        }
-
-        if (adjustTop && adjustLeft) {
-            arrowElement = $('<div id="tooltipArrow" class="tooltipArrow" style="' + leftStyleString + topStyleString + '"></div>');
-        } else if (adjustTop && adjustRight) {
-            arrowElement = $('<div id="tooltipArrow" class="tooltipArrow" style="' + rightStyleString + topStyleString + '"></div>');
-        } else if (adjustTop) {
-            arrowElement = $('<div id="tooltipArrow" class="tooltipArrow" style="' + topStyleString + '"></div>');
-        } else if (adjustLeft) {
-            arrowElement = $('<div id="tooltipArrow" class="tooltipArrow" style="' + leftStyleString + '"></div>');
-        } else if (adjustRight) {
-            arrowElement = $('<div id="tooltipArrow" class="tooltipArrow" style="' + rightStyleString + '"></div>');
-        } else {
-            arrowElement = $('<div id="tooltipArrow" class="tooltipArrow"></div>');
-        }
-
-        tip.append(arrowElement);
-        
+        hotword_offsetTop($(tooltipTextSpan));
     }
-    if (window.top.ReadiumSDK != null)
-            window.top.ReadiumSDK.reader.plugins.highlights.redrawAnnotations();
 }

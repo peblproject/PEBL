@@ -1,0 +1,56 @@
+.quiz {
+    
+}
+
+.quiz > li {
+    font-weight: bold;
+    padding: .5em 0;
+    border-bottom: 1px solid #aaa;
+    display: inline-block;
+    vertical-align: top;
+    width: 100%;
+}
+
+.quiz .choices {
+    font-family: "Helvetica Neue", sans-serif;
+    margin: 1em 1em 0 -1em;
+    list-style-type: none;
+    padding: 0;
+    font-weight: normal;
+}
+
+.quiz .choices li {
+    cursor: pointer;
+    padding: .5em 1em;
+    border-radius: 4px;
+}
+
+.quiz .choices li:hover {
+    background-color: #ddd;
+}
+
+.quiz .choices.reveal li.correct {
+    background-color: palegreen;
+}
+.quiz .choices.reveal.secondary li.correct {
+    background-color: transparent;
+    color: #009f1e;
+}
+.quiz .choices li.wrong {
+    background-color: #f49696;
+}
+
+.quiz .feedback {
+    font-weight: bold;
+    margin-top: 1em;
+    color: darkorange;
+}
+
+.questionPromptContainer {
+    position: relative;
+}
+
+.questionNumberSpan {
+    position: absolute;
+    left: -25px;
+}

@@ -33,6 +33,11 @@ a.button:hover {
     height: 40px;
 }
 
+.showHideButton.inline {
+    float: none !important;
+    margin-bottom: 0 !important;
+}
+
 .showHideButton.hiding {
     background-image: url('../image/icon-show-more-white.png') !important;
     background-size: 28px !important;

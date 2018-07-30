@@ -1,8 +1,18 @@
-function createDiscussion(buttonText, question, id, detailText) {
+$(document).ready(function() {
+    $('.discussion_discussionExtension').each(function() {
+        var buttonText = $(this)[0].getAttribute('data-buttonText');
+        var prompt = $(this)[0].getAttribute('data-prompt');
+        var id = $(this)[0].getAttribute('data-id');
+        var detailText = $(this)[0].hasAttribute('data-detailText') ? $(this)[0].getAttribute('data-detailText') : null;
+        var insertID = $(this)[0].getAttribute('id');
+        createDiscussion(insertID, buttonText, prompt, id, detailText);
+    });
+});
+
+function createDiscussion(insertID, buttonText, question, id, detailText) {
     var calloutDiv,
         chatButton,
         questionParagraph,
-        scripts,
         insertLocation;
 
     calloutDiv = document.createElement('div');
@@ -22,8 +32,7 @@ function createDiscussion(buttonText, question, id, detailText) {
     calloutDiv.appendChild(chatButton);
     calloutDiv.appendChild(questionParagraph);
 
-    scripts = document.getElementsByTagName('script');
-    insertLocation = scripts[scripts.length - 1];
+    insertLocation = document.getElementById(insertID);
 
     insertLocation.parentNode.insertBefore(calloutDiv, insertLocation);
     insertLocation.remove();
@@ -35,9 +44,13 @@ function messageHandler(responseBox, thread) {
     for (var i = 0; i < newMessages.length; i++) {
         var message = newMessages[i];
         if ($("#" + message.id).length == 0) {
-        var mine = window.top.pebl.getUserName() == message.userId;
+	    var mine;
+        if (window.top.pebl != null)
+            mine = window.top.pebl.userManager.profile.identity == message.userId;
+        else
+            mine = pebl.userManager.profile.identity == message.userId;
         var userIdBox = $('<span class="userId"></span>');
-        userIdBox.text(mine ? "You" : message.userId);
+        userIdBox.text(mine ? "You" : message.name);
         var timestampBox = $('<span class="timestamp"></span>');
         timestampBox.text(new Date(message.timestamp).toLocaleString());
         var textBox = $('<p class="message"></p>');
@@ -55,10 +68,10 @@ function messageHandler(responseBox, thread) {
             messageDeleteButton.innerHTML = '&#215;';
             messageDeleteButton.setAttribute('messageID', message.id);
             messageDeleteButton.setAttribute('thread', thread);
-            messageDeleteButton.onclick = function() {
+            messageDeleteButton.addEventListener('click', function() {
                 window.pebl.removeMessage(this.getAttribute('messageID'), this.getAttribute('thread'));
                 $('#' + this.getAttribute('messageID')).remove();
-            }
+            });
 
             messageDeleteButtonWrapper.appendChild(messageDeleteButton);
             messageContainer.append($(messageDeleteButtonWrapper));
@@ -73,7 +86,10 @@ function createThread(thread, element, moreInput) {
     var chatInputBox = $(element).parent();
     var responseBox = chatInputBox.siblings('.chatResponses');
     var messageHandle = messageHandler(responseBox, thread);
-    window.top.pebl.subscribeToDiscussion(thread, messageHandle);
+    if (window.top.pebl != null)
+        window.top.pebl.subscribeToDiscussion(thread, messageHandle);
+    else
+        pebl.subscribeToDiscussion(thread, messageHandle);
     var input = $(element).parent().find("textarea").val();
     var prompt = $(element).parent().parent().parent().children("p").text();
     if (input.trim() != "") {
@@ -83,7 +99,10 @@ function createThread(thread, element, moreInput) {
         "thread" : thread,
         "text" : input
     };
-    window.top.pebl.postMessage(message);
+    if (window.top.pebl != null)
+        window.top.pebl.postMessage(message);
+    else
+        pebl.postMessage(message);
     localStorage.setItem('peblThread-' + thread, 'true');
     if (!moreInput)
         chatInputBox.slideUp(400,
@@ -178,7 +197,10 @@ function createDiscussionBox(element, chatButton) {
     if (localStorage.getItem('peblThread-' + chatButton.id) === 'true') {
         var responseBox = $('.chatResponses');
         var messageHandle = messageHandler(responseBox, chatButton.id);
-        window.top.pebl.subscribeToDiscussion(chatButton.id, messageHandle);
+        if (window.top.pebl != null)
+            window.top.pebl.subscribeToDiscussion(chatButton.id, messageHandle);
+        else
+            pebl.subscribeToDiscussion(chatButton.id, messageHandle);
         responseBox.slideDown();
     }
 
@@ -192,15 +214,24 @@ function createDiscussionBox(element, chatButton) {
 }
 
 function handleChatButtonClick() {
+    $('#deviceInfo').text("Testing");
+    $('#debugWindowResult').val(0);
     var element,
         question;
     element = $(this);
     question = element.parent().children('p:first').text();
-    if (window.top.pebl != null) {
-    if ((this.id != null) && (this.id != ""))
-        if (element.parent().children(".chatBox").length == 0)
+    $('#debugWindowResult').val(1);
+    if (window.top.pebl != null || pebl != null) {
+        $('#debugWindowResult').val(2);
+    if ((this.id != null) && (this.id != "")) {
+        $('#debugWindowResult').val(3);
+        if (element.parent().children(".chatBox").length == 0) {
+            $('#debugWindowResult').val(4);
             openDiscussionLightbox(question, this);
+            $('#debugWindowResult').val(5);
             $('#discussionTextArea').focus();
+        }
+    }
     }
 }
 

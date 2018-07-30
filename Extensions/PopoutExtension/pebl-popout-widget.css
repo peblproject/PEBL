@@ -83,6 +83,11 @@
     /*    font-family: "Helvetica Neue", sans-serif;*/
 }
 
+.popout-content a {
+    text-decoration: underline;
+    color: blue;
+}
+
 .popout .popout-content h4 {
     font-family: "Helvetica Neue", sans-serif;
     margin-bottom: 0.5em;

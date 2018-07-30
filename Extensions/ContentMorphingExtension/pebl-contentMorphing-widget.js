@@ -1,5 +1,18 @@
+$(document).ready(function() {
+	$('.contentMorphing_contentMorphingExtension').each(function() {
+		var insertID = $(this)[0].getAttribute('id');
+		var levels = JSON.parse($(this)[0].getAttribute('data-levels'));
+		var levelContent = JSON.parse($(this)[0].getAttribute('data-levelContent'));
+		var id = $(this)[0].getAttribute('data-id');
+		var cassMapping = $(this)[0].hasAttribute('data-cassMapping') ? $(this)[0].getAttribute('data-cassMapping') : null;
+		var cassTarget = $(this)[0].hasAttribute('data-cassTarget') ? $(this)[0].getAttribute('data-cassTarget') : null;
+		var cassLevels = $(this)[0].hasAttribute('data-cassLevels') ? JSON.parse($(this)[0].getAttribute('data-cassLevels')) : null;
+		createMorphing(insertID, levels, levelContent, id, cassMapping, cassTarget, cassLevels);
+	});
+});
+
 //Takes an array with names of desired levels, and array with the content to be contained within those levels, optional parameters cassMapping, cassTarget, cassLevels[]
-function createMorphing(levels, levelContent, id, cassMapping, cassTarget, cassLevels) {
+function createMorphing(insertID, levels, levelContent, id, cassMapping, cassTarget, cassLevels) {
 	var adjustableContentDiv,
 		levelOptionsDiv,
 		currentLevelDiv,
@@ -9,12 +22,7 @@ function createMorphing(levels, levelContent, id, cassMapping, cassTarget, cassL
 		content,
 		clickEvent,
 		levelContentDiv,
-		scripts,
 		insertLocation;
-
-	cassMapping = typeof cassMapping !== 'undefined' ? cassMapping : false;
-	cassTarget = typeof cassTarget !== 'undefined' ? cassTarget : false;
-	cassLevels = typeof cassLevels !== 'undefined' ? cassLevels : false;
 
 	adjustableContentDiv = document.createElement('div');
 	adjustableContentDiv.classList.add('adjustable-content');
@@ -33,13 +41,13 @@ function createMorphing(levels, levelContent, id, cassMapping, cassTarget, cassL
 		var convertedValue = parseInt(level) + 1;
 		levelListElement = document.createElement('li');
 
-		if (cassMapping !== false) {
+		if (cassMapping !== null) {
 			levelListElement.setAttribute('data-cassMapping', cassMapping);
 		}
-		if (cassTarget !== false) {
+		if (cassTarget !== null) {
 			levelListElement.setAttribute('data-cassTarget', cassTarget);
 		}
-		if (cassLevels !== false && cassLevels.constructor === Array) {
+		if (cassLevels !== null && cassLevels.constructor === Array) {
 			levelListElement.setAttribute('data-cassLevel', cassLevels[level]);
 		}
 
@@ -79,8 +87,7 @@ function createMorphing(levels, levelContent, id, cassMapping, cassTarget, cassL
 		delete outerHTML;
 	}
 
-	scripts = document.getElementsByTagName('script');
-    insertLocation = scripts[scripts.length - 1];
+    insertLocation = document.getElementById(insertID);
 
     insertLocation.parentNode.insertBefore(adjustableContentDiv, insertLocation);
     insertLocation.remove();
@@ -113,7 +120,7 @@ function setLevel(n, sectionID, programInvoked) {
     if (n != '3') $('#' + sectionID + '.adjustable-content .level3').slideUp();
     
     $('#' + sectionID + '.adjustable-content .level' + n).slideDown(400, function () {
-    if (window.top.ReadiumSDK != null)
+    if (window.top.ReadiumSDK != null && window.top.ReadiumSDK.reader.plugins.highlights != null)
         window.top.ReadiumSDK.reader.plugins.highlights.redrawAnnotations();
     });
     //contentLevel = n;

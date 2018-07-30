@@ -1,12 +1,21 @@
+$(document).ready(function() {
+	$('.figure_figureExtension').each(function() {
+		var insertID = $(this)[0].getAttribute('id');
+		var img = JSON.parse($(this)[0].getAttribute('data-img'));
+		var title = $(this)[0].getAttribute('data-title');
+		var caption = $(this)[0].getAttribute('data-caption');
+		createFigure(insertID, img, title, caption);
+	});
+});
+
 //Accepts single image path, or array of image paths
-function createFigure(img, title, caption) {
+function createFigure(insertID, img, title, caption) {
 	var figure,
 		image,
 		imageElement,
 		figureCaption,
 		span,
 		paragraph,
-		scripts,
 		insertLocation;
 
 	figure = document.createElement('figure');
@@ -37,8 +46,7 @@ function createFigure(img, title, caption) {
 
 	figure.appendChild(figureCaption);
 
-	scripts = document.getElementsByTagName('script');
-    insertLocation = scripts[scripts.length - 1];
+    insertLocation = document.getElementById(insertID);
 
     insertLocation.parentNode.insertBefore(figure, insertLocation);
     insertLocation.remove();

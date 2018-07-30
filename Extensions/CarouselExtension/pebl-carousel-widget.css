@@ -1,0 +1,132 @@
+.carousel_wrapper {
+	display: inline-block;
+	vertical-align: top;
+	width: 100%;
+}
+
+.carousel_carouselContainer {
+	display: flex;
+    flex-flow: row wrap;
+    width: 100%;
+    height: 450px;
+    margin-bottom: 20px;
+}
+
+.carousel_carouselHeader {
+	display: flex;
+    width: 100%;
+}
+
+.carousel_carouselBody {
+	position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.carousel_controlsContainer {
+	display: inline-flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+}
+
+.carousel_dotsContainer {
+	display: inline-flex;
+	flex-wrap: wrap;
+}
+
+.carousel_dotWrapper {
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+.carousel_dot, .carousel_leftButton, .carousel_rightButton {
+	background-color: transparent;
+	padding: 0;
+}
+
+.carousel_dot:hover, .carousel_leftButton:hover, .carousel_rightButton:hover {
+	background-color: transparent;
+}
+
+.carousel_dotImage, .carousel_leftButtonImage, .carousel_rightButtonImage {
+	color: black;
+	text-shadow: none;
+}
+
+.carousel_leftButtonImage, .carousel_rightButtonImage {
+	font-size: 2rem;
+}
+
+.carousel_slide.carousel_imageOnly > .carousel_imageContainer {
+	height: 340px !important;
+}
+
+.carousel_slide {
+	position: absolute;
+	background-color: white;
+	width: 95%;
+	left: 2.5%;
+	z-index: 3;
+	margin-top: 60px;
+	-webkit-box-shadow: 0px 0px 5px 1px rgba(0,0,0,0.3);
+	-moz-box-shadow: 0px 0px 5px 1px rgba(0,0,0,0.3);
+	box-shadow: 0px 0px 5px 1px rgba(0,0,0,0.3);
+	-webkit-transition: margin .5s, width .5s, left .5s;
+	transition: margin .5s, width .5s, left .5s;
+}
+
+.carousel_animateNext {
+	margin-left: -100vw !important;
+}
+
+.carousel_animatePrev {
+	z-index: 4 !important;
+	margin-left: 0 !important;
+	width: 97% !important;
+	left: 1.5% !important;
+}
+
+.carousel_carouselBody > .carousel_slide:nth-child(n+4) {
+	z-index: -1;
+	margin-left: -100vw;
+	margin-top: 60px;
+}
+
+.carousel_carouselBody > .carousel_slide:nth-child(n+2) {
+
+}
+
+.carousel_carouselBody > .carousel_slide:nth-child(2) {
+	width: 93%;
+	left: 3.5%;
+	z-index: 2;
+	margin-top: 40px;
+}
+
+.carousel_carouselBody > .carousel_slide:nth-child(3) {
+	width: 91%;
+	left: 4.5%;
+	z-index: 1;
+	margin-top: 20px;
+}
+
+.carousel_imageContainer {
+	height: 270px;
+}
+
+.carousel_imageContainer img {
+	object-fit: contain;
+    height: 100%;
+    width: 100%;
+}
+
+.carousel_captionContainer {
+	display: flex;
+	justify-content: center;
+	padding: 10px;
+    height: 50px;
+    overflow: scroll;
+    background-color: rgb(240, 240, 240);
+}

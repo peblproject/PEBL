@@ -1,11 +1,20 @@
-function createPopout(title, content, iconType) {
+$(document).ready(function() {
+	$('.popout_popoutExtension').each(function() {
+		var insertID = $(this)[0].getAttribute('id');
+		var title = $(this)[0].getAttribute('data-title');
+		var content = $(this)[0].getAttribute('data-content');
+		var iconType = $(this)[0].getAttribute('data-icon');
+		createPopout(insertID, title, content, iconType);
+	});
+});
+
+function createPopout(insertID, title, content, iconType) {
 	var popoutDiv,
 		popoutShadowDiv,
 		popoutContentDiv,
 		closeButton,
 		header,
 		paragraph,
-		scripts,
 		insertLocation;
 
 	popoutDiv = document.createElement('div');
@@ -38,8 +47,7 @@ function createPopout(title, content, iconType) {
 
 	popoutDiv.addEventListener('click', handlePopoutClick);
 
-	scripts = document.getElementsByTagName('script');
-    insertLocation = scripts[scripts.length - 1];
+    insertLocation = document.getElementById(insertID);
 
     insertLocation.parentNode.insertBefore(popoutDiv, insertLocation);
     insertLocation.remove();
@@ -49,11 +57,14 @@ $().ready(function () {
     $('.popout').addClass('inactive'); // Hide all popouts, no script fallback shows popouts.
 });
 
-function handlePopoutClick() {
+function handlePopoutClick(event) {
+	//Don't close the popout when clicking a link inside it.
+	if (event.target.tagName === 'a')
+		return;
     var e = $(this).closest('.popout');
     e.toggleClass('inactive');
     e.toggleClass('active');
-    if (window.top.ReadiumSDK != null)
+    if (window.top.ReadiumSDK != null && window.top.ReadiumSDK.reader.plugins.highlights != null)
             window.top.ReadiumSDK.reader.plugins.highlights.redrawAnnotations();
     if (window.top.pebl != null) {
         var cfi = "";
