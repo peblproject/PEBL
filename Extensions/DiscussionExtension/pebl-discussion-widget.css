@@ -1,3 +1,19 @@
+.callout {
+    padding: 1em;
+    display: block;
+    background-color: rgb(240, 240, 240);
+    border-left: 10px solid rgb(0, 168, 142);
+    margin: 1.5em 10px;
+    clear: both;
+}
+
+.callout::after {
+    content: " ";
+    display: block;
+    height: 0;
+    clear: both;
+}
+
 button,
 a.button {
     cursor: pointer;
@@ -20,6 +36,17 @@ a.button {
     justify-content: center;
     padding-left: 2em;
     background-image: none;
+    background-color: rgb(0, 168, 142);
+    float: right;
+    margin-left: 1em;
+    margin-bottom: 0;
+}
+
+.callout p {
+    font-weight: bolder;
+    font-style: italic;
+    margin: 0;
+    padding: 0;
 }
 
 button.chat > i {
