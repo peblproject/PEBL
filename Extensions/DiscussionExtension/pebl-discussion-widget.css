@@ -13,12 +13,18 @@ a.button {
     border: none;
 }
 
-button.chat {
-    padding-left: 3em;
-    background-image: url(../image/icon-speech1.png);
-    background-size: 1.75em;
-    background-position: 10px center;
-    background-repeat: no-repeat;
+.callout > button.chat {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: center;
+    padding-left: 2em;
+    background-image: none;
+}
+
+button.chat > i {
+    font-size: 2em;
+    margin-right: 0.5em;
 }
 
 .messageDeleteButtonWrapper {
@@ -75,9 +81,14 @@ button.chat {
 .chatResponses .response {
     padding: .8em 1em .5em 3em;
     margin: 0;
-    background: transparent url(../image/icon-user.png) 6px 6px no-repeat;
-    background-size: 2em;
+    background: none;
     border-bottom: 1px solid #ddd;
+}
+
+.chatResponses .response > i {
+    position: absolute;
+    left: 0.5em;
+    font-size: 1.5em;
 }
 
 .chatResponses .showMore {
@@ -150,8 +161,7 @@ button.chat {
 .notesResponses .response {
     padding: .8em 1em .5em 3em;
     margin: 0;
-    background: transparent url(../image/icon-user.png) 6px 6px no-repeat;
-    background-size: 2em;
+    background: none;
     border-bottom: 1px solid #ddd;
 }
 

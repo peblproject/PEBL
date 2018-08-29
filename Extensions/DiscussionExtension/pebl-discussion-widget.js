@@ -12,6 +12,7 @@ $(document).ready(function() {
 function createDiscussion(insertID, buttonText, question, id, detailText) {
     var calloutDiv,
         chatButton,
+        chatIcon,
         questionParagraph,
         insertLocation;
 
@@ -22,6 +23,9 @@ function createDiscussion(insertID, buttonText, question, id, detailText) {
     chatButton.classList.add('chat');
     chatButton.id = id;
     chatButton.innerHTML = buttonText;
+    chatIcon = document.createElement('i');
+    chatIcon.classList.add('fa', 'fa-comments');
+    chatButton.appendChild(chatIcon);
     if (detailText)
         chatButton.setAttribute('detailText', detailText);
     chatButton.addEventListener('click', handleChatButtonClick);
@@ -44,18 +48,20 @@ function messageHandler(responseBox, thread) {
     for (var i = 0; i < newMessages.length; i++) {
         var message = newMessages[i];
         if ($("#" + message.id).length == 0) {
-	    var mine;
         if (window.top.pebl != null)
-            mine = window.top.pebl.userManager.profile.identity == message.userId;
+            var mine = window.top.pebl.getUserName() == message.userId;
         else
-            mine = pebl.userManager.profile.identity == message.userId;
+            var mine = pebl.getUserName() == message.userId;
+        var userIcon = document.createElement('i');
+        userIcon.classList.add('fa', 'fa-user');
         var userIdBox = $('<span class="userId"></span>');
-        userIdBox.text(mine ? "You" : message.name);
+        userIdBox.text(mine ? "You" : message.userId);
         var timestampBox = $('<span class="timestamp"></span>');
         timestampBox.text(new Date(message.timestamp).toLocaleString());
         var textBox = $('<p class="message"></p>');
         textBox.text(message.text);
         var messageContainer = $('<div id="' + message.id  + '" class="' + (mine?"your ":"") + 'response"></div>');
+        messageContainer.append($(userIcon));
         messageContainer.append(userIdBox);
         messageContainer.append(timestampBox);
         messageContainer.append(textBox);
