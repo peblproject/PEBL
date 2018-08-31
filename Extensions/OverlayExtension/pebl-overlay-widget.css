@@ -1,3 +1,10 @@
+#fake-page {
+    width: 100%;
+    height: calc(75% - 50px);
+    position: fixed;
+    top: 10vh;
+}
+
 .title {
     font-size: 35px;
 
@@ -18,12 +25,12 @@ p.discussionQuestionBoxText {
 .contentContainerWrapper {
     position: relative;
     height: auto;
-    top: 40%;
-    transform: translateY(-50%);
+    /*top: 40%;
+    transform: translateY(-50%);*/
 }
 
 .contentContainerWrapper.landscape {
-    top: 33%;
+    /*top: 33%;*/
 }
 
 .contentContainer.flatBottom {
@@ -32,7 +39,7 @@ p.discussionQuestionBoxText {
 }
 
 .contentContainer.landscape {
-    max-height: 300px;
+    /*max-height: 300px;*/
 }
 
 .contentContainer {
@@ -44,7 +51,7 @@ p.discussionQuestionBoxText {
     margin-right: 1em;
     position: relative;
     /*top: 40%;*/
-    max-height: 600px;
+    max-height: calc(68vh - 60px);
     /*transform: translateY(-50%);*/
     -webkit-box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
     box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
@@ -55,24 +62,43 @@ p.discussionQuestionBoxText {
 }
 
 .peblOverlay {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
     position: fixed;
     z-index: 10000;
     width: auto;
     left: 0;
     right: 0;
-    height: 50px;
+    height: auto;
     background-color: white;
 }
 
+.headerWrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+#uiBarDivider {
+    flex-basis: 100%;
+}
+
+
+
 .iconContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row-reverse;
     position: relative;
     float: left;
-    height: 45px;
+    height: 50px;
     width: auto;
     display: none;
     left: -150px;
-    bottom: 5px;
 }
 
 .peblFooter {
@@ -83,7 +109,7 @@ p.discussionQuestionBoxText {
     bottom: 0px;
     left: 0px;
     right: 0px;
-    height: 15%;
+    height: 15vh;
     background-color: white;
 }
 
@@ -258,7 +284,7 @@ p.discussionQuestionBoxText {
     background-color: white;
     padding: 20px;
     left: 12%;
-    top: 25%;
+    top: 10vh;
     position: fixed;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
@@ -274,6 +300,9 @@ p.discussionQuestionBoxText {
 /*Overlay Buttons*/
 
 .expandButtonContainerUnderlay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
     position: relative;
     float: left;
@@ -291,7 +320,9 @@ p.discussionQuestionBoxText {
     top: 5px;
 }
 
-.expandButton {
+i.expandButton {
+    font-size: 2rem;
+    color: rgb(7, 126, 188);
     cursor: pointer;
     position: relative;
     height: auto;
@@ -309,17 +340,12 @@ p.discussionQuestionBoxText {
     font-family: "Helvetica Neue", sans-serif;
 }
 
-.closeButton {
-    float: left;
-    margin-left: 0.5em;
+i#closeButton {
     cursor: pointer;
-    font-weight: bold;
-    font-family: "Helvetica Neue", sans-serif;
-    font-size: 3rem !important;
-    line-height: 30px !important;
+    margin-right: 20px;
+    font-size: 2rem !important;
     color: #077ebc;
     display: none;
-    margin-right: 50px;
 }
 
 .tocButton.hidden,
@@ -331,10 +357,8 @@ p.discussionQuestionBoxText {
 .tocButtonLabel,
 .askButtonLabel,
 .searchButtonLabel {
-    float: right;
     font-size: 19px;
     position: relative;
-    margin-top: 13px;
     padding-left: 10px;
     color: rgb(7, 126, 188);
     font-family: 'Helvetica Neue', sans-serif;
@@ -346,15 +370,24 @@ p.discussionQuestionBoxText {
     color: rgb(244, 123, 40) !important;
 }
 
-.tocButton {
+.tocButton.active,
+.askButton.active,
+.searchButton.active {
+    color: rgb(244, 123, 40) !important;
+}
+
+i.tocButton {
     cursor: pointer;
     position: relative;
     width: 35px;
-    height: 20px;
-    top: 15px;
+    color: rgb(7, 126, 188);
+    font-size: 2rem;
 }
 
 .tocButtonContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: relative;
     cursor: pointer;
     float: right;
@@ -369,6 +402,9 @@ p.discussionQuestionBoxText {
 }
 
 .searchButtonContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: relative;
     cursor: pointer;
     float: right;
@@ -382,15 +418,18 @@ p.discussionQuestionBoxText {
     border-bottom: 3px solid rgb(7, 126, 188);
 }
 
-.searchButton {
+i.searchButton {
     cursor: pointer;
     position: relative;
     width: auto;
-    height: 25px;
-    top: 13px;
+    color: rgb(7, 126, 188);
+    font-size: 2rem;
 }
 
 .askButtonContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: relative;
     cursor: pointer;
     float: right;
@@ -404,12 +443,12 @@ p.discussionQuestionBoxText {
     border-bottom: 3px solid rgb(7, 126, 188);
 }
 
-.askButton {
+i.askButton {
     cursor: pointer;
     position: relative;
     width: auto;
-    height: 25px;
-    top: 13px;
+    color: rgb(7, 126, 188);
+    font-size: 2rem;
 }
 
 .accountButtonContainer {
@@ -455,13 +494,13 @@ p.discussionQuestionBoxText {
     border-bottom: 3px solid rgb(7, 126, 188);
 }
 
-.peblNotificationButton {
+i.peblNotificationButton {
     cursor: pointer;
     position: relative;
     width: 30px;
     height: auto;
     top: 7px;
-    font-size: 30px !important;
+    font-size: 2rem;
     color: rgb(7, 126, 188);
 }
 
@@ -554,11 +593,12 @@ p.discussionQuestionBoxText {
 
 .askContainer,
 .registryContainer {
-    height: 100%;
+    height: calc(85vh - 100px);
     -webkit-box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
     box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
     width: 98%;
     margin: 5px;
+    position: relative;
 }
 
 .responsive-wrapper {
@@ -584,8 +624,9 @@ p.discussionQuestionBoxText {
 }
 
 .tocContainer {
+    flex-basis: 100%;
     width: 98%;
-    height: 100%;
+    height: calc(85vh - 100px);
     position: relative;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
@@ -890,7 +931,7 @@ p.discussionQuestionBoxText {
     top: 100px;
     bottom: 50px;
     background-color: white;
-    height: 70%;
+    height: calc(85vh - 125px);
     -webkit-box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
     box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
 }
@@ -903,18 +944,18 @@ p.discussionQuestionBoxText {
     margin: 5px;
 }
 
-.dynamicPageCloseButton, .overlayCloseButton {
+i.dynamicPageCloseButton, i.overlayCloseButton {
     cursor: pointer;
-    position: fixed;
-    top: 27px;
+    position: absolute;
+    top: 50px;
     right: 20px;
     color: rgba(0, 0, 0, 0.6);
-    font-size: 80px;
+    font-size: 3rem;
     font-weight: bold;
 }
 
-.overlayCloseButton {
-    top: 40px;
+i.overlayCloseButton {
+    top: 10px;
     z-index: 10001;
 }
 
@@ -938,13 +979,13 @@ p.discussionQuestionBoxText {
 
 .tutorialMessageContainer {
     clear: both;
-    position: relative;
+    position: absolute;
     width: 250px;
     height: auto;
     min-height: 100px;
     background-color: rgb(7, 126, 188);
     left: 0;
-    top: 8px;
+    top: 60px;
     border-radius: 10px;
     z-index: 3001;
 }
@@ -977,8 +1018,8 @@ p.discussionQuestionBoxText {
 .tutorialMessageArrow {
     position: absolute;
     top: 0;
-    left: 50%;
-    margin-left: -80px;
+    left: 0;
+    margin-left: 30px;
     margin-top: -10px;
     width: 0;
     height: 0;

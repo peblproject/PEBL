@@ -3,6 +3,8 @@ var tutorialIsActive = false;
 var overlayIsDisplayed = false;
 var handling = false;
 var frameIsReady = false;
+var globalPebl;
+var globalReadium;
 
 window.addEventListener("message", receiveMessage, false);
 
@@ -15,14 +17,39 @@ function receiveMessage(event) {
 }
 
 $(document).ready(function() {
+    var setGlobalPebl = setInterval(function() {
+        if (window.top && window.top.pebl) {
+            globalPebl = window.top.pebl;
+            clearInterval(setGlobalPebl);
+        }
+        else if (window.pebl) {
+            globalPebl = window.pebl
+            clearInterval(setGlobalPebl);
+        }
+    }, 10);
+
+    var setGlobalReadium = setInterval(function() {
+        if (window.top && window.top.ReadiumSDK) {
+            globalReadium = window.top.ReadiumSDK;
+            clearInterval(setGlobalReadium);
+        }
+        else if (window.ReadiumSDK) {
+            globalReadium = window.ReadiumSDK;
+            clearInterval(setGlobalReadium);
+        }
+    }, 10);
+
     createOverlay();
     createFooter();
     attachAddedResources();
     handleOrientationChange();
 
-    getAddedResources();
-    getNotificationsCount();
-
+    try {
+        getAddedResources();
+    }catch{}
+    try {
+        getNotificationsCount();
+    }catch{}
     displayUITutorial();
 
     var checkAccount = setInterval(setAccountName, 1000);
@@ -33,60 +60,12 @@ $(document).ready(function() {
 
     openDocumentAtDestination();
 
-    $('#closeButton').on('click', function() {
-        handleCloseButtonClick();
-    });
-
-    $('#tocButtonContainer').on('click', function() {
-        handleTOCButtonClick();
-    });
-
-    $('#helpButton').on('click', function() {
-        handleHelpButtonClick();
-    });
-
-    $('#askButtonContainer').on('click', function() {
-        handleAskButtonClick();
-    });
-
-    $('#searchButtonContainer').on('click', function() {
-        handleRegistryButtonClick();
-    });
-
-    $('#tutorialMessageNextButton').on('click', function() {
-        nextTutorialStage();
-    });
-
-    $('#peblNotificationButton').on('click', function() {
-        handleNotificationButtonClick();
-    });
-
-    $('#accountLogoutButton').on('click', function() {
-        handleLogoutButtonClick();
-    });
-
-    $('.expandButtonContainerUnderlay').on('click', function() {
-        handleExpandButtonClick();
-    });
-
-    $('#findButton').on('click', function() {
-        handleFindButtonClick();
-    });
-
-    $('#discussButton').on('click', function() {
+    $(document.body).on('click', "#discussButton", function() {
         handleDiscussButtonClick();
     });
     
-    $('#notesButton').on('click', function() {
+    $(document.body).on('click', "#notesButton", function() {
         handleNotesButtonClick();
-    });
-
-    $('#contributeButton').on('click', function() {
-        handleContributeButtonClick();
-    });
-
-    $('#addedResourcesButton').on('click', function() {
-        handleAddedResourcesButtonClick();
     });
 
     //FindMenu click handlers
@@ -181,37 +160,14 @@ $(document).ready(function() {
         }
     });
 
-    //TOC click handler
-    $(document.body).on('click', '.tocPageText', function(e) {
-        e.preventDefault();
-        //If its a dynamic document
-        if ($(this).attr('url')) {
-            if ($(this).attr('tocLink')) {
-                sendDocumentToDestination($(this).attr('url'), $(this).attr('docType'), $(this).attr('externalURL'), $(this).text());
-                if (window.location.pathname.substr(1) === $(this).attr('href')) {
-                    handleCloseButtonClick();
-                    openDocumentAtDestination();
-                } else {
-                    window.top.ReadiumSDK.reader.openContentUrl($(this).attr('href'));
-                }
-            } else {
-                createDynamicPage($(this).attr('url'), $(this).attr('docType'), $(this).attr('externalURL'), $(this).text()); 
-                handleCloseButtonClick();
-                hideAddedResources();
-            } 
-        } else {
-            window.top.ReadiumSDK.reader.openContentUrl($(this).attr('href'));
-        }
-    });
-
     $(document.body).on('click', '.tocSectionTitleText', function(e) {
         e.preventDefault();
-        window.top.ReadiumSDK.reader.openContentUrl($(this).attr('href'));
+        globalReadium.reader.openContentUrl($(this).attr('href'));
     });
 
     $(document.body).on('click', '.tocSubsectionTitleText', function(e) {
         e.preventDefault();
-        window.top.ReadiumSDK.reader.openContentUrl($(this).attr('href'));
+        globalReadium.reader.openContentUrl($(this).attr('href'));
     });
 
     //TOC delete click handler
@@ -224,7 +180,7 @@ $(document).ready(function() {
     $(document.body).on('click', '#tocDeleteConfirmButton', function(e) {
         var sectionId = $(this).attr('section-id');
         var documentId = $(this).attr('document-id');
-        window.pebl.removeToc(documentId, sectionId);
+        globalPebl.removeToc(documentId, sectionId);
 
         //Remove from the list
         $('#' + documentId).remove();
@@ -246,20 +202,17 @@ $(document).ready(function() {
     });
 
     $(document.body).on('click', '#overlayCloseButton', function(e) {
-        clearUI();
-        $('#peblOverlay').animate({
-            height: '50px'
-        }, 500);
+        handleOverlayCloseButtonClick();
     });
 
     $(document.body).on('click', '.notificationElementWrapper', function(e) {
         sendDocumentToDestination($(this).attr('url'), $(this).attr('docType'), $(this).attr('externalURL'), $(this).attr('title'));
-        window.pebl.removeNotification($(this).attr('notification-id'));
-        if (window.location.pathname.substr(1) === $(this).attr('destination')) {
+        globalPebl.removeNotification($(this).attr('notification-id'));
+        if ($('body')[0].baseURI.split('/').pop() === $(this).attr('destination')) {
             $('#notificationsContainer').remove();
             openDocumentAtDestination();
         } else {
-            window.top.ReadiumSDK.reader.openContentUrl($(this).attr('destination'));
+            globalReadium.reader.openContentUrl($(this).attr('destination'));
         }
     });
 
@@ -278,20 +231,25 @@ function createOverlay() {
     overlay.id = 'peblOverlay';
     overlay.classList.add('peblOverlay');
 
+    var headerWrapper = document.createElement('div');
+    headerWrapper.classList.add('headerWrapper');
+
     var iconContainer = document.createElement('div');
     iconContainer.id = 'iconContainer';
     iconContainer.classList.add('iconContainer');
 
-    overlay.appendChild(createCloseButton());
-    overlay.appendChild(createExpandButton());
+    overlay.appendChild(headerWrapper);
+
+    headerWrapper.appendChild(createCloseButton());
+    headerWrapper.appendChild(createExpandButton());
     //overlay.appendChild(createAccountButton());
     //iconContainer.appendChild(createHelpButton());
     //iconContainer.appendChild(createNotificationButton());
     iconContainer.appendChild(createAskButton());
     iconContainer.appendChild(createSearchButton());
     iconContainer.appendChild(createTOCButton());
-    overlay.appendChild(iconContainer);
-    overlay.appendChild(createNotificationButton());
+    headerWrapper.appendChild(iconContainer);
+    headerWrapper.appendChild(createNotificationButton());
 
     var hr = document.createElement('hr');
     hr.id = 'uiBarDivider';
@@ -338,6 +296,7 @@ function createFooterFindButton() {
     var findButton = document.createElement('button');
     findButton.id = 'findButton';
     findButton.classList.add('findButton');
+    findButton.addEventListener('click', handleFindButtonClick);
 
     var findButtonIcon = document.createElement('i');
     findButtonIcon.classList.add('fa', 'fa-search', 'footerIcon');
@@ -457,6 +416,7 @@ function createFooterAddedResourcesButton() {
     var addedResourcesButton = document.createElement('button');
     addedResourcesButton.id = 'addedResourcesButton';
     addedResourcesButton.classList.add('addedResourcesButton');
+    addedResourcesButton.addEventListener('click', handleAddedResourcesButtonClick);
 
     var addedResourcesBadgeContainer = document.createElement('div');
     addedResourcesBadgeContainer.classList.add('addedResourcesBadgeContainer');
@@ -514,15 +474,15 @@ function createFooterNotesButton() {
 function createExpandButton() {
     var expandButtonContainerUnderlay = document.createElement('div');
     expandButtonContainerUnderlay.classList.add('expandButtonContainerUnderlay');
+    expandButtonContainerUnderlay.addEventListener('click', handleExpandButtonClick);
 
     var expandButtonContainer = document.createElement('div');
     expandButtonContainer.id = 'expandButtonContainer';
     expandButtonContainer.classList.add('expandButtonContainer');
 
-    var expandButton = document.createElement('img');
+    var expandButton = document.createElement('i');
     expandButton.id = 'expandButton';
-    expandButton.classList.add('expandButton');
-    expandButton.src = 'image/peblExpandIcon.png';
+    expandButton.classList.add('expandButton', 'fa', 'fa-toolbox');
 
     var expandText = document.createElement('span');
     expandText.classList.add('expandText');
@@ -535,10 +495,10 @@ function createExpandButton() {
 }
 
 function createCloseButton() {
-    var closeButton = document.createElement('span');
+    var closeButton = document.createElement('i');
     closeButton.id = 'closeButton';
-    closeButton.classList.add('closeButton');
-    closeButton.innerHTML = '&#215;';
+    closeButton.classList.add('fa', 'fa-times', 'closeButton');
+    closeButton.addEventListener('click', handleCloseButtonClick);
     return closeButton;
 }
 
@@ -565,6 +525,7 @@ function createNotificationButton() {
     peblNotificationButton.id = 'peblNotificationButton';
     peblNotificationButton.classList.add('fa', 'fa-bell', 'peblNotificationButton');
     peblNotificationButton.setAttribute('aria-hidden', 'true');
+    peblNotificationButton.addEventListener('click', handleNotificationButtonClick);
 
     var peblNotificationBadge = document.createElement('div');
     peblNotificationBadge.id = 'peblNotificationBadge';
@@ -578,18 +539,12 @@ function createAskButton() {
     var askButtonContainer = document.createElement('div');
     askButtonContainer.id = 'askButtonContainer';
     askButtonContainer.classList.add('askButtonContainer');
+    askButtonContainer.addEventListener('click', handleAskButtonClick);
 
-    var askButton = document.createElement('img');
+    var askButton = document.createElement('i');
     askButton.id = 'askButton';
-    askButton.classList.add('askButton');
-    askButton.src = 'image/peblAskExpertIcon.png';
+    askButton.classList.add('askButton', 'fa', 'fa-comment-alt');
     askButtonContainer.appendChild(askButton);
-
-    var askButtonActive = document.createElement('img');
-    askButtonActive.id = 'askButtonActive';
-    askButtonActive.classList.add('askButton', 'hidden');
-    askButtonActive.src = 'image/peblAskExpertIconActive.png';
-    askButtonContainer.appendChild(askButtonActive);
 
     var askButtonLabel = document.createElement('span');
     askButtonLabel.classList.add('askButtonLabel');
@@ -604,18 +559,12 @@ function createSearchButton() {
     var searchButtonContainer = document.createElement('div');
     searchButtonContainer.id = 'searchButtonContainer';
     searchButtonContainer.classList.add('searchButtonContainer');
+    searchButtonContainer.addEventListener('click', handleRegistryButtonClick);
 
-    var searchButton = document.createElement('img');
+    var searchButton = document.createElement('i');
     searchButton.id = 'searchButton';
-    searchButton.classList.add('searchButton');
-    searchButton.src = 'image/peblRegistrySearchIcon.png';
+    searchButton.classList.add('searchButton', 'fa', 'fa-search');
     searchButtonContainer.appendChild(searchButton);
-
-    var searchButtonActive = document.createElement('img');
-    searchButtonActive.id = 'searchButtonActive';
-    searchButtonActive.classList.add('searchButton', 'hidden');
-    searchButtonActive.src = 'image/peblRegistrySearchIconActive.png';
-    searchButtonContainer.appendChild(searchButtonActive);
 
     var searchButtonLabel = document.createElement('div');
     searchButtonLabel.classList.add('searchButtonLabel');
@@ -655,16 +604,11 @@ function createTOCButton() {
     var tocButtonContainer = document.createElement('div');
     tocButtonContainer.id = 'tocButtonContainer';
     tocButtonContainer.classList = 'tocButtonContainer';
+    tocButtonContainer.addEventListener('click', handleTOCButtonClick);
 
-    var tocButton = document.createElement('img');
+    var tocButton = document.createElement('i');
     tocButton.id = 'tocButton';
-    tocButton.classList.add('tocButton');
-    tocButton.src = 'image/peblTOCIcon.png';
-
-    var tocButtonActive = document.createElement('img');
-    tocButtonActive.id = 'tocButtonActive';
-    tocButtonActive.classList.add('tocButton', 'hidden');
-    tocButtonActive.src = 'image/peblTOCIconActive.png';
+    tocButton.classList.add('tocButton', 'fa', 'fa-list-ul');
 
     var tocButtonLabel = document.createElement('span');
     tocButtonLabel.classList.add('tocButtonLabel');
@@ -673,7 +617,6 @@ function createTOCButton() {
 
 
     tocButtonContainer.appendChild(tocButton);
-    tocButtonContainer.appendChild(tocButtonActive);
     tocButtonContainer.appendChild(tocButtonLabel);
     return tocButtonContainer;
 }
@@ -702,23 +645,20 @@ function clearHelp() {
 function clearAskExpert() {
     //Remove askExpert elements
     $('#askContainer').remove();
-    document.getElementById('askButtonActive').classList.add('hidden');
-    document.getElementById('askButton').classList.remove('hidden');
+    document.getElementById('askButton').classList.remove('active');
     document.getElementById('askButtonLabel').classList.remove('active');
 }
 
 function clearRegistrySearch() {
     //Remove registrySearch elements
     $('#registryContainer').remove();
-    document.getElementById('searchButtonActive').classList.add('hidden');
-    document.getElementById('searchButton').classList.remove('hidden');
+    document.getElementById('searchButton').classList.remove('active');
     document.getElementById('searchButtonLabel').classList.remove('active');
 }
 
 function clearTOC() {
     $('#tocContainer').remove();
-    document.getElementById('tocButtonActive').classList.add('hidden');
-    document.getElementById('tocButton').classList.remove('hidden');
+    document.getElementById('tocButton').classList.remove('active');
     document.getElementById('tocButtonLabel').classList.remove('active');
 }
 
@@ -762,6 +702,7 @@ function createUITutorial() {
     tutorialMessageNextButton.classList.add('tutorialMessageNextButton');
     tutorialMessageNextButton.textContent = 'Next';
     tutorialMessageContainer.appendChild(tutorialMessageNextButton);
+    tutorialMessageNextButton.addEventListener('click', nextTutorialStage);
 
     var tutorialMessageArrow = document.createElement('div');
     tutorialMessageArrow.id = 'tutorialMessageArrow';
@@ -776,26 +717,36 @@ function nextTutorialStage() {
     var currentStage = $('#tutorialMessageContainer').attr('Stage');
     if (currentStage === '1') {
         handleExpandButtonClick();
-        $('#tutorialMessageArrow').animate({
-            marginLeft: '40px'
-        }, 500);
+        setTimeout(function() {
+            $('#tutorialMessageContainer').animate({
+                left: $('#tocButtonContainer').offset().left
+            }, 500);
 
-        $('#tutorialMessageContainer').animate({
-            left: '0px'
-        }, 500);
+            $('#tutorialMessageArrow').animate({
+                marginLeft: '50px'
+            }, 500);
 
-        $('#tutorialMessage').text('The table of contents section allows you to view and navigate to all of major sections of your book.');
-        $('#tutorialMessageContainer').attr('Stage', '2');
+            $('#tutorialMessage').text('The table of contents section allows you to view and navigate to all of major sections of your book.');
+            $('#tutorialMessageContainer').attr('Stage', '2');
+        }, 500);
     } else if (currentStage === '2') {
         $('#tutorialMessageContainer').animate({
-            left: '170px'
+            left: $('#searchButtonContainer').offset().left
+        }, 500);
+
+        $('#tutorialMessageArrow').animate({
+            marginLeft: '50px'
         }, 500);
 
         $('#tutorialMessage').text('The Registry Search feature allows you to find the information you need quickly and easily from a wide variety of sources.');
         $('#tutorialMessageContainer').attr('Stage', '3');
     } else if (currentStage === '3') {
         $('#tutorialMessageContainer').animate({
-            left: '370px'
+            left: $('#askButtonContainer').offset().left - 150
+        }, 500);
+
+        $('#tutorialMessageArrow').animate({
+            marginLeft: '175px'
         }, 500);
 
         $('#tutorialMessage').text('The Ask an Expert feature allows you to get in contact with a real professional in one of many fields.');
@@ -835,12 +786,12 @@ function createNotifications() {
 
     
 
-    window.pebl.getNotifications(function(obj) {
+    globalPebl.getNotifications(function(obj) {
         var notificationsObj = obj;
 
         Object.keys(notificationsObj).forEach(function(key) {
             var pulled;
-            if (notificationsObj[key].payload.actorId === window.pebl.getUserName()) {
+            if (notificationsObj[key].payload.actorId === globalPebl.getUserName()) {
                 pulled = true;
             } else {
                 pulled = false;
@@ -957,13 +908,13 @@ function createAskExpert() {
     wrapper.appendChild(askFrame);
     askContainer.appendChild(wrapper);
     document.getElementById('peblOverlay').appendChild(askContainer);
-    document.body.appendChild(createOverlayCloseButton());
+    askContainer.appendChild(createOverlayCloseButton());
 }
 
 
 
 function createRegistrySearch() {
-    var currentPage = window.location.pathname.split('/').pop().slice(0, -6).substring(5);
+    var currentPage = $('body')[0].baseURI.split('/').pop().slice(0, -6).substring(5);
     clearUI();
     //Create the registrySearch page
     var registryContainer = document.createElement('div');
@@ -980,12 +931,11 @@ function createRegistrySearch() {
     registryFrame.classList.add('registryFrame');
     registryFrame.src = 'https://peblproject.com/registry/#welcome';
     registryFrame.name = 'registryFrame';
-    registryFrame.setAttribute('scrolling', 'no');
     wrapper.appendChild(registryFrame);
     registryContainer.appendChild(wrapper);
     document.getElementById('peblOverlay').appendChild(registryContainer);
 
-    document.body.appendChild(createOverlayCloseButton());
+    registryContainer.appendChild(createOverlayCloseButton());
 
     //Post Messages
     var waitingForReady = setInterval(function() {
@@ -1008,7 +958,7 @@ function createRegistrySearch() {
 function createTOC() {
     clearUI();
 
-    window.pebl.getToc(function(obj) {
+    globalPebl.getToc(function(obj) {
         var tocObject = obj;
 
         var tocContainer = document.createElement('div');
@@ -1106,6 +1056,9 @@ function createTOC() {
                                     tocPageText.setAttribute('externalURL', tocObject[sectionKey][dynamicKey].externalURL);
                                     tocPageText.href = tocObject[sectionKey][pageKey].location;
                                     tocPageText.setAttribute('tocLink', 'true');
+                                    tocPageText.addEventListener('click', function() {
+                                        handleTocPageTextClick(event);
+                                    });
 
                                     tocPageTextWrapper.appendChild(tocPageText);
 
@@ -1149,6 +1102,9 @@ function createTOC() {
                             tocPageText.classList.add('tocPageText');
                             tocPageText.textContent = tocObject[sectionKey][pageKey].pages[cardKey].title;
                             tocPageText.href = tocObject[sectionKey][pageKey].pages[cardKey].location;
+                            tocPageText.addEventListener('click', function() {
+                                handleTocPageTextClick(event);
+                            });
 
                             tocPageTextWrapper.appendChild(tocPageText);
 
@@ -1185,6 +1141,9 @@ function createTOC() {
                                     tocPageText.setAttribute('externalURL', tocObject[sectionKey][dynamicKey].externalURL);
                                     tocPageText.href = tocObject[sectionKey][pageKey].pages[cardKey].location;
                                     tocPageText.setAttribute('tocLink', 'true');
+                                    tocPageText.addEventListener('click', function() {
+                                        handleTocPageTextClick(event);
+                                    });
 
                                     tocPageTextWrapper.appendChild(tocPageText);
 
@@ -1218,7 +1177,7 @@ function createTOC() {
             tocContainer.appendChild(tocSection);
         });
         document.getElementById('peblOverlay').appendChild(tocContainer);
-        document.body.appendChild(createOverlayCloseButton());
+        tocContainer.appendChild(createOverlayCloseButton());
         //Fix TOC scrolling, iOS sucks
         setTimeout(function() {
             $('.tocSection').attr('style', 'transform: translate3d(0px, 0px, 0px);');
@@ -1259,7 +1218,7 @@ function createTOCDeleteConfirmDialog(sectionId, documentId) {
 
 function createDynamicPage(url, docType, externalURL, title) {
     closeDynamicPage();
-    window.pebl.getAsset(url, function(obj) {
+    globalPebl.getAsset(url, function(obj) {
         // var blobURL = URL.createObjectURL(obj.content);
         // var arrayBuffer;
         // var fileReader = new FileReader();
@@ -1277,14 +1236,16 @@ function createDynamicPage(url, docType, externalURL, title) {
         dynamicPageHeaderLink.classList.add('dynamicPageHeaderLink');
         dynamicPageHeaderLink.href = 'openinbrowser:' + externalURL;
         dynamicPageHeaderLink.innerHTML = externalURL;
+        dynamicPageHeaderLink.addEventListener('click', function() {
+            handleDynamicPageHeaderLinkClick(event);
+        });
 
         dynamicPageHeader.appendChild(dynamicPageHeaderLink);
 
 
-        var dynamicPageCloseButton = document.createElement('span');
+        var dynamicPageCloseButton = document.createElement('i');
         dynamicPageCloseButton.id = 'dynamicPageCloseButton';
-        dynamicPageCloseButton.classList.add('dynamicPageCloseButton');
-        dynamicPageCloseButton.innerHTML = '&#215;';
+        dynamicPageCloseButton.classList.add('dynamicPageCloseButton', 'fa', 'fa-times');
 
         var dynamicPage = document.createElement('div');
         dynamicPage.id = 'dynamicPage';
@@ -1320,59 +1281,32 @@ function createDynamicPage(url, docType, externalURL, title) {
 }
 
 function createOverlayCloseButton() {
-    var overlayCloseButton = document.createElement('span');
+    var overlayCloseButton = document.createElement('i');
     overlayCloseButton.id = 'overlayCloseButton';
-    overlayCloseButton.classList.add('overlayCloseButton');
-    overlayCloseButton.innerHTML = '&#215;';
+    overlayCloseButton.classList.add('overlayCloseButton', 'fa', 'fa-times');
+    overlayCloseButton.addEventListener('click', handleOverlayCloseButtonClick);
 
     return overlayCloseButton;
 }
 
 //UI Display control
 
-function displayOverlay() {
-    $('#peblOverlay').animate({
-        top: '5%'
-    }, 500);
-    $('#peblOverlay').animate({
-        top: '3%'
-    }, 500, function() {
-        overlayIsDisplayed = true;
-        handling = false;
-    });
-}
-
-function hideOverlay() {
-    $('#peblOverlay').animate({
-        top: '-100%'
-    }, 500, function() {
-        overlayIsDisplayed = false;
-        handling = false;
-    });
-}
-
 function expandOverlay() {
-    $('#peblOverlay').animate({
-        height: '70%'
-    }, 500);
     overlayIsExtended = true;
-    $('#uiBarDivider').show();
+    $('#uiBarDivider').css('display', 'block');
     $('#closeButton').show();
 }
 
 function retractOverlay() {
     clearUI();
-    $('#peblOverlay').animate({
-        height: '50px'
-    }, 500);
     overlayIsExtended = false;
-    $('#uiBarDivider').hide();
+    $('#uiBarDivider').css('display', 'none');
     $('#closeButton').hide();
 }
 
 function showToolbar() {
     var iconContainer = $('#iconContainer');
-    iconContainer.show();
+    iconContainer.css('display', 'flex');
     iconContainer.animate({
         left: '15px'
     }, 250);
@@ -1381,9 +1315,10 @@ function showToolbar() {
 function hideToolbar() {
     var iconContainer = $('#iconContainer');
     iconContainer.animate({
-        left: '-150px'
+        left: '-500px'
     }, 250, function() {
         iconContainer.hide();
+        $('.expandButtonContainerUnderlay').show();
     });
 }
 
@@ -1400,17 +1335,8 @@ function closeDynamicPage() {
  
 //Click Handlers
 
-function handle3FingerTouch(event) {
-    if (overlayIsDisplayed) {
-        hideOverlay();
-    } else {
-        displayOverlay();
-    }
-}
-
 function handleCloseButtonClick() {
     retractOverlay();
-    $('.expandButtonContainerUnderlay').show();
     hideToolbar();
 }
 
@@ -1426,8 +1352,7 @@ function handleNotificationButtonClick() {
 function handleTOCButtonClick() {
     expandOverlay();
     createTOC();
-    document.getElementById('tocButton').classList.add('hidden');
-    document.getElementById('tocButtonActive').classList.remove('hidden');
+    document.getElementById('tocButton').classList.add('active');
     document.getElementById('tocButtonLabel').classList.add('active');
 }
 
@@ -1440,8 +1365,7 @@ function handleHelpButtonClick() {
 function handleAskButtonClick() {
     expandOverlay();
     createAskExpert();
-    document.getElementById('askButton').classList.add('hidden');
-    document.getElementById('askButtonActive').classList.remove('hidden');
+    document.getElementById('askButton').classList.add('active');
     document.getElementById('askButtonLabel').classList.add('active');
 }
 
@@ -1449,8 +1373,7 @@ function handleRegistryButtonClick() {
     frameIsReady = false;
     expandOverlay();
     createRegistrySearch();
-    document.getElementById('searchButton').classList.add('hidden');
-    document.getElementById('searchButtonActive').classList.remove('hidden');
+    document.getElementById('searchButton').classList.add('active');
     document.getElementById('searchButtonLabel').classList.add('active');
 }
 
@@ -1460,14 +1383,19 @@ function handleExpandButtonClick() {
     $('#closeButton').show();
 }
 
+function handleOverlayCloseButtonClick() {
+    clearUI();
+    $('#uiBarDivider').css('display', 'none');
+}
+
 function handleFindButtonClick() {
     $('#findMenuContainer').removeClass('hidden');
 }
 
 function handleDiscussButtonClick() {
     closeLightBox();
-    var currentBook = window.pebl.activityManager.currentBook;
-    var currentPage = window.location.pathname.split('/').pop().slice(0, -6).substring(5);
+    var currentBook = globalPebl.activityManager.currentBook;
+    var currentPage = $('body')[0].baseURI.split('/').pop().slice(0, -6).substring(5);
     var discussionId;
     var discussionTitle;
 
@@ -1515,7 +1443,7 @@ function handleDiscussButtonClick() {
     var chatInputBox = $('button.chatSubmit').parent();
     var responseBox = chatInputBox.siblings('.chatResponses');
     var messageHandle = messageHandler(responseBox);
-    window.top.pebl.subscribeToDiscussion(discussionId, messageHandle);
+    globalPebl.subscribeToDiscussion(discussionId, messageHandle);
     responseBox.slideDown();
 
     $('#discussTextArea').focus();
@@ -1538,8 +1466,8 @@ function handleDiscussButtonClick() {
 
 function handleNotesButtonClick() {
     closeLightBox();
-    var currentBook = window.pebl.activityManager.currentBook;
-    var currentPage = window.location.pathname.split('/').pop().slice(0, -6).substring(5);
+    var currentBook = globalPebl.activityManager.currentBook;
+    var currentPage = $('body')[0].baseURI.split('/').pop().slice(0, -6).substring(5);
     var discussionId;
     var discussionTitle;
 
@@ -1589,12 +1517,12 @@ function handleNotesButtonClick() {
     var notesInputBox = $('button.notesSubmit').parent();
     var responseBox = notesInputBox.siblings('.notesResponses');
     var messageHandle = messageHandler(responseBox);
-    window.top.pebl.subscribeToDiscussion(discussionId, messageHandle);
+    globalPebl.subscribeToDiscussion(discussionId, messageHandle);
     responseBox.slideDown();
 
     notesInput.on('click', 'button.notesSubmit', function() {
         createThread(discussionId, $(this), true);
-        window.top.pebl.subscribeToDiscussion(discussionId, messageHandle);
+        globalPebl.subscribeToDiscussion(discussionId, messageHandle);
         responseBox.slideDown();
     });
 
@@ -1628,7 +1556,7 @@ function handleAddedResourcesButtonClick() {
     if ($('#addedResourcesContainer').length) {
         hideAddedResources();
     } else {
-        var currentPage = window.location.pathname.split('/').pop().slice(0, -6).substring(5);
+        var currentPage = $('body')[0].baseURI.split('/').pop().slice(0, -6).substring(5);
         var addedResourcesContainer = document.createElement('div');
         addedResourcesContainer.classList.add('addedResourcesContainer');
         if (Math.abs(window.orientation) === 90) {
@@ -1636,7 +1564,7 @@ function handleAddedResourcesButtonClick() {
         }
         addedResourcesContainer.id = 'addedResourcesContainer';
 
-        window.pebl.getToc(function(obj) {
+        globalPebl.getToc(function(obj) {
             var tocObject = obj;
 
             Object.keys(tocObject).forEach(function(sectionKey) {
@@ -1670,6 +1598,9 @@ function handleAddedResourcesButtonClick() {
                             tocPageText.setAttribute('url', tocObject[sectionKey][pageKey].url);
                             tocPageText.setAttribute('docType', tocObject[sectionKey][pageKey].docType);
                             tocPageText.setAttribute('externalURL', tocObject[sectionKey][pageKey].externalURL);
+                            tocPageText.addEventListener('click', function() {
+                                handleTocPageTextClick(event);
+                            });
 
                             tocPageTextWrapper.appendChild(tocPageText);
 
@@ -1706,8 +1637,40 @@ function handleAddedResourcesButtonClick() {
 
 }
 
+function handleTocPageTextClick(event) {
+    event.preventDefault();
+        //If its a dynamic document
+        if ($(event.currentTarget).attr('url')) {
+            if ($(event.currentTarget).attr('tocLink')) {
+                sendDocumentToDestination($(event.currentTarget).attr('url'), $(event.currentTarget).attr('docType'), $(event.currentTarget).attr('externalURL'), $(event.currentTarget).text());
+                if ($('body')[0].baseURI.substr(1) === $(event.currentTarget).attr('href')) {
+                    handleCloseButtonClick();
+                    openDocumentAtDestination();
+                } else {
+                    globalReadium.reader.openContentUrl($(event.currentTarget).attr('href'));
+                }
+            } else {
+                createDynamicPage($(event.currentTarget).attr('url'), $(event.currentTarget).attr('docType'), $(event.currentTarget).attr('externalURL'), $(event.currentTarget).text()); 
+                handleCloseButtonClick();
+                hideAddedResources();
+            } 
+        } else {
+            globalReadium.reader.openContentUrl($(event.currentTarget).attr('href'));
+        }
+}
+
+function handleDynamicPageHeaderLinkClick(event) {
+    event.preventDefault();
+    //If in iOS let the app handle opening in a new window ()
+    if (!!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform))
+        window.location.href = $(event.currentTarget).attr('href');
+    else
+        window.open($(event.currentTarget).attr('href').replace('openinbrowser:', ''), '_blank');
+
+}
+
 function getNotificationsCount() {
-    window.pebl.getNotifications(function(obj) {
+    globalPebl.getNotifications(function(obj) {
         var notificationsObj = obj;
         var notificationsCount = Object.keys(notificationsObj).length;
         setNotificationBadgeCounter(notificationsCount);
@@ -1716,10 +1679,10 @@ function getNotificationsCount() {
 }
 
 function getAddedResources() {
-    var currentPage = window.location.pathname.split('/').pop().slice(0, -6).substring(5);
+    var currentPage = $('body')[0].baseURI.split('/').pop().slice(0, -6).substring(5);
     var docCounter = 0;
     if (currentPage && currentPage !== '') {
-        window.pebl.getToc(function(obj) {
+        globalPebl.getToc(function(obj) {
             var tocObject = obj;
 
             Object.keys(tocObject).forEach(function(sectionKey) {
@@ -1766,13 +1729,13 @@ function toc_sort(a, b) {
     var a_compare;
     var b_compare;
     if (parts.a[1].includes('.')) {
-        a_compare = parts.a[1].split('.')[1];
+        a_compare = parts.a[1].split('.').pop();
     } else {
         return -1;
     }
 
     if (parts.b[1].includes('.')) {
-        b_compare = parts.b[1].split('.')[1];
+        b_compare = parts.b[1].split('.').pop();
     } else {
         return 1;
     }
@@ -1792,11 +1755,16 @@ function sendDocumentToDestination(url, docType, externalURL, title) {
 }
 
 function openDocumentAtDestination() {
-    if (localStorage.getItem('documentToOpen') !== null) {
-        var documentObj = JSON.parse(localStorage.getItem('documentToOpen'));
-        createDynamicPage(documentObj.url, documentObj.docType, documentObj.externalURL, documentObj.title);
-        localStorage.removeItem('documentToOpen');
-    }
+    var tryOpenDocumentAtDestination = setInterval(function() {
+        console.log('TRYING');
+        if (globalPebl)
+            if (localStorage.getItem('documentToOpen') !== null) {
+                var documentObj = JSON.parse(localStorage.getItem('documentToOpen'));
+                createDynamicPage(documentObj.url, documentObj.docType, documentObj.externalURL, documentObj.title);
+                localStorage.removeItem('documentToOpen');
+            }
+            clearInterval(tryOpenDocumentAtDestination);
+    }, 10);
 }
 
 function handleOrientationChange() {
