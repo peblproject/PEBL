@@ -1728,13 +1728,13 @@ function toc_sort(a, b) {
 
     var a_compare;
     var b_compare;
-    if (parts.a[1].includes('.')) {
+    if (parts && parts.a && parts.a[1] && parts.a[1].includes('.')) {
         a_compare = parts.a[1].split('.').pop();
     } else {
         return -1;
     }
 
-    if (parts.b[1].includes('.')) {
+    if (parts && parts.b && parts.b[1] && parts.b[1].includes('.')) {
         b_compare = parts.b[1].split('.').pop();
     } else {
         return 1;
