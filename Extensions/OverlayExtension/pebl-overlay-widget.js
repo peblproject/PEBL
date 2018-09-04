@@ -988,7 +988,7 @@ function createTOC() {
             tocSectionTitle.appendChild(tocSectionPrefix);
             tocSectionTitle.appendChild(tocSectionTitleTextWrapper);
             tocSection.appendChild(tocSectionTitle);
-            Object.keys(tocObject[sectionKey]).sort(toc_sort).forEach(function(pageKey) {
+            Object.keys(tocObject[sectionKey]).forEach(function(pageKey) {
                 //Pages
                 if (pageKey === 'Section') {
                     //Do nothing
@@ -1024,7 +1024,7 @@ function createTOC() {
                     tocSubsectionTitle.appendChild(tocSubsectionTitleTextWrapper);
                     tocSection.appendChild(tocSubsectionTitle);
 
-                    Object.keys(tocObject[sectionKey][pageKey].pages).sort(toc_sort).forEach(function(cardKey) {
+                    Object.keys(tocObject[sectionKey][pageKey].pages).forEach(function(cardKey) {
                         
                         if (tocObject[sectionKey][pageKey].skip !== undefined) {
                             //Do something different if its just a subsection
