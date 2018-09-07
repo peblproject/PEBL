@@ -41,6 +41,7 @@ $(document).ready(function() {
 
     createOverlay();
     createFooter();
+    createSidebar();
     attachAddedResources();
     handleOrientationChange();
 
@@ -282,6 +283,83 @@ function createFooter() {
     footer.appendChild(footerIconContainer);
 
     document.body.appendChild(footer);
+}
+
+function createSidebar() {
+    if ($('#peblSidebar')) {
+        $('#peblSidebar').remove();
+    }
+
+    var categories = JSON.parse($('#fake-page').attr('categories'));
+    console.log(categories);
+
+
+    var sidebar = document.createElement('div');
+    sidebar.id = 'peblSidebar';
+    sidebar.classList.add('peblSidebar', 'expanded');
+
+    var resourceInfoContainer = document.createElement('div');
+    resourceInfoContainer.classList.add('peblResourceInfoContainer');
+
+    var resourceInfoText = document.createElement('span');
+    resourceInfoText.classList.add('peblResourceInfoText');
+    resourceInfoText.textContent = '';
+
+    resourceInfoContainer.appendChild(resourceInfoText);
+    sidebar.appendChild(resourceInfoContainer);
+
+    for (var i in categories) {
+        if (categories[i].length > 0) {
+            var header = document.createElement('div');
+            header.classList.add('sidebarTagHeader');
+
+            var headerText = document.createElement('span');
+            headerText.classList.add('sidebarTagHeaderText');
+            headerText.textContent = i;
+
+            header.appendChild(headerText);
+
+            var container = document.createElement('div');
+            container.classList.add('sidebarTagContainer');
+
+            for (var j = 0; j < categories[i].length; j++) {
+                var element = document.createElement('div');
+                element.classList.add('sidebarTagElement');
+
+                var text = document.createElement('span');
+                text.classList.add('sidebarTagText');
+                text.textContent = categories[i][j];
+
+                var count = document.createElement('span');
+                count.classList.add('sidebarTagCount');
+                count.textContent = getTagCount(categories[i][j]);
+
+                element.appendChild(text);
+                element.appendChild(count);
+                container.appendChild(element);
+            }
+
+            sidebar.appendChild(header);
+            sidebar.appendChild(container);
+        }
+    }
+
+    var sidebarExpandButton = document.createElement('div');
+    sidebarExpandButton.classList.add('peblSidebarExpandButton');
+    sidebarExpandButton.addEventListener('click', function() {
+        $('#peblSidebar').toggleClass('expanded');
+    });
+
+    $('.contentContainerWrapper').prepend(sidebarExpandButton);
+    $('.contentContainerWrapper').prepend(sidebar);
+}
+
+function getTagCount(tag) {
+    return '(1)';
+}
+
+function getTargetAudienceCount(tag) {
+    return '(1)';
 }
 
 function attachAddedResources() {

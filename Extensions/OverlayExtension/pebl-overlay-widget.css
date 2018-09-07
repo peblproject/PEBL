@@ -24,7 +24,10 @@ p.discussionQuestionBoxText {
 
 .contentContainerWrapper {
     position: relative;
-    height: auto;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     /*top: 40%;
     transform: translateY(-50%);*/
 }
@@ -59,6 +62,11 @@ p.discussionQuestionBoxText {
     -webkit-overflow-scrolling: touch;
     z-index: 10;
     background-color: white;
+    transition: width 1s;
+}
+
+.contentContainer .contentDetails {
+    font-family: Helvetica;
 }
 
 .peblOverlay {
@@ -86,7 +94,71 @@ p.discussionQuestionBoxText {
     flex-basis: 100%;
 }
 
+.peblSidebar {
+    font-family: Helvetica;
+    width: 0;
+    max-height: calc(68vh - 60px);
+    background: white;
+    transition: width 1s;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    -webkit-box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    margin-left: 10px;
+}
 
+.peblSidebar.expanded {
+    width: 100%;
+    max-width: 200px;
+}
+
+.peblSidebarExpandButton {
+    width: 50%;
+    height: 100%;
+    background: blue;
+    display: none;
+}
+
+.peblResourceInfoContainer {
+    text-align: center;
+    border: 1px solid rgb(7, 126, 188);
+    padding: 10px;
+    margin: 1em;
+}
+
+.sidebarTagHeader {
+    text-align: center;
+}
+
+.sidebarTagContainer {
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+}
+
+.sidebarTagElement:nth-child(n+2) {
+    border-top: none;
+}
+
+.sidebarTagElement {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    border: 1px solid rgb(7, 126, 188);
+}
+
+.sidebarTagText {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.sidebarTagCount {
+    margin-right: 5px;
+}
 
 .iconContainer {
     display: flex;
