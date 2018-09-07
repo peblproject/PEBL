@@ -57,7 +57,7 @@ $(document).ready(function() {
     //var fixIframes = setInterval(fixIframeScrolling, 500);
     var updateAddedResourceCount = setInterval(getAddedResources, 5000);
     var updateNotificationsCount = setInterval(getNotificationsCount, 5000);
-    var searchTerms = $('#fake-page').attr('keywords').split(',');
+    var searchTerms = [];
 
     openDocumentAtDestination();
 
