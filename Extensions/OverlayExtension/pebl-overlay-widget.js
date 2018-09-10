@@ -47,10 +47,10 @@ $(document).ready(function() {
 
     try {
         getAddedResources();
-    }catch{}
+    }catch(e){}
     try {
         getNotificationsCount();
-    }catch{}
+    }catch(e){}
     displayUITutorial();
 
     var checkAccount = setInterval(setAccountName, 1000);
@@ -324,6 +324,11 @@ function createSidebar() {
             for (var j = 0; j < categories[i].length; j++) {
                 var element = document.createElement('div');
                 element.classList.add('sidebarTagElement');
+                element.addEventListener('click', function() {
+                    filterPosts(event);
+                });
+                element.setAttribute('data-bucket', i);
+                element.setAttribute('data-tag', categories[i][j]);
 
                 var text = document.createElement('span');
                 text.classList.add('sidebarTagText');
@@ -353,8 +358,67 @@ function createSidebar() {
         $('#peblSidebar').toggleClass('expanded');
     });
 
+    var sidebarExtendedFrame = document.createElement('div');
+    sidebarExtendedFrame.classList.add('peblSidebarExtendedFrame', 'contracted');
+
     $('.contentContainerWrapper').prepend(sidebarExpandButton);
+    $('.contentContainerWrapper').prepend(sidebarExtendedFrame);
     $('.contentContainerWrapper').prepend(sidebar);
+}
+
+function filterPosts(event) {
+    console.log(event.currentTarget);
+    var elem = event.currentTarget;
+    var bucket = elem.getAttribute('data-bucket');
+    var tag = elem.getAttribute('data-tag');
+    var posts = [];
+    globalPebl.getToc(function(toc) {
+        Object.keys(toc).forEach(function(section) {
+            Object.keys(toc[section]).sort(toc_sort).forEach(function(subsection) {
+                if (toc[section][subsection].tags != null && toc[section][subsection].tags[bucket] != null)
+                    if (toc[section][subsection].tags[bucket].indexOf(tag) > -1)
+                        posts.push({
+                            "prefix": toc[section][subsection].prefix,
+                            "post": toc[section][subsection].post
+                        });
+            });
+        });
+        displayFilteredTOC(posts);
+    });
+}
+
+function displayFilteredTOC(posts) {
+    $('.peblSidebarExtendedFrame').children().remove();
+    for (var i = 0; i < posts.length; i++) {
+        var tocSubsectionTitle = document.createElement('div');
+        tocSubsectionTitle.classList.add('tocSubsectionTitle');
+
+        var tocSubsectionPrefix = document.createElement('div');
+        tocSubsectionPrefix.classList.add('tocSubsectionPrefix');
+
+        var tocSubsectionPrefixText = document.createElement('span');
+        tocSubsectionPrefixText.classList.add('tocSubsectionPrefixText');
+        tocSubsectionPrefixText.textContent = posts[i].prefix;
+
+        var tocSubsectionTitleTextWrapper = document.createElement('div');
+        tocSubsectionTitleTextWrapper.classList.add('tocSubsectionTitleTextWrapper');
+
+        var tocSubsectionTitleText = document.createElement('a');
+        tocSubsectionTitleText.classList.add('tocSubsectionTitleText');
+        tocSubsectionTitleText.href = posts[i].post.filename;
+        tocSubsectionTitleText.textContent = posts[i].post.title;
+
+        tocSubsectionPrefix.appendChild(tocSubsectionPrefixText);
+        tocSubsectionTitleTextWrapper.appendChild(tocSubsectionTitleText);
+
+        tocSubsectionTitle.appendChild(tocSubsectionPrefix);
+        tocSubsectionTitle.appendChild(tocSubsectionTitleTextWrapper);
+
+        $('.peblSidebarExtendedFrame')[0].appendChild(tocSubsectionTitle);
+    }
+
+    $('.contentContainer').addClass('contracted');
+    $('.peblSidebarExtendedFrame').removeClass('contracted');
 }
 
 function getTagCount(elem, bucket, tag) {
