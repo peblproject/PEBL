@@ -291,7 +291,6 @@ function createSidebar() {
     }
 
     var categories = JSON.parse($('#fake-page').attr('categories'));
-    console.log(categories);
 
 
     var sidebar = document.createElement('div');
@@ -332,7 +331,11 @@ function createSidebar() {
 
                 var count = document.createElement('span');
                 count.classList.add('sidebarTagCount');
-                count.textContent = getTagCount(categories[i][j]);
+                (function(count, i, j, categories) {
+                    setTimeout(function() {
+                        getTagCount(count, i, categories[i][j]);
+                    }, 1000);
+                })(count, i, j, categories);
 
                 element.appendChild(text);
                 element.appendChild(count);
@@ -354,12 +357,21 @@ function createSidebar() {
     $('.contentContainerWrapper').prepend(sidebar);
 }
 
-function getTagCount(tag) {
-    return '(1)';
-}
-
-function getTargetAudienceCount(tag) {
-    return '(1)';
+function getTagCount(elem, bucket, tag) {
+    if (globalPebl) {
+        var counter = 0;
+        globalPebl.getToc(function(toc) {
+            Object.keys(toc).forEach(function(section) {
+                Object.keys(toc[section]).forEach(function(subsection) {
+                    if (toc[section][subsection].tags != null && toc[section][subsection].tags[bucket] != null) {
+                        if (toc[section][subsection].tags[bucket].indexOf(tag) > -1)
+                            counter ++;
+                    }
+                });
+            });
+            elem.textContent = '(' + counter + ')';
+        });
+    }
 }
 
 function attachAddedResources() {
@@ -1834,7 +1846,6 @@ function sendDocumentToDestination(url, docType, externalURL, title) {
 
 function openDocumentAtDestination() {
     var tryOpenDocumentAtDestination = setInterval(function() {
-        console.log('TRYING');
         if (globalPebl)
             if (localStorage.getItem('documentToOpen') !== null) {
                 var documentObj = JSON.parse(localStorage.getItem('documentToOpen'));
