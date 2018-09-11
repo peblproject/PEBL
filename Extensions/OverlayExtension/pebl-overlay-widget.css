@@ -176,6 +176,11 @@ p.discussionQuestionBoxText {
     border: 1px solid rgb(7, 126, 188);
 }
 
+.sidebarTagElement.active {
+    background: rgb(7, 126, 188);
+    color: white;
+}
+
 .sidebarTagText {
     margin-left: 5px;
     margin-right: 5px;
@@ -1049,6 +1054,16 @@ i.dynamicPageCloseButton, i.overlayCloseButton {
     color: rgba(0, 0, 0, 0.6);
     font-size: 3rem;
     font-weight: bold;
+}
+
+i.peblSidebarExtendedFrameCloseButton {
+    cursor: pointer;
+    position: absolute;
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 3rem;
+    font-weight: bold;
+    top: 0;
+    right: 10px;
 }
 
 i.overlayCloseButton {

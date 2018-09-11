@@ -5,6 +5,8 @@ var handling = false;
 var frameIsReady = false;
 var globalPebl;
 var globalReadium;
+var filterTags = [];
+var allTags = [];
 
 window.addEventListener("message", receiveMessage, false);
 
@@ -308,6 +310,12 @@ function createSidebar() {
     sidebar.appendChild(resourceInfoContainer);
 
     for (var i in categories) {
+        for (var j = 0; j < categories[i].length; j++) {
+            allTags.push(i + "|" + categories[i][j]);
+        }
+    }
+
+    for (var i in categories) {
         if (categories[i].length > 0) {
             var header = document.createElement('div');
             header.classList.add('sidebarTagHeader');
@@ -338,7 +346,7 @@ function createSidebar() {
                 count.classList.add('sidebarTagCount');
                 (function(count, i, j, categories) {
                     setTimeout(function() {
-                        getTagCount(count, i, categories[i][j]);
+                        getTagCount(count, [i + "|" + categories[i][j]]);
                     }, 1000);
                 })(count, i, j, categories);
 
@@ -361,34 +369,80 @@ function createSidebar() {
     var sidebarExtendedFrame = document.createElement('div');
     sidebarExtendedFrame.classList.add('peblSidebarExtendedFrame', 'contracted');
 
+    var sidebarExtendedFrameCloseButton = document.createElement('i');
+    sidebarExtendedFrameCloseButton.classList.add('fa', 'fa-times', 'peblSidebarExtendedFrameCloseButton');
+    sidebarExtendedFrameCloseButton.addEventListener('click', function() {
+        $('.contentContainer').removeClass('contracted');
+        $('.peblSidebarExtendedFrame').addClass('contracted');
+    });
+
+    sidebarExtendedFrame.appendChild(sidebarExtendedFrameCloseButton);
+
     $('.contentContainerWrapper').prepend(sidebarExpandButton);
     $('.contentContainerWrapper').prepend(sidebarExtendedFrame);
     $('.contentContainerWrapper').prepend(sidebar);
 }
 
+function parseFilterTag(filterTag) {
+    var arr = filterTag.split("|");
+    return {
+        bucket : arr[0],
+        tag : arr[1]
+    };
+}
+
 function filterPosts(event) {
-    console.log(event.currentTarget);
     var elem = event.currentTarget;
     var bucket = elem.getAttribute('data-bucket');
     var tag = elem.getAttribute('data-tag');
+    if ($(elem).hasClass('active')) {
+        $(elem).removeClass('active');
+        filterTags.splice(filterTags.indexOf(bucket + "|" + tag), 1);
+    } else {
+        $(elem).addClass('active');
+        filterTags.push(bucket + "|" + tag);
+    }
     var posts = [];
+
     globalPebl.getToc(function(toc) {
         Object.keys(toc).forEach(function(section) {
             Object.keys(toc[section]).sort(toc_sort).forEach(function(subsection) {
-                if (toc[section][subsection].tags != null && toc[section][subsection].tags[bucket] != null)
-                    if (toc[section][subsection].tags[bucket].indexOf(tag) > -1)
+                if (toc[section][subsection].tags != null) {
+                    if (filterTags.length < 1)
                         posts.push({
                             "prefix": toc[section][subsection].prefix,
                             "post": toc[section][subsection].post
                         });
+                    for (var i = 0; i < filterTags.length; i++) {
+                        var thing = parseFilterTag(filterTags[i]);
+                        var bucket = thing.bucket;
+                        var tag = thing.tag;
+                        if (toc[section][subsection].tags[bucket] != null) {
+                            if (toc[section][subsection].tags[bucket].indexOf(tag) == -1)
+                                break;
+                            else if (i == filterTags.length - 1) {
+                                posts.push({
+                                    "prefix": toc[section][subsection].prefix,
+                                    "post": toc[section][subsection].post
+                                });
+                            }
+                        }
+                    }
+                }
             });
         });
         displayFilteredTOC(posts);
+        $('.sidebarTagElement').each(function() {
+            var tag = $(this).attr('data-tag');
+            var bucket = $(this).attr('data-bucket');
+            var newFilterTags = filterTags.concat([bucket + "|" + tag]);
+            getTagCount($(this).children('.sidebarTagCount')[0], newFilterTags);
+        });
     });
 }
 
 function displayFilteredTOC(posts) {
-    $('.peblSidebarExtendedFrame').children().remove();
+    $('.peblSidebarExtendedFrame').children('.tocSubsectionTitle').remove();
     for (var i = 0; i < posts.length; i++) {
         var tocSubsectionTitle = document.createElement('div');
         tocSubsectionTitle.classList.add('tocSubsectionTitle');
@@ -421,15 +475,23 @@ function displayFilteredTOC(posts) {
     $('.peblSidebarExtendedFrame').removeClass('contracted');
 }
 
-function getTagCount(elem, bucket, tag) {
+function getTagCount(elem, tagArr) {
     if (globalPebl) {
         var counter = 0;
         globalPebl.getToc(function(toc) {
             Object.keys(toc).forEach(function(section) {
                 Object.keys(toc[section]).forEach(function(subsection) {
-                    if (toc[section][subsection].tags != null && toc[section][subsection].tags[bucket] != null) {
-                        if (toc[section][subsection].tags[bucket].indexOf(tag) > -1)
-                            counter ++;
+                    for (var i = 0; i < tagArr.length; i++) {
+                        var thing = parseFilterTag(tagArr[i]);
+                        var bucket = thing.bucket;
+                        var tag = thing.tag;
+                        if (toc[section][subsection].tags != null && toc[section][subsection].tags[bucket] != null) {
+                            if (toc[section][subsection].tags[bucket].indexOf(tag) == -1)
+                                break;
+                            else if (i == tagArr.length - 1) {
+                                counter++;
+                            }
+                        }
                     }
                 });
             });
