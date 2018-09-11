@@ -402,17 +402,24 @@ function filterPosts(event) {
         $(elem).addClass('active');
         filterTags.push(bucket + "|" + tag);
     }
-    var posts = [];
+    var posts = {};
 
     globalPebl.getToc(function(toc) {
         Object.keys(toc).forEach(function(section) {
             Object.keys(toc[section]).sort(toc_sort).forEach(function(subsection) {
-                if (toc[section][subsection].tags != null) {
-                    if (filterTags.length < 1)
-                        posts.push({
+                if (toc[section][subsection].tags != null && toc[section].Section != null) {
+                    if (filterTags.length < 1) {
+                        if (posts[toc[section].Section.prefix] == null)
+                            posts[toc[section].Section.prefix] = {
+                                "title": toc[section].Section.title,
+                                "location": toc[section].Section.location,
+                                "posts": []
+                            };
+                        posts[toc[section].Section.prefix].posts.push({
                             "prefix": toc[section][subsection].prefix,
                             "post": toc[section][subsection].post
                         });
+                    }
                     for (var i = 0; i < filterTags.length; i++) {
                         var thing = parseFilterTag(filterTags[i]);
                         var bucket = thing.bucket;
@@ -421,7 +428,13 @@ function filterPosts(event) {
                             if (toc[section][subsection].tags[bucket].indexOf(tag) == -1)
                                 break;
                             else if (i == filterTags.length - 1) {
-                                posts.push({
+                                if (posts[toc[section].Section.prefix] == null)
+                                    posts[toc[section].Section.prefix] = {
+                                        "title": toc[section].Section.title,
+                                        "location": toc[section].Section.location,
+                                        "posts": []
+                                    };
+                                posts[toc[section].Section.prefix].posts.push({
                                     "prefix": toc[section][subsection].prefix,
                                     "post": toc[section][subsection].post
                                 });
@@ -442,34 +455,64 @@ function filterPosts(event) {
 }
 
 function displayFilteredTOC(posts) {
-    $('.peblSidebarExtendedFrame').children('.tocSubsectionTitle').remove();
-    for (var i = 0; i < posts.length; i++) {
-        var tocSubsectionTitle = document.createElement('div');
-        tocSubsectionTitle.classList.add('tocSubsectionTitle');
+    $('.peblSidebarExtendedFrame').children(':not(.peblSidebarExtendedFrameCloseButton)').remove();
+    Object.keys(posts).forEach(function(key) {
+        var tocSectionTitle = document.createElement('div');
+        tocSectionTitle.classList.add('tocSectionTitle');
 
-        var tocSubsectionPrefix = document.createElement('div');
-        tocSubsectionPrefix.classList.add('tocSubsectionPrefix');
+        var tocSectionPrefix = document.createElement('div');
+        tocSectionPrefix.classList.add('tocSectionPrefix');
 
-        var tocSubsectionPrefixText = document.createElement('span');
-        tocSubsectionPrefixText.classList.add('tocSubsectionPrefixText');
-        tocSubsectionPrefixText.textContent = posts[i].prefix;
+        var tocSectionPrefixText = document.createElement('a');
+        tocSectionPrefixText.classList.add('tocSectionPrefixText');
+        tocSectionPrefixText.textContent = key;
+        tocSectionPrefixText.href = posts[key].location;
 
-        var tocSubsectionTitleTextWrapper = document.createElement('div');
-        tocSubsectionTitleTextWrapper.classList.add('tocSubsectionTitleTextWrapper');
+        tocSectionPrefix.appendChild(tocSectionPrefixText);
 
-        var tocSubsectionTitleText = document.createElement('a');
-        tocSubsectionTitleText.classList.add('tocSubsectionTitleText');
-        tocSubsectionTitleText.href = posts[i].post.filename;
-        tocSubsectionTitleText.textContent = posts[i].post.title;
+        var tocSectionTitleTextWrapper = document.createElement('div');
+        tocSectionTitleTextWrapper.classList.add('tocSectionTitleTextWrapper');
 
-        tocSubsectionPrefix.appendChild(tocSubsectionPrefixText);
-        tocSubsectionTitleTextWrapper.appendChild(tocSubsectionTitleText);
+        var tocSectionTitleText = document.createElement('a');
+        tocSectionTitleText.classList.add('tocSectionTitleText');
+        tocSectionTitleText.textContent = posts[key].title;
+        tocSectionTitleText.href = posts[key].location;
 
-        tocSubsectionTitle.appendChild(tocSubsectionPrefix);
-        tocSubsectionTitle.appendChild(tocSubsectionTitleTextWrapper);
+        tocSectionTitleTextWrapper.appendChild(tocSectionTitleText);
 
-        $('.peblSidebarExtendedFrame')[0].appendChild(tocSubsectionTitle);
-    }
+        tocSectionTitle.appendChild(tocSectionPrefix);
+        tocSectionTitle.appendChild(tocSectionTitleTextWrapper);
+
+        $('.peblSidebarExtendedFrame')[0].appendChild(tocSectionTitle);
+
+        for (var i = 0; i < posts[key].posts.length; i++) {
+            var tocSubsectionTitle = document.createElement('div');
+            tocSubsectionTitle.classList.add('tocSubsectionTitle');
+
+            var tocSubsectionPrefix = document.createElement('div');
+            tocSubsectionPrefix.classList.add('tocSubsectionPrefix');
+
+            var tocSubsectionPrefixText = document.createElement('span');
+            tocSubsectionPrefixText.classList.add('tocSubsectionPrefixText');
+            tocSubsectionPrefixText.textContent = posts[key].posts[i].prefix;
+
+            var tocSubsectionTitleTextWrapper = document.createElement('div');
+            tocSubsectionTitleTextWrapper.classList.add('tocSubsectionTitleTextWrapper');
+
+            var tocSubsectionTitleText = document.createElement('a');
+            tocSubsectionTitleText.classList.add('tocSubsectionTitleText');
+            tocSubsectionTitleText.href = posts[key].posts[i].post.filename;
+            tocSubsectionTitleText.textContent = posts[key].posts[i].post.title;
+
+            tocSubsectionPrefix.appendChild(tocSubsectionPrefixText);
+            tocSubsectionTitleTextWrapper.appendChild(tocSubsectionTitleText);
+
+            tocSubsectionTitle.appendChild(tocSubsectionPrefix);
+            tocSubsectionTitle.appendChild(tocSubsectionTitleTextWrapper);
+
+            $('.peblSidebarExtendedFrame')[0].appendChild(tocSubsectionTitle);
+        }
+    });
 
     $('.contentContainer').addClass('contracted');
     $('.peblSidebarExtendedFrame').removeClass('contracted');
@@ -477,7 +520,7 @@ function displayFilteredTOC(posts) {
 
 function getTagCount(elem, tagArr) {
     if (globalPebl) {
-        var counter = 0;
+        var counter = new Set();
         globalPebl.getToc(function(toc) {
             Object.keys(toc).forEach(function(section) {
                 Object.keys(toc[section]).forEach(function(subsection) {
@@ -489,13 +532,13 @@ function getTagCount(elem, tagArr) {
                             if (toc[section][subsection].tags[bucket].indexOf(tag) == -1)
                                 break;
                             else if (i == tagArr.length - 1) {
-                                counter++;
+                                counter.add(toc[section][subsection].location);
                             }
                         }
                     }
                 });
             });
-            elem.textContent = '(' + counter + ')';
+            elem.textContent = '(' + counter.size + ')';
         });
     }
 }
