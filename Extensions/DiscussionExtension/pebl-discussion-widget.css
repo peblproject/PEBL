@@ -247,6 +247,7 @@ button.chat > i {
     border-radius: 15px;
     min-height: 15em;
     max-height: 31em;
+    padding-bottom: 20px;
 }
 
 .lightBoxTitle {
