@@ -4,7 +4,7 @@ $(document).ready(function() {
     if (window.ReadiumSDK == null) {
 	PEBL.start(false, function(readypebl) {
 	    pebl = readypebl;
-	    if (!PEBL-buttonLogin)
+	    if (!PEBLbuttonLogin)
 		pebl.login(function() {
 		    dosomething();
 		});
@@ -242,7 +242,7 @@ function dosomething() {
 }
 
 function useOpenIDLoginButton(elementName) {
-    PEBL-buttonLogin = true;
+    PEBLbuttonLogin = true;
     
     Lightbox.createLoginButton(elementName);
 }
