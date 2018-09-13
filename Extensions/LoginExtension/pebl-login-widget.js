@@ -171,7 +171,7 @@ window.Lightbox = {
 	'<input type="submit" value="Login" onclick="document.getElementById(\'loginReturn\').value = window.top.location.toString();" />' +
       '</form>');
 
-	document.getElementById(element).append(loginForm);
+	$(document.getElementById(element)).append(loginForm);
     },
 
     createLoginFormWithFields : function () {
