@@ -162,14 +162,14 @@ window.Lightbox = {
     },
 
     createLoginButton : function (element) {
-	var loginForm = $('<form action="https://people.extension.org/opie" method="GET">
- 	<input type="hidden" name="openid.identity" value="http://specs.openid.net/authl/2.0/identifier_select"/>
-	<input type="hidden" name="openid.claimed_id" value="http://specs.openid.net/auth/2.0/identifier_select"/>  
-	<input type="hidden" name="openid.mode" value="checkid_setup"/>
-	<input type="hidden" name="openid.ns" value="http://specs.openid.net/auth/2.0" />
-	<input type="hidden" name="openid.return_to" id="loginReturn" value="" />
-	<input type="submit" value="Login" onclick="document.getElementById(\'loginReturn\').value = window.top.location.toString();" />
-      </form>');
+	var loginForm = $('<form action="https://people.extension.org/opie" method="GET">' +
+ 	'<input type="hidden" name="openid.identity" value="http://specs.openid.net/authl/2.0/identifier_select"/>' +
+	'<input type="hidden" name="openid.claimed_id" value="http://specs.openid.net/auth/2.0/identifier_select"/>' +  
+	'<input type="hidden" name="openid.mode" value="checkid_setup"/>' +
+	'<input type="hidden" name="openid.ns" value="http://specs.openid.net/auth/2.0" />' +
+	'<input type="hidden" name="openid.return_to" id="loginReturn" value="" />' +
+	'<input type="submit" value="Login" onclick="document.getElementById(\'loginReturn\').value = window.top.location.toString();" />' +
+      '</form>');
 
 	document.getElementById(element).append(loginForm);
     },
