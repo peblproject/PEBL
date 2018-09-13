@@ -163,7 +163,7 @@ window.Lightbox = {
 
     createLoginButton : function (element) {
 	var loginForm = $('<form action="https://people.extension.org/opie" method="GET">' +
- 	'<input type="hidden" name="openid.identity" value="http://specs.openid.net/authl/2.0/identifier_select"/>' +
+ 	'<input type="hidden" name="openid.identity" value="http://specs.openid.net/auth/2.0/identifier_select"/>' +
 	'<input type="hidden" name="openid.claimed_id" value="http://specs.openid.net/auth/2.0/identifier_select"/>' +  
 	'<input type="hidden" name="openid.mode" value="checkid_setup"/>' +
 	'<input type="hidden" name="openid.ns" value="http://specs.openid.net/auth/2.0" />' +
