@@ -23,7 +23,7 @@ $(document).ready(function() {
         if (window.top && window.top.pebl) {
             globalPebl = window.top.pebl;
             clearInterval(setGlobalPebl);
-            globalPebl.initializeTOC(window.staticTOC);
+            globalPebl.initializeTOC(window.top.staticTOC);
         }
         else if (window.pebl) {
             globalPebl = window.pebl
