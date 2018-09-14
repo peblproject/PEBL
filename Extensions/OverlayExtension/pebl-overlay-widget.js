@@ -23,11 +23,14 @@ $(document).ready(function() {
         if (window.top && window.top.pebl) {
             globalPebl = window.top.pebl;
             clearInterval(setGlobalPebl);
+            globalPebl.initializeTOC(window.staticTOC);
         }
         else if (window.pebl) {
             globalPebl = window.pebl
             clearInterval(setGlobalPebl);
+            globalPebl.initializeTOC(window.staticTOC);
         }
+
     }, 10);
 
     var setGlobalReadium = setInterval(function() {
