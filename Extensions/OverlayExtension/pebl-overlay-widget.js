@@ -23,12 +23,12 @@ $(document).ready(function() {
         if (window.top && window.top.pebl) {
             globalPebl = window.top.pebl;
             clearInterval(setGlobalPebl);
-            globalPebl.initializeTOC(window.top.staticTOC);
+            globalPebl.initializeToc(window.top.staticTOC);
         }
         else if (window.pebl) {
             globalPebl = window.pebl
             clearInterval(setGlobalPebl);
-            globalPebl.initializeTOC(window.staticTOC);
+            globalPebl.initializeToc(window.staticTOC);
         }
 
     }, 10);
