@@ -1,3 +1,20 @@
+.replyContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.replyTextArea {
+    flex-shrink: 0;
+    width: 100%;
+    margin-bottom: 1em;
+    height: 5em;
+}
+
+.replyCloseButton {
+    background-color: gray;
+}
+
 .callout {
     padding: 1em;
     display: block;

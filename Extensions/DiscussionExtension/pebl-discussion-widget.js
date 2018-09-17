@@ -42,6 +42,57 @@ function createDiscussion(insertID, buttonText, question, id, detailText) {
     insertLocation.remove();
 }
 
+function replyDiscussion(event) {
+    console.log(event.currentTarget);
+    replyClose();
+    var parentPost = $(event.currentTarget).parent();
+    var parentAuthor = parentPost.children('.userId');
+    var parentId = parentPost.attr('id');
+    
+    var replyContainer = document.createElement('div');
+    replyContainer.classList.add('replyContainer');
+
+    var replyTextArea = document.createElement('textarea');
+    replyTextArea.classList.add('replyTextArea');
+    replyTextArea.placeholder = 'Reply to ' + parentAuthor.text();
+
+    var replyCloseButton = document.createElement('button');
+    replyCloseButton.classList.add('replyCloseButton');
+    replyCloseButton.textContent = 'Cancel';
+    replyCloseButton.addEventListener('click', replyClose);
+
+    var replySubmitButton = document.createElement('button');
+    replySubmitButton.classList.add('replySubmitButton');
+    replySubmitButton.textContent = 'Submit';
+    replySubmitButton.addEventListener('click', function(event) {
+        replySubmit(event);
+    });
+
+    replyContainer.appendChild(replyTextArea);
+    replyContainer.appendChild(replyCloseButton);
+    replyContainer.appendChild(replySubmitButton);
+
+    $(event.currentTarget).hide();
+    $(event.currentTarget).after(replyContainer);
+
+}
+
+function replyClose() {
+    $('.replyContainer').remove();
+    $('.messageReplyButton').show();
+}
+
+function replySubmit(event) {
+    console.log(event.currentTarget);
+    var textarea = $(event.currentTarget).siblings('textarea');
+    var thread = 'peblThread://' + $(event.currentTarget).parent().parent().attr('id');
+    console.log(thread);
+    var responseBox = $(event.currentTarget).parent().siblings('.chatReplies');
+    var prompt = $(event.currentTarget).parent().siblings('.message').text();
+    console.log(textarea.val());
+    createSubThread(thread, prompt, textarea, responseBox);
+}
+
 function messageHandler(responseBox, thread) {
     return function (newMessages) {
     newMessages.sort(sortMessages);
@@ -65,6 +116,17 @@ function messageHandler(responseBox, thread) {
         messageContainer.append(userIdBox);
         messageContainer.append(timestampBox);
         messageContainer.append(textBox);
+        var messageReplyButton = document.createElement('a');
+        messageReplyButton.classList.add('messageReplyButton');
+        messageReplyButton.textContent = 'Reply';
+        messageReplyButton.href = '#!';
+        messageReplyButton.addEventListener('click', function(event) {
+            replyDiscussion(event);
+        });
+        var chatReplies = document.createElement('div');
+        chatReplies.classList.add('chatReplies');
+        messageContainer.append($(messageReplyButton));
+        messageContainer.append($(chatReplies));
         if (mine) {
             var messageDeleteButtonWrapper = document.createElement('div');
             messageDeleteButtonWrapper.classList.add('messageDeleteButtonWrapper');
@@ -82,7 +144,14 @@ function messageHandler(responseBox, thread) {
             messageDeleteButtonWrapper.appendChild(messageDeleteButton);
             messageContainer.append($(messageDeleteButtonWrapper));
         }
+        console.log(messageContainer);
         responseBox.prepend(messageContainer);
+        var thread = 'peblThread://' + message.id;
+        var messageHandle = messageHandler($(chatReplies), thread);
+        if (window.top.pebl != null)
+            window.top.pebl.subscribeToDiscussion(thread, messageHandle);
+        else
+            pebl.subscribeToDiscussion(thread, messageHandle);
         }
     }
     };
@@ -119,6 +188,29 @@ function createThread(thread, element, moreInput) {
         $(element).parent().find("textarea").val("");
 
     responseBox.slideDown();
+    }
+}
+
+function createSubThread(thread, prompt, textarea, responseBox) {
+    var messageHandle = messageHandler(responseBox, thread);
+    var input = textarea.val();
+    if (window.top.pebl != null)
+        window.top.pebl.subscribeToDiscussion(thread, messageHandle);
+    else
+        pebl.subscribeToDiscussion(thread, messageHandle);
+    if (input.trim() != "") {
+        var message = {
+            "prompt": prompt,
+            "timestamp": new Date().toISOString(),
+            "thread": thread,
+            "text": input
+        };
+        if (window.top.pebl != null)
+            window.top.pebl.postMessage(message);
+        else
+            pebl.postMessage(message);
+        localStorage.setItem('peblThread-' + thread, 'true');
+        textarea.val("");
     }
 }
 
