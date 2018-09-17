@@ -127,23 +127,23 @@ function messageHandler(responseBox, thread) {
         chatReplies.classList.add('chatReplies');
         messageContainer.append($(messageReplyButton));
         messageContainer.append($(chatReplies));
-        if (mine) {
-            var messageDeleteButtonWrapper = document.createElement('div');
-            messageDeleteButtonWrapper.classList.add('messageDeleteButtonWrapper');
+        // if (mine) {
+        //     var messageDeleteButtonWrapper = document.createElement('div');
+        //     messageDeleteButtonWrapper.classList.add('messageDeleteButtonWrapper');
 
-            var messageDeleteButton = document.createElement('span');
-            messageDeleteButton.classList.add('messageDeleteButton');
-            messageDeleteButton.innerHTML = '&#215;';
-            messageDeleteButton.setAttribute('messageID', message.id);
-            messageDeleteButton.setAttribute('thread', thread);
-            messageDeleteButton.addEventListener('click', function() {
-                window.pebl.removeMessage(this.getAttribute('messageID'), this.getAttribute('thread'));
-                $('#' + this.getAttribute('messageID')).remove();
-            });
+        //     var messageDeleteButton = document.createElement('span');
+        //     messageDeleteButton.classList.add('messageDeleteButton');
+        //     messageDeleteButton.innerHTML = '&#215;';
+        //     messageDeleteButton.setAttribute('messageID', message.id);
+        //     messageDeleteButton.setAttribute('thread', thread);
+        //     messageDeleteButton.addEventListener('click', function() {
+        //         window.pebl.removeMessage(this.getAttribute('messageID'), this.getAttribute('thread'));
+        //         $('#' + this.getAttribute('messageID')).remove();
+        //     });
 
-            messageDeleteButtonWrapper.appendChild(messageDeleteButton);
-            messageContainer.append($(messageDeleteButtonWrapper));
-        }
+        //     messageDeleteButtonWrapper.appendChild(messageDeleteButton);
+        //     messageContainer.append($(messageDeleteButtonWrapper));
+        // }
         console.log(messageContainer);
         responseBox.prepend(messageContainer);
         var thread = 'peblThread://' + message.id;
