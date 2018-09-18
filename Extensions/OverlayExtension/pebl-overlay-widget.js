@@ -295,7 +295,7 @@ function createSidebar() {
         $('#peblSidebar').remove();
     }
 
-    var categories = JSON.parse($('#fake-page').attr('categories'));
+    var categories = JSON.parse($('#fake-page').attr('allCategories'));
 
 
     var sidebar = document.createElement('div');
