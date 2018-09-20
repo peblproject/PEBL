@@ -146,6 +146,18 @@ p.discussionQuestionBoxText {
     margin: 0;
 }
 
+.peblSidebarSearchContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 1em;
+}
+
+.peblSidebarSearchField {
+    width: 100%;
+    border: 1px solid rgb(7, 126, 188);
+}
+
 .peblResourceInfoContainer {
     text-align: center;
     border: 1px solid rgb(7, 126, 188);

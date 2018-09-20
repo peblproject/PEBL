@@ -7,6 +7,7 @@ var globalPebl;
 var globalReadium;
 var filterTags = [];
 var allTags = [];
+var searchableTOC = null;
 
 window.addEventListener("message", receiveMessage, false);
 
@@ -30,7 +31,7 @@ $(document).ready(function() {
             clearInterval(setGlobalPebl);
             globalPebl.initializeToc(window.staticTOC);
         }
-
+        console.log('globalpebl');
     }, 10);
 
     var setGlobalReadium = setInterval(function() {
@@ -42,6 +43,7 @@ $(document).ready(function() {
             globalReadium = window.ReadiumSDK;
             clearInterval(setGlobalReadium);
         }
+        console.log('globalreadium');
     }, 10);
 
     createOverlay();
@@ -297,21 +299,13 @@ function createSidebar() {
 
     var allCatAttr = $('#fake-page').attr('allCategories');
     var categories = allCatAttr ? JSON.parse(allCatAttr) : JSON.parse($('#fake-page').attr('categories'));
-
+    
 
     var sidebar = document.createElement('div');
     sidebar.id = 'peblSidebar';
     sidebar.classList.add('peblSidebar', 'expanded');
 
-    var resourceInfoContainer = document.createElement('div');
-    resourceInfoContainer.classList.add('peblResourceInfoContainer');
-
-    var resourceInfoText = document.createElement('span');
-    resourceInfoText.classList.add('peblResourceInfoText');
-    resourceInfoText.textContent = '';
-
-    resourceInfoContainer.appendChild(resourceInfoText);
-    sidebar.appendChild(resourceInfoContainer);
+    sidebar.appendChild(createSidebarSearch());
 
     for (var i in categories) {
         for (var j = 0; j < categories[i].length; j++) {
@@ -375,16 +369,97 @@ function createSidebar() {
 
     var sidebarExtendedFrameCloseButton = document.createElement('i');
     sidebarExtendedFrameCloseButton.classList.add('fa', 'fa-times', 'peblSidebarExtendedFrameCloseButton');
-    sidebarExtendedFrameCloseButton.addEventListener('click', function() {
-        $('.contentContainer').removeClass('contracted');
-        $('.peblSidebarExtendedFrame').addClass('contracted');
-    });
+    sidebarExtendedFrameCloseButton.addEventListener('click', closeSidebarExtendedFrame);
 
     sidebarExtendedFrame.appendChild(sidebarExtendedFrameCloseButton);
 
     $('.contentContainerWrapper').prepend(sidebarExpandButton);
     $('.contentContainerWrapper').prepend(sidebarExtendedFrame);
     $('.contentContainerWrapper').prepend(sidebar);
+}
+
+function closeSidebarExtendedFrame() {
+    $('.contentContainer').removeClass('contracted');
+    $('.peblSidebarExtendedFrame').addClass('contracted');
+}
+
+function createSidebarSearch() {
+    var sidebarSearchContainer = document.createElement('div');
+    sidebarSearchContainer.classList.add('peblSidebarSearchContainer');
+
+    var sidebarSearchField = document.createElement('input');
+    sidebarSearchField.classList.add('peblSidebarSearchField');
+    sidebarSearchField.placeholder = 'Search your resources...';
+    sidebarSearchField.addEventListener('input', function(event) {
+        performSidebarSearch(event);
+    });
+
+    sidebarSearchContainer.appendChild(sidebarSearchField);
+
+    return sidebarSearchContainer;
+}
+
+function performSidebarSearch(event) {
+    if (Fuse) {
+        if (!searchableTOC) {
+            generateSearchableTOC();
+            return;
+        }
+        var input = $(event.currentTarget).val();
+        var options = {
+            shouldSort: true,
+            tokenize: true,
+            findAllMatches: true,
+            threshold: 0,
+            location: 0,
+            distance: 100,
+            maxPatternLength: 32,
+            minMatchCharLength: 1,
+            keys: ['title', 'content']
+        }
+
+        var fuse = new Fuse(searchableTOC, options);
+        var result = fuse.search(input);
+        var newResult = {};
+        globalPebl.getToc(function(toc) {
+            Object.keys(toc).forEach(function(section) {
+                Object.keys(toc[section]).sort(toc_sort).forEach(function(subsection) {
+                    for (var i = 0; i < result.length; i++) {
+                        if (result[i].location === toc[section][subsection].location) {
+                            if (newResult[toc[section].Section.prefix] == null)
+                                newResult[toc[section].Section.prefix] = {
+                                    "title": toc[section].Section.title,
+                                    "location": toc[section].Section.location,
+                                    "posts": []
+                                };
+                            newResult[toc[section].Section.prefix].posts.push(result[i]);
+                        }
+                    }
+                });
+            });
+            console.log(newResult);
+            displayFilteredTOC(newResult);
+        });
+    }
+}
+
+function generateSearchableTOC() {
+    var result = [];
+    globalPebl.getToc(function(toc) {
+        Object.keys(toc).forEach(function(key) {
+            Object.keys(toc[key]).forEach(function(key2) {
+                if (toc[key][key2].post)
+                    result.push({
+                        "title": toc[key][key2].post.title,
+                        "content": toc[key][key2].post.content,
+                        "location": toc[key][key2].location,
+                        "prefix": toc[key][key2].prefix,
+                        "post": toc[key][key2].post
+                    });
+            });
+        });
+        searchableTOC = result;
+    });
 }
 
 function parseFilterTag(filterTag) {
@@ -460,6 +535,10 @@ function filterPosts(event) {
 
 function displayFilteredTOC(posts) {
     $('.peblSidebarExtendedFrame').children(':not(.peblSidebarExtendedFrameCloseButton)').remove();
+    if (Object.keys(posts).length < 1) {
+        closeSidebarExtendedFrame();
+        return;
+    }
     Object.keys(posts).forEach(function(key) {
         var tocSectionTitle = document.createElement('div');
         tocSectionTitle.classList.add('tocSectionTitle');
