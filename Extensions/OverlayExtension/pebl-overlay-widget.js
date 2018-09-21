@@ -1743,13 +1743,13 @@ function handleDiscussButtonClick() {
 
     if ($('#dynamicPage').length) {
         var currentDynamicPage = $('#dynamicPage').attr('resource-id');
-        discussionId = currentBook + '_' + currentDynamicPage;
+        discussionId = currentDynamicPage;
 
         var title = $('#dynamicPage').attr('title');
         discussionTitle = 'Added Resource - ' + title + ' Discussion';
 
     } else {
-        discussionId = currentBook + '_' + currentPage;
+        discussionId = currentPage;
         discussionTitle = $('h1.title').text() + ' Discussion';
     }
 
