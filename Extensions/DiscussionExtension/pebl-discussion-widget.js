@@ -291,16 +291,13 @@ function createDiscussionBox(element, chatButton) {
         document.getElementById('discussionDetailText').textContent = chatButton.getAttribute('detailText');
     element.find(".chatInput").slideDown();
 
-    //if User has already contributed, show responses
-    if (localStorage.getItem('peblThread-' + chatButton.id) === 'true') {
-        var responseBox = $('.chatResponses');
-        var messageHandle = messageHandler(responseBox, chatButton.id);
-        if (window.top.pebl != null)
-            window.top.pebl.subscribeToDiscussion(chatButton.id, messageHandle);
-        else
-            pebl.subscribeToDiscussion(chatButton.id, messageHandle);
-        responseBox.slideDown();
-    }
+    var responseBox = $('.chatResponses');
+    var messageHandle = messageHandler(responseBox, chatButton.id);
+    if (window.top.pebl != null)
+        window.top.pebl.subscribeToDiscussion(chatButton.id, messageHandle);
+    else
+        pebl.subscribeToDiscussion(chatButton.id, messageHandle);
+    responseBox.slideDown();
 
     chatInput.on('click', 'button.chatSubmit', function () {
         createThread(chatButton.id, $(this), true);
