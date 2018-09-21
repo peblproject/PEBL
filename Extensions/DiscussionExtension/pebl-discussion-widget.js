@@ -100,13 +100,13 @@ function messageHandler(responseBox, thread) {
         var message = newMessages[i];
         if ($("#" + message.id).length == 0) {
         if (window.top.pebl != null)
-            var mine = window.top.pebl.getUserName() == message.userId;
+            var mine = window.top.pebl.getUserName() == message.name;
         else
-            var mine = pebl.getUserName() == message.userId;
+            var mine = pebl.getUserName() == message.name;
         var userIcon = document.createElement('i');
         userIcon.classList.add('fa', 'fa-user');
         var userIdBox = $('<span class="userId"></span>');
-        userIdBox.text(mine ? "You" : message.userId);
+        userIdBox.text(message.name);
         var timestampBox = $('<span class="timestamp"></span>');
         timestampBox.text(new Date(message.timestamp).toLocaleString());
         var textBox = $('<p class="message"></p>');
