@@ -320,7 +320,7 @@ function createSidebar() {
 
             var headerText = document.createElement('span');
             headerText.classList.add('sidebarTagHeaderText');
-            headerText.textContent = i;
+            headerText.textContent = niceName(i);
 
             header.appendChild(headerText);
 
@@ -2114,6 +2114,14 @@ function handleOrientationChange() {
     } else {
         $('.contentContainerWrapper, .contentContainer, .findButtonContainer, .discussButtonContainer, .notesButtonContainer, .findButton, .discussButton, .notesButton, .addedResourcesContainer').removeClass('landscape');
     }
+}
+
+function niceName(str) {
+    str = str.replace(/_/g, ' ');
+    str = str.replace(/\w\S*/g, function(txt) {
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+    return str;
 }
 
 //Weirdest bug ever
