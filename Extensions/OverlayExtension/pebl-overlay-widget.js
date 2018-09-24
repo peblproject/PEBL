@@ -305,6 +305,9 @@ function createSidebar() {
     sidebar.id = 'peblSidebar';
     sidebar.classList.add('peblSidebar', 'expanded');
 
+    var sidebarTagList = document.createElement('div');
+    sidebarTagList.classList.add('peblSidebarTagList');
+
     sidebar.appendChild(createSidebarSearch());
 
     for (var i in categories) {
@@ -353,10 +356,12 @@ function createSidebar() {
                 container.appendChild(element);
             }
 
-            sidebar.appendChild(header);
-            sidebar.appendChild(container);
+            sidebarTagList.appendChild(header);
+            sidebarTagList.appendChild(container);
         }
     }
+
+    sidebar.appendChild(sidebarTagList);
 
     var sidebarExpandButton = document.createElement('div');
     sidebarExpandButton.classList.add('peblSidebarExpandButton');
