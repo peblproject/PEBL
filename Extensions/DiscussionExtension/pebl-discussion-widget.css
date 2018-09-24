@@ -17,7 +17,8 @@
 
 .callout {
     padding: 1em;
-    display: block;
+    display: inline-block;
+    vertical-align: top;
     background-color: rgb(240, 240, 240);
     border-left: 10px solid rgb(0, 168, 142);
     margin: 1.5em 10px;
