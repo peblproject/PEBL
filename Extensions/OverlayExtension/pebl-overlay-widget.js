@@ -1519,7 +1519,7 @@ function createTOC() {
             tocContainer.appendChild(tocSection);
         });
         document.getElementById('peblOverlay').appendChild(tocContainer);
-        tocContainer.appendChild(createOverlayCloseButton());
+        document.getElementById('peblOverlay').appendChild(createOverlayCloseButton());
         //Fix TOC scrolling, iOS sucks
         setTimeout(function() {
             $('.tocSection').attr('style', 'transform: translate3d(0px, 0px, 0px);');

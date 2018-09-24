@@ -1057,8 +1057,8 @@ i.peblNotificationButton {
 
 i.dynamicPageCloseButton, i.overlayCloseButton {
     cursor: pointer;
-    position: absolute;
-    top: 50px;
+    position: fixed;
+    top: 80px;
     right: 20px;
     color: rgba(0, 0, 0, 0.6);
     font-size: 3rem;
@@ -1076,7 +1076,6 @@ i.peblSidebarExtendedFrameCloseButton {
 }
 
 i.overlayCloseButton {
-    top: 10px;
     z-index: 10001;
 }
 
