@@ -1,16 +1,16 @@
 
 
-// $(document).ready(function() {
-//     if (window.ReadiumSDK == null && window.top.ReadiumSDK == null && window.pebl == null && window.top.pebl == null) {
-// 	PEBL.start(false, function(readypebl) {
-// 	    pebl = readypebl;
-// 	    if (!window.PEBLbuttonLogin)
-// 		pebl.login(function() {
-// 		    dosomething();
-// 		});
-// 	});
-//     }
-// });
+$(document).ready(function() {
+    if (window.ReadiumSDK == null && window.top.ReadiumSDK == null) {
+	PEBL.start(false, function(readypebl) {
+	    pebl = readypebl;
+	    if (!window.PEBLbuttonLogin)
+		pebl.login(function() {
+		    dosomething();
+		});
+	});
+    }
+});
 
 
 window.Lightbox = {
