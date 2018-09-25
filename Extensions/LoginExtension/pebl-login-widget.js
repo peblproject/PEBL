@@ -13,6 +13,17 @@ $(document).ready(function() {
 });
 
 
+$(document).ready(function() {
+  var loginInterval;
+  loginInterval = setInterval(function() {
+    if (window.pebl && !window.pebl.userManager.isLoggedIn && window.Lightbox) {
+      console.log('Logging In');
+      window.Lightbox.create('login', false);
+      window.Lightbox.createLoginButton('lightBoxContent');
+      clearInterval(loginInterval);
+    }
+  }, 1000);
+});
 window.Lightbox = {
     close : function() {
 	var lightBox = document.getElementById('lightBox');
@@ -40,7 +51,7 @@ window.Lightbox = {
     	$('#lrsURLInput').val(settingsObject.lrsURL);
     	$('#lrsPasswordInput').val(settingsObject.lrsPassword);
     	$('#lrsTokenInput').val(settingsObject.lrsToken);
-	$('#lrsUsernameInput').val(settingsObject.lrsUsername);
+      $('#lrsUsernameInput').val(settingsObject.lrsUsername);
     },
 
     closeLRSSettings : function() {
@@ -52,13 +63,13 @@ window.Lightbox = {
     	var lrsURL = $('#lrsURLInput').val();
     	var lrsPassword = $('#lrsPasswordInput').val();
     	var lrsToken = $('#lrsTokenInput').val();
-	var lrsUsername = $('#lrsUsernameInput').val();
+      var lrsUsername = $('#lrsUsernameInput').val();
 
     	var settingsObject = {
-    	    "lrsURL": lrsURL,
-    	    "lrsPassword": lrsPassword,
-    	    "lrsToken": lrsToken,
-            "lrsUsername": lrsUsername
+    		"lrsURL": lrsURL,
+    		"lrsPassword": lrsPassword,
+    		"lrsToken": lrsToken,
+        "lrsUsername": lrsUsername
     	};
     	localStorage.setItem("LRSAuth", JSON.stringify(settingsObject));
     },
@@ -71,13 +82,13 @@ window.Lightbox = {
     	var currentSettings = window.Lightbox.getLRSSettings();
 
     	var settingsObject = {
-    	    "lrsURL": lrsURL,
-    	    "lrsPassword": lrsPassword,
-    	    "lrsToken": lrsToken,
-            "lrsUsername": lrsUsername
+    		"lrsURL": lrsURL,
+    		"lrsPassword": lrsPassword,
+    		"lrsToken": lrsToken,
+        "lrsUsername": lrsUsername
     	};
     	if (reset || currentSettings == null)
-    	    localStorage.setItem("LRSAuth", JSON.stringify(settingsObject));
+    		localStorage.setItem("LRSAuth", JSON.stringify(settingsObject));
     },
 
     getLRSSettings : function() {
@@ -94,9 +105,9 @@ window.Lightbox = {
     	var settingsObject = window.Lightbox.getLRSSettings();
     	var lrsPassword;
     	if (settingsObject.lrsPassword != null && settingsObject.lrsPassword.length > 0)
-    	    lrsPassword = settingsObject.lrsPassword;
+    		lrsPassword = settingsObject.lrsPassword;
     	else
-    	    lrsPassword = null;
+    		lrsPassword = null;
     	callback(lrsPassword);
     },
 
@@ -104,20 +115,20 @@ window.Lightbox = {
     	var settingsObject = window.Lightbox.getLRSSettings();
     	var lrsToken;
     	if (settingsObject.lrsToken != null && settingsObject.lrsToken.length > 0)
-    	    lrsToken = settingsObject.lrsToken;
+    		lrsToken = settingsObject.lrsToken;
     	else
-    	    lrsToken = null;
+    		lrsToken = null;
     	callback(lrsToken);
     },
 
     getLRSUsername : function(callback) {
-	var settingsObject = window.Lightbox.getLRSSettings();
-	var lrsUsername;
-	if (settingsObject.lrsUsername != null && settingsObject.lrsUsername.length > 0)
-            lrsUsername = settingsObject.lrsUsername;
-	else
-            lrsUsername = null;
-	callback(lrsUsername);
+      var settingsObject = window.Lightbox.getLRSSettings();
+      var lrsUsername;
+      if (settingsObject.lrsUsername != null && settingsObject.lrsUsername.length > 0)
+        lrsUsername = settingsObject.lrsUsername;
+      else
+        lrsUsername = null;
+      callback(lrsUsername);
     },
 
     createLoginForm : function () {
@@ -164,14 +175,14 @@ window.Lightbox = {
     createLoginButton : function (element) {
 	var loginForm = $('<form action="https://people.extension.org/opie" method="GET">' +
  	'<input type="hidden" name="openid.identity" value="http://specs.openid.net/auth/2.0/identifier_select"/>' +
-	'<input type="hidden" name="openid.claimed_id" value="http://specs.openid.net/auth/2.0/identifier_select"/>' +  
+	'<input type="hidden" name="openid.claimed_id" value="http://specs.openid.net/auth/2.0/identifier_select"/>' + 
 	'<input type="hidden" name="openid.mode" value="checkid_setup"/>' +
 	'<input type="hidden" name="openid.ns" value="http://specs.openid.net/auth/2.0" />' +
 	'<input type="hidden" name="openid.return_to" id="loginReturn" value="" />' +
-	'<input type="submit" value="Login" onclick="document.getElementById(\'loginReturn\').value = window.top.location.toString();" />' +
+	'<input id="openIDLoginButton" type="submit" value="Login" onclick="document.getElementById(\'loginReturn\').value = window.top.location.toString();" />' +
       '</form>');
 
-	$(document.getElementById(element)).append(loginForm);
+	document.getElementById(element).appendChild(loginForm[0]);
     },
 
     createLoginFormWithFields : function () {
@@ -192,9 +203,9 @@ window.Lightbox = {
     
     create : function (lightBoxType, allowClickOut) {
 	var lightBox,
-            lightBoxContent,
-            lightBoxContentSecondary,
-            dimOverlay;
+        lightBoxContent,
+        lightBoxContentSecondary,
+        dimOverlay;
 
 	lightBox = document.createElement('div');
 	lightBox.id = 'lightBox';
@@ -233,17 +244,5 @@ window.Lightbox = {
             }
 	});
     }
-}
-
-function dosomething() {
-    window.pebl.openBook(window.ReadiumInterop.getEmbeddedBookName(), function() {
-	window.pebl.initializeToc(window.staticTOC);
-    });
-}
-
-function useOpenIDLoginButton(elementName) {
-    window.PEBLbuttonLogin = true;
-    
-    Lightbox.createLoginButton(elementName);
 }
 
