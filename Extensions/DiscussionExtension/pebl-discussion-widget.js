@@ -310,22 +310,20 @@ function createDiscussionBox(element, chatButton) {
 }
 
 function handleChatButtonClick() {
-    $('#deviceInfo').text("Testing");
-    $('#debugWindowResult').val(0);
     var element,
         question;
     element = $(this);
     question = element.parent().children('p:first').text();
-    $('#debugWindowResult').val(1);
     if (window.top.pebl != null || pebl != null) {
-        $('#debugWindowResult').val(2);
     if ((this.id != null) && (this.id != "")) {
-        $('#debugWindowResult').val(3);
         if (element.parent().children(".chatBox").length == 0) {
-            $('#debugWindowResult').val(4);
-            openDiscussionLightbox(question, this);
-            $('#debugWindowResult').val(5);
-            $('#discussionTextArea').focus();
+            if (window.pebl.userManager.isLoggedIn) {
+                openDiscussionLightbox(question, this);
+                $('#discussionTextArea').focus();
+            } else if (window.Lightbox) {
+                window.Lightbox.create('login', false);
+                window.Lightbox.createLoginButton('lightBoxContent');
+            }
         }
     }
     }
