@@ -41,12 +41,15 @@ a.button {
     -moz-border-radius: 5;
     border-radius: 5px;
     text-shadow: 1px 1px 3px #666666;
-    color: #ffffff;
-    background: #077ebc;
     padding: 10px 20px 10px 20px;
     text-decoration: none;
     margin-bottom: 1em;
     border: none;
+    color: #ffffff;
+}
+
+button.chatSubmit {
+    background: #077ebc;
 }
 
 .callout > button.chat {
@@ -90,7 +93,7 @@ button.chat > i {
     margin-bottom: 10px !important;
 }
 
-.discussionCloseButton {
+button.discussionCloseButton {
     background-color: gray;
 }
 
