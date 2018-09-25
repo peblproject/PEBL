@@ -32,7 +32,7 @@
     clear: both;
 }
 
-button,
+button.chat,
 a.button {
     cursor: pointer;
     -webkit-border-radius: 5;
