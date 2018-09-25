@@ -13,7 +13,6 @@ $(document).ready(function() {
 });
 
 
-
 window.Lightbox = {
     close : function() {
 	var lightBox = document.getElementById('lightBox');
@@ -234,5 +233,17 @@ window.Lightbox = {
             }
 	});
     }
+}
+
+function dosomething() {
+    window.pebl.openBook(window.ReadiumInterop.getEmbeddedBookName(), function() {
+	window.pebl.initializeToc(window.staticTOC);
+    });
+}
+
+function useOpenIDLoginButton(elementName) {
+    window.PEBLbuttonLogin = true;
+    
+    Lightbox.createLoginButton(elementName);
 }
 
