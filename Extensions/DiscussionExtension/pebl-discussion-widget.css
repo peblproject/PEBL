@@ -33,6 +33,8 @@
 }
 
 button.chat,
+button.discussionCloseButton,
+button.chatSubmit,
 a.button {
     cursor: pointer;
     -webkit-border-radius: 5;
