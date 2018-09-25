@@ -91,6 +91,7 @@ function replySubmit(event) {
     var prompt = $(event.currentTarget).parent().siblings('.message').text();
     console.log(textarea.val());
     createSubThread(thread, prompt, textarea, responseBox);
+    replyClose();
 }
 
 function messageHandler(responseBox, thread) {

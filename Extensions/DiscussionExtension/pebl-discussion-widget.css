@@ -35,6 +35,8 @@
 button.chat,
 button.discussionCloseButton,
 button.chatSubmit,
+button.replyCloseButton,
+button.replySubmitButton,
 a.button {
     cursor: pointer;
     -webkit-border-radius: 5;
@@ -48,7 +50,8 @@ a.button {
     color: #ffffff;
 }
 
-button.chatSubmit {
+button.chatSubmit,
+button.replySubmitButton {
     background: #077ebc;
 }
 
@@ -261,15 +264,13 @@ button.discussionCloseButton {
     z-index: 1002;
     -webkit-box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
     box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
-    left: 25%;
+    left: 0;
     top: 10%;
-    width: 50%;
-    max-height: 600px;
+    width: 100%;
     overflow: hidden;
     background-color: rgb(240, 240, 240);
     border-radius: 15px;
     min-height: 15em;
-    max-height: 31em;
     padding-bottom: 20px;
 }
 
