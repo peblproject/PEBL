@@ -13,17 +13,7 @@ $(document).ready(function() {
 });
 
 
-$(document).ready(function() {
-  var loginInterval;
-  loginInterval = setInterval(function() {
-    if (window.pebl && !window.pebl.userManager.isLoggedIn && window.Lightbox) {
-      console.log('Logging In');
-      window.Lightbox.create('login', false);
-      window.Lightbox.createLoginButton('lightBoxContent');
-      clearInterval(loginInterval);
-    }
-  }, 1000);
-});
+
 window.Lightbox = {
     close : function() {
 	var lightBox = document.getElementById('lightBox');
