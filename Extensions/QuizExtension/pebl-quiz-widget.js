@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    
+
 });
 
 function createLowStakesMultiChoiceQuestion(id, questionNumber, choices, prompt, answer, image, required, attempts, feedbackLink, linkText) {
@@ -53,7 +53,7 @@ $(document).on('click', '.feedbackLink', function(evt) {
     window.top.ReadiumSDK.reader.openContentUrl($(this).attr('href'));
 });
 
-$().ready(function () {
+$().ready(function() {
     $('.quiz_quizExtension').each(function() {
         var id = $(this)[0].getAttribute('data-id');
         var questionNumber = $(this)[0].getAttribute('data-questionNumber');
@@ -67,42 +67,47 @@ $().ready(function () {
         var linkText = $(this)[0].getAttribute('data-linkText');
         createLowStakesMultiChoiceQuestion(id, questionNumber, choices, prompt, answer, image, required, attempts, feedbackLink, linkText);
     });
-    
-    $('ol.quiz').each(function () {
-	var quizEntry = this.id + '-quizAttempts';
 
-	attachClickHandler(this.id)
-	
-	var quizAttempts = localStorage.getItem(quizEntry);
+    $('ol.quiz').each(function() {
+        var quizEntry = this.id + '-quizAttempts';
 
-	if (quizAttempts) {
-	    quizAttempts = JSON.parse(quizAttempts);
+        attachClickHandler(this.id)
 
-	    if (quizAttempts.length != 0) {
-		var counter = 0;
-		$('ol.quiz > li').each(function () {
-		    if (quizAttempts[counter][0] == false && quizAttempts[counter][1] == false) {
-			$(this).children('.choices').addClass('reveal secondary');
-			var feedBackLink = $(this).children('.feedback').attr('feedbackLink');
-			var linkText = $(this).children('.feedback').attr('linkText');
-			if (feedBackLink != 'default')
-			    $(this).children('.feedback').html('Please study the correct answer in <a class="feedbackLink" href="' + feedBackLink + '">' + linkText + '</a>');
-			else
-			    $(this).children('.feedback').text('Please study the correct answer.');
-			$(this).children('.feedback').slideDown();
-		    }
-		    if (quizAttempts[counter][0] == true || quizAttempts[counter][1] == true) {
-			$(this).children('.choices').addClass('reveal');
-			$(this).children('.feedback').text("That's correct.");
-			$(this).children('.feedback').slideDown();
-		    }
-		    counter++;
-		});
-	    }
+        var quizAttempts = localStorage.getItem(quizEntry);
 
-	} 
-	
-    });    
+        if (quizAttempts) {
+            quizAttempts = JSON.parse(quizAttempts);
+
+            if (quizAttempts.length != 0) {
+                var counter = 0;
+                $('ol.quiz > li').each(function() {
+                    if (quizAttempts[counter][0] == false && quizAttempts[counter][1] == false) {
+                        $(this).children('.choices').addClass('reveal secondary');
+                        var feedBackLink = $(this).children('.feedback').attr('feedbackLink');
+                        var linkText = $(this).children('.feedback').attr('linkText');
+                        if (feedBackLink != 'default') {
+                            var feedbackLinkElem = document.createElement('a');
+		                	feedbackLinkElem.classList.add('feedbackLink');
+		                	feedbackLinkElem.href = $feedback.attr('feedbackLink');
+		                	feedbackLinkElem.textContent = $feedback.attr('linkText');
+		                	$feedback.text('Please study the correct answer in ');
+		                	$feedback.append($(feedbackLinkElem));
+                        } else
+                            $(this).children('.feedback').text('Please study the correct answer.');
+                        $(this).children('.feedback').slideDown();
+                    }
+                    if (quizAttempts[counter][0] == true || quizAttempts[counter][1] == true) {
+                        $(this).children('.choices').addClass('reveal');
+                        $(this).children('.feedback').text("That's correct.");
+                        $(this).children('.feedback').slideDown();
+                    }
+                    counter++;
+                });
+            }
+
+        }
+
+    });
 });
 
 function attachClickHandler(quizId) {
@@ -110,116 +115,122 @@ function attachClickHandler(quizId) {
     // tries and results
     // [0,1],[1] ...
     var quizEntry = quizId + '-quizAttempts'
-    
+
     var quizAttempts = localStorage.getItem(quizEntry);
 
     if (quizAttempts) {
-	quizAttempts = JSON.parse(quizAttempts);
+        quizAttempts = JSON.parse(quizAttempts);
     } else {
-	quizAttempts = [];
-	$('ol.quiz[id="' + quizId + '"] > li').each(function () {
-	    quizAttempts.push([]);
+        quizAttempts = [];
+        $('ol.quiz[id="' + quizId + '"] > li').each(function() {
+            quizAttempts.push([]);
         });
     }
-    
-    var gradeTest = function() {
-	var score = 0;
-	var total = 0;
-	var finished = true;
-	for (var i = 0; i < quizAttempts.length && finished; i++) {
-	    var question = quizAttempts[i];
-	    if ((question.length == 0) || ((question.length == 1) && (!question[0])))
-		finished = false;
-	    if (finished) {
-		if ((question.length == 2) && question[1])
-		    score += 1;
-		else if (question[0])
-		    score += 1;
-	    }
-	    total += 1;
-	}
-	if (finished) {
-	    var id = $("ol.quiz")[0].id;
-	    var description = $(".title").text().trim();
-	    var normalizedScore = ((Math.round((score/total) * 100) / 100) * 100) | 0;
-	    var quizFeedback = "%" + normalizedScore;
-	    if ((score / total) >= 0.8) {
-		if (window.top.pebl != null)
-		    window.top.pebl.eventPassed(normalizedScore, id, description);
-		quizFeedback += " - You passed!";
-	    } else {
-		if (window.top.pebl != null)
-		    window.top.pebl.eventFailed(normalizedScore, id, description);
-		quizFeedback += " - You did not pass, you should review the material and try again.";
-	    }
-	    localStorage.removeItem(quizEntry);
-	    $(".quizScore").text(quizFeedback);
-	}
-    };
-    
-    $('ol.quiz[id="' + quizId + '"] .choices').off();
-    $('ol.quiz[id="' + quizId + '"] .choices').on('click', 'li', function () {
-	var prompt = $(this).text();
-	var $answers = $(this).parents('.choices');
-	var $answersText = $answers.children();
-	$answersText = $answersText.map(function (i) {
-	    return $($answersText[i]).text();
-	});
-	var $feedback = $answers.siblings('.feedback');
-	var correct = $(this).hasClass('correct'); // T or F
-	var questionNum = $('ol.quiz .choices').index($answers);
 
-	if (quizAttempts[questionNum].length == 0) {
+    var gradeTest = function() {
+        var score = 0;
+        var total = 0;
+        var finished = true;
+        for (var i = 0; i < quizAttempts.length && finished; i++) {
+            var question = quizAttempts[i];
+            if ((question.length == 0) || ((question.length == 1) && (!question[0])))
+                finished = false;
+            if (finished) {
+                if ((question.length == 2) && question[1])
+                    score += 1;
+                else if (question[0])
+                    score += 1;
+            }
+            total += 1;
+        }
+        if (finished) {
+            var id = $("ol.quiz")[0].id;
+            var description = $(".title").text().trim();
+            var normalizedScore = ((Math.round((score / total) * 100) / 100) * 100) | 0;
+            var quizFeedback = "%" + normalizedScore;
+            if ((score / total) >= 0.8) {
+                if (window.top.pebl != null)
+                    window.top.pebl.eventPassed(normalizedScore, id, description);
+                quizFeedback += " - You passed!";
+            } else {
+                if (window.top.pebl != null)
+                    window.top.pebl.eventFailed(normalizedScore, id, description);
+                quizFeedback += " - You did not pass, you should review the material and try again.";
+            }
+            localStorage.removeItem(quizEntry);
+            $(".quizScore").text(quizFeedback);
+        }
+    };
+
+    $('ol.quiz[id="' + quizId + '"] .choices').off();
+    $('ol.quiz[id="' + quizId + '"] .choices').on('click', 'li', function() {
+        var prompt = $(this).text();
+        var $answers = $(this).parents('.choices');
+        var $answersText = $answers.children();
+        $answersText = $answersText.map(function(i) {
+            return $($answersText[i]).text();
+        });
+        var $feedback = $answers.siblings('.feedback');
+        var correct = $(this).hasClass('correct'); // T or F
+        var questionNum = $('ol.quiz .choices').index($answers);
+
+        if (quizAttempts[questionNum].length == 0) {
 
             // first attempt
             $answers.children('li').removeClass('wrong');
             quizAttempts[questionNum].push(correct);
             localStorage.setItem(quizEntry, JSON.stringify(quizAttempts));
             if (correct == true) {
-		$answers.addClass('reveal');
-		$feedback.text(correctFeedback(1));
-		if (window.top.pebl != null)
+                $answers.addClass('reveal');
+                $feedback.text(correctFeedback(1));
+                if (window.top.pebl != null)
                     window.top.pebl.eventAnswered(prompt, $answersText, $(this).text(), correct, true);
             } else {
-		
-		$(this).addClass('wrong');
-		//$(this).delay(1000).slideUp();
-		$feedback.text(wrongFeedback(1));
-		if (window.top.pebl != null)
-		    window.top.pebl.eventAnswered(prompt, $answersText, $(this).text(), correct, false);
+
+                $(this).addClass('wrong');
+                //$(this).delay(1000).slideUp();
+                $feedback.text(wrongFeedback(1));
+                if (window.top.pebl != null)
+                    window.top.pebl.eventAnswered(prompt, $answersText, $(this).text(), correct, false);
             }
-	    
-	    gradeTest();
-	    $feedback.slideDown();
-	} else if (quizAttempts[questionNum].length == 1 && quizAttempts[questionNum][0] == false) {
+
+            gradeTest();
+            $feedback.slideDown();
+        } else if (quizAttempts[questionNum].length == 1 && quizAttempts[questionNum][0] == false) {
 
             // 2nd attempt
             //$answers.children('li').removeClass('wrong');
             quizAttempts[questionNum].push(correct);
             localStorage.setItem(quizEntry, JSON.stringify(quizAttempts));
             if (correct == true) {
-		$answers.addClass('reveal');
-		$feedback.text(correctFeedback(2));
+                $answers.addClass('reveal');
+                $feedback.text(correctFeedback(2));
             } else {
-		setTimeout(function () {
-		    $answers.addClass('reveal secondary');
-		}, 1500);
-		
-		$(this).addClass('wrong');
-		//$(this).delay(1000).slideUp();
-		if ($feedback.attr('feedbackLink') != 'default')
-		    $feedback.html('Please study the correct answer in <a class="feedbackLink" href="' + $feedback.attr('feedbackLink') + '">' + $feedback.attr('linkText') + '</a>');
-		else
-		    $feedback.text(wrongFeedback(2));
+                setTimeout(function() {
+                    $answers.addClass('reveal secondary');
+                }, 1500);
+
+                $(this).addClass('wrong');
+                //$(this).delay(1000).slideUp();
+                if ($feedback.attr('feedbackLink') != 'default') {
+                	var feedbackLinkElem = document.createElement('a');
+                	feedbackLinkElem.classList.add('feedbackLink');
+                	feedbackLinkElem.href = $feedback.attr('feedbackLink');
+                	feedbackLinkElem.textContent = $feedback.attr('linkText');
+                	$feedback.text('Please study the correct answer in ');
+                	$feedback.append($(feedbackLinkElem));
+                }
+                else
+                    $feedback.text(wrongFeedback(2));
             }
 
-	    if (window.top.pebl != null)
-		window.top.pebl.eventAnswered(prompt, $answersText, $(this).text(), correct, true);
-	    gradeTest();
-	    $feedback.slideDown();
-	} else if (quizAttempts[questionNum].length > 1) {
+            if (window.top.pebl != null)
+                window.top.pebl.eventAnswered(prompt, $answersText, $(this).text(), correct, true);
+            gradeTest();
+            $feedback.slideDown();
+        } else if (quizAttempts[questionNum].length > 1) {
             // Ignore repeated attempts
-	}
+        }
     });
 }
 
