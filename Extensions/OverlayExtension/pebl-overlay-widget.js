@@ -627,6 +627,11 @@ function getTagCount(elem, tagArr) {
                 });
             });
             elem.textContent = '(' + counter.size + ')';
+            //Hide tags if they don't have any resources associated with them
+            if (counter.size == 0)
+                $(elem).parent().hide();
+            else
+                $(elem).parent().show();
         });
     }
 }
