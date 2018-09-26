@@ -1,7 +1,3 @@
-$(document).ready(function() {
-
-});
-
 function createLowStakesMultiChoiceQuestion(id, questionNumber, choices, prompt, answer, image, required, attempts, feedbackLink, linkText) {
     var quizToAppendTo = document.getElementById(id);
     var insertPoint = quizToAppendTo.lastElementChild;
