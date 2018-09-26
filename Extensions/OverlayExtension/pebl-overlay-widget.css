@@ -109,6 +109,81 @@ p.discussionQuestionBoxText {
     flex-basis: 100%;
 }
 
+.showCardTagsButton {
+    width: 100%;
+    color: white;
+    background-color: rgb(7, 126, 188);
+    border: none;
+    height: 2em;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+.showCardTagsButton.contracted:after {
+    content: 'Show Tags';
+}
+
+.showCardTagsButton.expanded:after {
+    content: 'Hide Tags';
+}
+
+.cardTagContainer {
+    display: flex;
+    flex-direction: column;
+    transition: all 1s ease;
+    overflow: hidden;
+}
+
+.cardTagContainer.contracted {
+    max-height: 0;
+}
+
+.cardTagContainer.expanded {
+    max-height: 100vh;
+}
+
+.cardTag {
+    color: white;
+    font-family: Helvetica;
+    padding: 5px;
+    border-radius: 5px;
+    margin: 5px;
+    display: inline-block;
+}
+
+.cardTag.dei_assessment,
+.cardTag.targeted_audience {
+    background-color: #80cbc4;
+}
+
+.cardTag.dei_competency,
+.cardTag.approach_type {
+    background-color: #7986cb;
+}
+
+.cardTag.dei_activity,
+.cardTag.response_type {
+    background-color: #4dd0e1;
+}
+
+.cardTag.dei_issue_type,
+.cardTag.format {
+    background-color: #64b5f6;
+}
+
+.cardTag.dei_accountability,
+.cardTag.md_addiction {
+    background-color: #9ccc65;
+}
+
+.cardTag.dei_tool_or_resource {
+    background-color: #66bb6a;
+}
+
+.cardTag.resource {
+    background-color: #ef7747;
+}
+
 .peblSidebar {
     font-family: Helvetica;
     width: 0;

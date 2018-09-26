@@ -46,6 +46,7 @@ $(document).ready(function() {
         console.log('globalreadium');
     }, 10);
 
+    createTags();
     createOverlay();
     createFooter();
     createSidebar();
@@ -292,6 +293,59 @@ function createFooter() {
     document.body.appendChild(footer);
 }
 
+function createTags() {
+    var tags = JSON.parse($('#fake-page').attr('categories'));
+
+    var showCardTagsButton = document.createElement('button');
+    showCardTagsButton.classList.add('showCardTagsButton', 'contracted');
+    showCardTagsButton.addEventListener('click', function() {
+        toggleCardTags();
+    });
+
+    var tagContainer = document.createElement('div');
+    tagContainer.classList.add('cardTagContainer', 'contracted');
+
+    Object.keys(tags).forEach(function(key, index) {
+        if (tags[key].length > 0) {
+            var tagGroup = document.createElement('div');
+            tagGroup.classList.add('cardTagGroup');
+
+            for (var i = 0; i < tags[key].length; i++) {
+                var tag = document.createElement('div');
+                tag.classList.add('cardTag', key);
+                tag.setAttribute('data-bucket', key);
+                tag.setAttribute('data-tag', tags[key][i]);
+                tag.addEventListener('click', function(event) {
+                    var bucket = event.currentTarget.getAttribute('data-bucket');
+                    var tag = event.currentTarget.getAttribute('data-tag');
+
+                    var elem = $('#peblSidebar').find('div[data-bucket="' + bucket + '"]').filter('div[data-tag="' + tag + '"]');
+                    $('.peblSidebarTagList').scrollTop($('.peblSidebarTagList').scrollTop() + (elem.position().top - $('.peblSidebarTagList').position().top) - ($('.peblSidebarTagList').height()/2) + (elem.height()/2)  );
+                    elem.click();
+                });
+
+                var tagText = document.createElement('span');
+                tagText.classList.add('cardTagText');
+                tagText.textContent = tags[key][i];
+
+                tag.appendChild(tagText);
+                tagGroup.appendChild(tag);
+            }
+            tagContainer.appendChild(tagGroup);
+        }
+    });
+    $('.contentContainer').prepend(tagContainer);
+    $('.contentContainer').prepend(showCardTagsButton);
+}
+
+function toggleCardTags() {
+    $('.showCardTagsButton').toggleClass('contracted');
+    $('.showCardTagsButton').toggleClass('expanded');
+
+    $('.cardTagContainer').toggleClass('contracted');
+    $('.cardTagContainer').toggleClass('expanded');
+}
+
 function createSidebar() {
     if ($('#peblSidebar')) {
         $('#peblSidebar').remove();
@@ -386,6 +440,19 @@ function createSidebar() {
 function closeSidebarExtendedFrame() {
     $('.contentContainer').removeClass('contracted');
     $('.peblSidebarExtendedFrame').addClass('contracted');
+    $('.peblSidebarSearchField').val('');
+    resetTagFilter();
+}
+
+function resetTagFilter() {
+    filterTags = [];
+    $('.sidebarTagElement').each(function() {
+        $(this).removeClass('active');
+        var tag = $(this).attr('data-tag');
+        var bucket = $(this).attr('data-bucket');
+        var newFilterTags = filterTags.concat([bucket + "|" + tag]);
+        getTagCount($(this).children('.sidebarTagCount')[0], newFilterTags);
+    });
 }
 
 function createSidebarSearch() {
@@ -442,8 +509,31 @@ function performSidebarSearch(event) {
                     }
                 });
             });
-            console.log(newResult);
-            displayFilteredTOC(newResult);
+            if (Object.keys(newResult).length < 1) {
+                var posts = {};
+                globalPebl.getToc(function(toc) {
+                    Object.keys(toc).forEach(function(section) {
+                        Object.keys(toc[section]).sort(toc_sort).forEach(function(subsection) {
+                            if (toc[section][subsection].tags != null && toc[section].Section != null) {
+                                if (filterTags.length < 1) {
+                                    if (posts[toc[section].Section.prefix] == null)
+                                        posts[toc[section].Section.prefix] = {
+                                            "title": toc[section].Section.title,
+                                            "location": toc[section].Section.location,
+                                            "posts": []
+                                        };
+                                    posts[toc[section].Section.prefix].posts.push({
+                                        "prefix": toc[section][subsection].prefix,
+                                        "post": toc[section][subsection].post
+                                    });
+                                }
+                            }
+                        });
+                    });
+                    displayFilteredTOC(posts);
+                });
+            } else
+                displayFilteredTOC(newResult);
         });
     }
 }
@@ -540,10 +630,10 @@ function filterPosts(event) {
 
 function displayFilteredTOC(posts) {
     $('.peblSidebarExtendedFrame').children(':not(.peblSidebarExtendedFrameCloseButton)').remove();
-    if (Object.keys(posts).length < 1) {
-        closeSidebarExtendedFrame();
-        return;
-    }
+    // if (Object.keys(posts).length < 1) {
+    //     closeSidebarExtendedFrame();
+    //     return;
+    // }
     Object.keys(posts).forEach(function(key) {
         var tocSectionTitle = document.createElement('div');
         tocSectionTitle.classList.add('tocSectionTitle');
