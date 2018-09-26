@@ -100,59 +100,59 @@ function messageHandler(responseBox, thread) {
     for (var i = 0; i < newMessages.length; i++) {
         var message = newMessages[i];
         if ($("#" + message.id).length == 0) {
-        if (window.top.pebl != null)
-            var mine = window.top.pebl.getUserName() == message.name;
-        else
-            var mine = pebl.getUserName() == message.name;
-        var userIcon = document.createElement('i');
-        userIcon.classList.add('fa', 'fa-user');
-        var userIdBox = $('<span class="userId"></span>');
-        userIdBox.text(message.name);
-        var timestampBox = $('<span class="timestamp"></span>');
-        timestampBox.text(new Date(message.timestamp).toLocaleString());
-        var textBox = $('<p class="message"></p>');
-        textBox.text(message.text);
-        var messageContainer = $('<div id="' + message.id  + '" class="' + (mine?"your ":"") + 'response"></div>');
-        messageContainer.append($(userIcon));
-        messageContainer.append(userIdBox);
-        messageContainer.append(timestampBox);
-        messageContainer.append(textBox);
-        var messageReplyButton = document.createElement('a');
-        messageReplyButton.classList.add('messageReplyButton');
-        messageReplyButton.textContent = 'Reply';
-        messageReplyButton.href = '#!';
-        messageReplyButton.addEventListener('click', function(event) {
-            replyDiscussion(event);
-        });
-        var chatReplies = document.createElement('div');
-        chatReplies.classList.add('chatReplies');
-        messageContainer.append($(messageReplyButton));
-        messageContainer.append($(chatReplies));
-        // if (mine) {
-        //     var messageDeleteButtonWrapper = document.createElement('div');
-        //     messageDeleteButtonWrapper.classList.add('messageDeleteButtonWrapper');
+            var mine;
+            if (window.top.pebl != null)
+                mine = window.top.pebl.getUserName() == message.name;
+            else
+                mine = pebl.getUserName() == message.name;
+            var userIcon = document.createElement('i');
+            userIcon.classList.add('fa', 'fa-user');
+            var userIdBox = $('<span class="userId"></span>');
+            userIdBox.text(message.name);
+            var timestampBox = $('<span class="timestamp"></span>');
+            timestampBox.text(new Date(message.timestamp).toLocaleString());
+            var textBox = $('<p class="message"></p>');
+            textBox.text(message.text);
+            var messageContainer = $('<div id="' + message.id  + '" class="' + (mine?"your ":"") + 'response"></div>');
+            messageContainer.append($(userIcon));
+            messageContainer.append(userIdBox);
+            messageContainer.append(timestampBox);
+            messageContainer.append(textBox);
+            var messageReplyButton = document.createElement('a');
+            messageReplyButton.classList.add('messageReplyButton');
+            messageReplyButton.textContent = 'Reply';
+            messageReplyButton.href = '#!';
+            messageReplyButton.addEventListener('click', function(event) {
+                replyDiscussion(event);
+            });
+            var chatReplies = document.createElement('div');
+            chatReplies.classList.add('chatReplies');
+            messageContainer.append($(messageReplyButton));
+            messageContainer.append($(chatReplies));
+            // if (mine) {
+            //     var messageDeleteButtonWrapper = document.createElement('div');
+            //     messageDeleteButtonWrapper.classList.add('messageDeleteButtonWrapper');
 
-        //     var messageDeleteButton = document.createElement('span');
-        //     messageDeleteButton.classList.add('messageDeleteButton');
-        //     messageDeleteButton.innerHTML = '&#215;';
-        //     messageDeleteButton.setAttribute('messageID', message.id);
-        //     messageDeleteButton.setAttribute('thread', thread);
-        //     messageDeleteButton.addEventListener('click', function() {
-        //         window.pebl.removeMessage(this.getAttribute('messageID'), this.getAttribute('thread'));
-        //         $('#' + this.getAttribute('messageID')).remove();
-        //     });
+            //     var messageDeleteButton = document.createElement('span');
+            //     messageDeleteButton.classList.add('messageDeleteButton');
+            //     messageDeleteButton.innerHTML = '&#215;';
+            //     messageDeleteButton.setAttribute('messageID', message.id);
+            //     messageDeleteButton.setAttribute('thread', thread);
+            //     messageDeleteButton.addEventListener('click', function() {
+            //         window.pebl.removeMessage(this.getAttribute('messageID'), this.getAttribute('thread'));
+            //         $('#' + this.getAttribute('messageID')).remove();
+            //     });
 
-        //     messageDeleteButtonWrapper.appendChild(messageDeleteButton);
-        //     messageContainer.append($(messageDeleteButtonWrapper));
-        // }
-        console.log(messageContainer);
-        responseBox.prepend(messageContainer);
-        var thread = 'peblThread://' + message.id;
-        var messageHandle = messageHandler($(chatReplies), thread);
-        if (window.top.pebl != null)
-            window.top.pebl.subscribeToDiscussion(thread, messageHandle);
-        else
-            pebl.subscribeToDiscussion(thread, messageHandle);
+            //     messageDeleteButtonWrapper.appendChild(messageDeleteButton);
+            //     messageContainer.append($(messageDeleteButtonWrapper));
+            // }
+            responseBox.prepend(messageContainer);
+            var thread = 'peblThread://' + message.id;
+            var messageHandle = messageHandler($(chatReplies), thread);
+            if (window.top.pebl != null)
+                window.top.pebl.subscribeToDiscussion(thread, messageHandle);
+            else
+                pebl.subscribeToDiscussion(thread, messageHandle);
         }
     }
     };
