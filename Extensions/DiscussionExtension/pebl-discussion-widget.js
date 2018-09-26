@@ -179,7 +179,6 @@ function createThread(thread, element, moreInput) {
         window.top.pebl.postMessage(message);
     else
         pebl.postMessage(message);
-    localStorage.setItem('peblThread-' + thread, 'true');
     if (!moreInput)
         chatInputBox.slideUp(400,
                  function () {
@@ -210,7 +209,6 @@ function createSubThread(thread, prompt, textarea, responseBox) {
             window.top.pebl.postMessage(message);
         else
             pebl.postMessage(message);
-        localStorage.setItem('peblThread-' + thread, 'true');
         textarea.val("");
     }
 }
