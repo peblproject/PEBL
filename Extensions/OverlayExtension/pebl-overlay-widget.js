@@ -297,7 +297,7 @@ function createTags() {
     var tags = JSON.parse($('#fake-page').attr('categories'));
 
     var showCardTagsButton = document.createElement('button');
-    showCardTagsButton.classList.add('showCardTagsButton', 'contracted');
+    showCardTagsButton.classList.add('showCardTagsButton', 'contracted', 'hidden');
     showCardTagsButton.addEventListener('click', function() {
         toggleCardTags();
     });
@@ -336,6 +336,9 @@ function createTags() {
     });
     $('.contentContainer').prepend(tagContainer);
     $('.contentContainer').prepend(showCardTagsButton);
+    if ($('.cardTagContainer').children().length > 0) {
+        $('.showCardTagsButton').removeClass('hidden');
+    }
 }
 
 function toggleCardTags() {

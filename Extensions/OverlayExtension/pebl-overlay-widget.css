@@ -119,6 +119,10 @@ p.discussionQuestionBoxText {
     font-size: 1em;
 }
 
+.showCardTagsButton.hidden {
+    display: none;
+}
+
 .showCardTagsButton.contracted:after {
     content: 'Show Tags';
 }
