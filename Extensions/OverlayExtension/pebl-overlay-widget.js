@@ -517,20 +517,16 @@ function performSidebarSearch(event) {
                 globalPebl.getToc(function(toc) {
                     Object.keys(toc).forEach(function(section) {
                         Object.keys(toc[section]).sort(toc_sort).forEach(function(subsection) {
-                            if (toc[section][subsection].tags != null && toc[section].Section != null) {
-                                if (filterTags.length < 1) {
-                                    if (posts[toc[section].Section.prefix] == null)
-                                        posts[toc[section].Section.prefix] = {
-                                            "title": toc[section].Section.title,
-                                            "location": toc[section].Section.location,
-                                            "posts": []
-                                        };
-                                    posts[toc[section].Section.prefix].posts.push({
-                                        "prefix": toc[section][subsection].prefix,
-                                        "post": toc[section][subsection].post
-                                    });
-                                }
-                            }
+                            if (posts[toc[section].Section.prefix] == null)
+                                posts[toc[section].Section.prefix] = {
+                                    "title": toc[section].Section.title,
+                                    "location": toc[section].Section.location,
+                                    "posts": []
+                                };
+                            posts[toc[section].Section.prefix].posts.push({
+                                "prefix": toc[section][subsection].prefix,
+                                "post": toc[section][subsection].post
+                            });
                         });
                     });
                     displayFilteredTOC(posts);
