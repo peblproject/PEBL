@@ -190,13 +190,14 @@ p.discussionQuestionBoxText {
 
 .peblSidebar {
     font-family: Helvetica;
-    width: 0;
+    max-width: 0;
     max-height: calc(68vh - 60px);
     background: white;
     transition: width 1s;
     margin-left: 10px;
     display: flex;
     flex-direction: column;
+    transition: all 1s ease;
 }
 
 .peblSidebar.expanded {
@@ -205,10 +206,38 @@ p.discussionQuestionBoxText {
 }
 
 .peblSidebarExpandButton {
-    width: 50%;
-    height: 100%;
-    background: blue;
-    display: none;
+    width: 2em;
+    height: calc(68vh - 60px);
+    background: rgb(7, 126, 188);
+    position: relative;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+.peblSidebarExpandButton.expanded:after {
+    content: '';
+    position: absolute;
+    left: 0.7em;
+    top: 50%;
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 10px solid white;
+    clear: both;
+}
+
+.peblSidebarExpandButton.contracted:after {
+    content: '';
+    position: absolute;
+    left: 0.7em;
+    top: 50%;
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right: 10px solid white;
+    clear: both;
 }
 
 .peblSidebarExtendedFrame {

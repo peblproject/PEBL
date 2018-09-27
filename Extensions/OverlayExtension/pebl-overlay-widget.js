@@ -368,7 +368,7 @@ function createSidebar() {
 
     var sidebar = document.createElement('div');
     sidebar.id = 'peblSidebar';
-    sidebar.classList.add('peblSidebar', 'expanded');
+    sidebar.classList.add('peblSidebar');
 
     var sidebarTagList = document.createElement('div');
     sidebarTagList.classList.add('peblSidebarTagList');
@@ -429,9 +429,11 @@ function createSidebar() {
     sidebar.appendChild(sidebarTagList);
 
     var sidebarExpandButton = document.createElement('div');
-    sidebarExpandButton.classList.add('peblSidebarExpandButton');
+    sidebarExpandButton.classList.add('peblSidebarExpandButton', 'contracted');
     sidebarExpandButton.addEventListener('click', function() {
         $('#peblSidebar').toggleClass('expanded');
+        $(this).toggleClass('expanded');
+        $(this).toggleClass('contracted');
     });
 
     var sidebarExtendedFrame = document.createElement('div');
@@ -443,9 +445,9 @@ function createSidebar() {
 
     sidebarExtendedFrame.appendChild(sidebarExtendedFrameCloseButton);
 
-    $('.contentContainerWrapper').prepend(sidebarExpandButton);
-    $('.contentContainerWrapper').prepend(sidebarExtendedFrame);
-    $('.contentContainerWrapper').prepend(sidebar);
+    $('.contentContainerWrapper').append(sidebarExtendedFrame);
+    $('.contentContainerWrapper').append(sidebarExpandButton);
+    $('.contentContainerWrapper').append(sidebar);
 }
 
 function closeSidebarExtendedFrame() {
