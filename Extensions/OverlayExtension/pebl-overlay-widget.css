@@ -212,6 +212,7 @@ p.discussionQuestionBoxText {
     position: relative;
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
+    flex-shrink: 0;
 }
 
 .peblSidebarExpandButton.expanded:after {
