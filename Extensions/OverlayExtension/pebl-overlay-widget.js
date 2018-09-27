@@ -347,6 +347,14 @@ function toggleCardTags() {
 
     $('.cardTagContainer').toggleClass('contracted');
     $('.cardTagContainer').toggleClass('expanded');
+
+    //iOS strikes again...
+    setTimeout(function() {
+        $('.contentContainer').attr('style', 'overflow: hidden !important');
+        setTimeout(function() {
+            $('.contentContainer').attr('style', 'overflow: auto !important');
+        }, 10);
+    }, 1000)
 }
 
 function createSidebar() {
@@ -494,29 +502,13 @@ function performSidebarSearch(event) {
         }
 
         var fuse = new Fuse(searchableTOC, options);
-        var result = fuse.search(input);
-        var newResult = {};
-        globalPebl.getToc(function(toc) {
-            Object.keys(toc).forEach(function(section) {
-                Object.keys(toc[section]).sort(toc_sort).forEach(function(subsection) {
-                    for (var i = 0; i < result.length; i++) {
-                        if (result[i].location === toc[section][subsection].location) {
-                            if (newResult[toc[section].Section.prefix] == null)
-                                newResult[toc[section].Section.prefix] = {
-                                    "title": toc[section].Section.title,
-                                    "location": toc[section].Section.location,
-                                    "posts": []
-                                };
-                            newResult[toc[section].Section.prefix].posts.push(result[i]);
-                        }
-                    }
-                });
-            });
-            if (Object.keys(newResult).length < 1) {
-                var posts = {};
-                globalPebl.getToc(function(toc) {
-                    Object.keys(toc).forEach(function(section) {
-                        Object.keys(toc[section]).sort(toc_sort).forEach(function(subsection) {
+        //No input, show everything
+        if (input.length < 1) {
+            var posts = {};
+            globalPebl.getToc(function(toc) {
+                Object.keys(toc).forEach(function(section) {
+                    Object.keys(toc[section]).sort(toc_sort).forEach(function(subsection) {
+                        if (toc[section][subsection].tags != null && toc[section].Section != null) {
                             if (posts[toc[section].Section.prefix] == null)
                                 posts[toc[section].Section.prefix] = {
                                     "title": toc[section].Section.title,
@@ -527,13 +519,35 @@ function performSidebarSearch(event) {
                                 "prefix": toc[section][subsection].prefix,
                                 "post": toc[section][subsection].post
                             });
-                        });
+                        }
                     });
-                    displayFilteredTOC(posts);
                 });
-            } else
+                displayFilteredTOC(posts);
+            });
+        } else {
+            var result = fuse.search(input);
+            var newResult = {};
+            globalPebl.getToc(function(toc) {
+                Object.keys(toc).forEach(function(section) {
+                    Object.keys(toc[section]).sort(toc_sort).forEach(function(subsection) {
+                        for (var i = 0; i < result.length; i++) {
+                            if (result[i].location === toc[section][subsection].location) {
+                                if (toc[section][subsection].tags != null && toc[section].Section != null) {
+                                    if (newResult[toc[section].Section.prefix] == null)
+                                        newResult[toc[section].Section.prefix] = {
+                                            "title": toc[section].Section.title,
+                                            "location": toc[section].Section.location,
+                                            "posts": []
+                                        };
+                                    newResult[toc[section].Section.prefix].posts.push(result[i]);
+                                }
+                            }
+                        }
+                    });
+                });
                 displayFilteredTOC(newResult);
-        });
+            });
+        }
     }
 }
 
