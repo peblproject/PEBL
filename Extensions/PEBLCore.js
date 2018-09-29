@@ -38142,7 +38142,9 @@ PEBL = stjs.extend(PEBL, null, [], function(constructor, prototype) {
 
 window.PEBL = PEBL;
 
-PEBL.start(window.PEBLTeacher,
-	   function (peblInstance) {
-	       window.pebl = peblInstance
-	   });
+$(document).ready(function () {
+    PEBL.start(window.PEBLTeacher,
+	       function (peblInstance) {
+		   window.pebl = peblInstance
+	       });
+})
