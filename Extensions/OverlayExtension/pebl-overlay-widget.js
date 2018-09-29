@@ -521,6 +521,26 @@ function performSidebarSearch(event) {
                                 "prefix": toc[section][subsection].prefix,
                                 "post": toc[section][subsection].post
                             });
+                            if (toc[section][subsection].skip == undefined) {
+                                Object.keys(toc[section][subsection].pages).forEach(function(page) {
+                                    if (posts[toc[section].Section.prefix].subPages == null) 
+                                        posts[toc[section].Section.prefix].subPages = {
+                                            "title": toc[section][subsection].title,
+                                            "location": toc[section][subsection].location,
+                                            "posts": []
+                                        }
+                                    if (posts[toc[section].Section.prefix].posts.length < 1)
+                                        posts[toc[section].Section.prefix].posts.push({
+                                            "prefix": toc[section][subsection].prefix,
+                                            "post": toc[section][subsection].post
+                                        });
+
+                                    posts[toc[section].Section.prefix].subPages.posts.push({
+                                        "prefix": toc[section][subsection].pages[page].prefix,
+                                        "post": toc[section][subsection].pages[page].post
+                                    });
+                                });
+                            }
                         }
                     });
                 });
@@ -533,15 +553,41 @@ function performSidebarSearch(event) {
                 Object.keys(toc).forEach(function(section) {
                     Object.keys(toc[section]).sort(toc_sort).forEach(function(subsection) {
                         for (var i = 0; i < result.length; i++) {
-                            if (result[i].location === toc[section][subsection].location) {
-                                if (toc[section][subsection].tags != null && toc[section].Section != null) {
-                                    if (newResult[toc[section].Section.prefix] == null)
-                                        newResult[toc[section].Section.prefix] = {
-                                            "title": toc[section].Section.title,
-                                            "location": toc[section].Section.location,
-                                            "posts": []
-                                        };
-                                    newResult[toc[section].Section.prefix].posts.push(result[i]);
+                            //Has subPages
+                            if (result[i].parent) {
+                                if (result[i].parent.location === toc[section][subsection].location) {
+                                    if (toc[section][subsection].tags != null && toc[section].Section != null) {
+                                        if (newResult[toc[section].Section.prefix] == null)
+                                            newResult[toc[section].Section.prefix] = {
+                                                "title": toc[section].Section.title,
+                                                "location": toc[section].Section.location,
+                                                "posts": []
+                                            };
+                                        if (newResult[toc[section].Section.prefix].subPages == null) 
+                                            newResult[toc[section].Section.prefix].subPages = {
+                                                "title": toc[section][subsection].title,
+                                                "location": toc[section][subsection].location,
+                                                "posts": []
+                                            }
+                                        if (newResult[toc[section].Section.prefix].posts.length < 1)
+                                            newResult[toc[section].Section.prefix].posts.push({
+                                                "prefix": toc[section][subsection].prefix,
+                                                "post": toc[section][subsection].post
+                                            });
+                                        newResult[toc[section].Section.prefix].subPages.posts.push(result[i]);
+                                    }
+                                }
+                            } else {
+                                if (result[i].location === toc[section][subsection].location) {
+                                    if (toc[section][subsection].tags != null && toc[section].Section != null) {
+                                        if (newResult[toc[section].Section.prefix] == null)
+                                            newResult[toc[section].Section.prefix] = {
+                                                "title": toc[section].Section.title,
+                                                "location": toc[section].Section.location,
+                                                "posts": []
+                                            };
+                                        newResult[toc[section].Section.prefix].posts.push(result[i]);
+                                    }
                                 }
                             }
                         }
@@ -566,6 +612,25 @@ function generateSearchableTOC() {
                         "prefix": toc[key][key2].prefix,
                         "post": toc[key][key2].post
                     });
+                //Has subpages
+                if (toc[key][key2].skip == undefined && toc[key][key2].pages) {
+                    Object.keys(toc[key][key2].pages).forEach(function(page) {
+                        result.push({
+                            "title": toc[key][key2].pages[page].post.title,
+                            "content": toc[key][key2].pages[page].post.content,
+                            "location": toc[key][key2].pages[page].location,
+                            "prefix": toc[key][key2].pages[page].prefix,
+                            "post": toc[key][key2].pages[page].post,
+                            "parent": {
+                                "title": toc[key][key2].post.title,
+                                "content": toc[key][key2].post.content,
+                                "location": toc[key][key2].location,
+                                "prefix": toc[key][key2].prefix,
+                                "post": toc[key][key2].post
+                            }
+                        });
+                    });
+                }
             });
         });
         searchableTOC = result;
@@ -597,6 +662,7 @@ function filterPosts(event) {
         Object.keys(toc).forEach(function(section) {
             Object.keys(toc[section]).sort(toc_sort).forEach(function(subsection) {
                 if (toc[section][subsection].tags != null && toc[section].Section != null) {
+                    //Show all of them
                     if (filterTags.length < 1) {
                         if (posts[toc[section].Section.prefix] == null)
                             posts[toc[section].Section.prefix] = {
@@ -608,25 +674,87 @@ function filterPosts(event) {
                             "prefix": toc[section][subsection].prefix,
                             "post": toc[section][subsection].post
                         });
-                    }
-                    for (var i = 0; i < filterTags.length; i++) {
-                        var thing = parseFilterTag(filterTags[i]);
-                        var bucket = thing.bucket;
-                        var tag = thing.tag;
-                        if (toc[section][subsection].tags[bucket] != null) {
-                            if (toc[section][subsection].tags[bucket].indexOf(tag) == -1)
-                                break;
-                            else if (i == filterTags.length - 1) {
-                                if (posts[toc[section].Section.prefix] == null)
-                                    posts[toc[section].Section.prefix] = {
-                                        "title": toc[section].Section.title,
-                                        "location": toc[section].Section.location,
+                        if (toc[section][subsection].skip == undefined) {
+                            Object.keys(toc[section][subsection].pages).forEach(function(page) {
+                                if (posts[toc[section].Section.prefix].subPages == null) 
+                                    posts[toc[section].Section.prefix].subPages = {
+                                        "title": toc[section][subsection].title,
+                                        "location": toc[section][subsection].location,
                                         "posts": []
-                                    };
-                                posts[toc[section].Section.prefix].posts.push({
-                                    "prefix": toc[section][subsection].prefix,
-                                    "post": toc[section][subsection].post
+                                    }
+                                if (posts[toc[section].Section.prefix].posts.length < 1)
+                                    posts[toc[section].Section.prefix].posts.push({
+                                        "prefix": toc[section][subsection].prefix,
+                                        "post": toc[section][subsection].post
+                                    });
+
+                                posts[toc[section].Section.prefix].subPages.posts.push({
+                                    "prefix": toc[section][subsection].pages[page].prefix,
+                                    "post": toc[section][subsection].pages[page].post
                                 });
+                            });
+                        }
+                    } else {
+                        if (toc[section][subsection].skip == undefined && toc[section][subsection].pages) {
+                            //Has subPages
+                            Object.keys(toc[section][subsection].pages).forEach(function(page) {
+                                for (var i = 0; i < filterTags.length; i++) {
+                                    var thing = parseFilterTag(filterTags[i]);
+                                    var bucket = thing.bucket;
+                                    var tag = thing.tag;
+
+                                    if (toc[section][subsection].pages[page].tags[bucket].indexOf(tag) == -1)
+                                            break;
+                                    else if (i == filterTags.length - 1) {
+                                        if (posts[toc[section].Section.prefix] == null)
+                                            posts[toc[section].Section.prefix] = {
+                                                "title": toc[section].Section.title,
+                                                "location": toc[section].Section.location,
+                                                "posts": []
+                                            };
+                                        if (posts[toc[section].Section.prefix].subPages == null) 
+                                            posts[toc[section].Section.prefix].subPages = {
+                                                "title": toc[section][subsection].title,
+                                                "location": toc[section][subsection].location,
+                                                "posts": []
+                                            }
+                                        if (posts[toc[section].Section.prefix].posts.length < 1)
+                                            posts[toc[section].Section.prefix].posts.push({
+                                                "prefix": toc[section][subsection].prefix,
+                                                "post": toc[section][subsection].post
+                                            });
+                                        posts[toc[section].Section.prefix].subPages.posts.push({
+                                            "prefix": toc[section][subsection].pages[page].prefix,
+                                            "post": toc[section][subsection].pages[page].post
+                                        });
+                                    }
+                                }
+                            });
+                        } else {
+                            for (var i = 0; i < filterTags.length; i++) {
+                                var thing = parseFilterTag(filterTags[i]);
+                                var bucket = thing.bucket;
+                                var tag = thing.tag;
+
+                                //Just a subsection
+                                if (toc[section][subsection].skip != undefined) {
+                                    if (toc[section][subsection].tags[bucket] != null) {
+                                        if (toc[section][subsection].tags[bucket].indexOf(tag) == -1)
+                                            break;
+                                        else if (i == filterTags.length - 1) {
+                                            if (posts[toc[section].Section.prefix] == null)
+                                                posts[toc[section].Section.prefix] = {
+                                                    "title": toc[section].Section.title,
+                                                    "location": toc[section].Section.location,
+                                                    "posts": []
+                                                };
+                                            posts[toc[section].Section.prefix].posts.push({
+                                                "prefix": toc[section][subsection].prefix,
+                                                "post": toc[section][subsection].post
+                                            });
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -634,6 +762,7 @@ function filterPosts(event) {
             });
         });
         displayFilteredTOC(posts);
+        //Update the tag counts
         $('.sidebarTagElement').each(function() {
             var tag = $(this).attr('data-tag');
             var bucket = $(this).attr('data-bucket');
@@ -645,10 +774,6 @@ function filterPosts(event) {
 
 function displayFilteredTOC(posts) {
     $('.peblSidebarExtendedFrame').children(':not(.peblSidebarExtendedFrameCloseButton)').remove();
-    // if (Object.keys(posts).length < 1) {
-    //     closeSidebarExtendedFrame();
-    //     return;
-    // }
     Object.keys(posts).forEach(function(key) {
         var tocSectionTitle = document.createElement('div');
         tocSectionTitle.classList.add('tocSectionTitle');
@@ -704,6 +829,37 @@ function displayFilteredTOC(posts) {
             tocSubsectionTitle.appendChild(tocSubsectionTitleTextWrapper);
 
             $('.peblSidebarExtendedFrame')[0].appendChild(tocSubsectionTitle);
+            //Display the subPages
+            if (posts[key].subPages != null && posts[key].posts[i].post.title === posts[key].subPages.title) {
+                for (var j = 0; j < posts[key].subPages.posts.length; j++) {
+                    var tocPage = document.createElement('div');
+                    tocPage.classList.add('tocPage', 'header');
+
+                    var tocPagePrefixWrapper = document.createElement('div');
+                    tocPagePrefixWrapper.classList.add('tocPagePrefixWrapper');
+
+                    var tocPagePrefix = document.createElement('a');
+                    tocPagePrefix.classList.add('tocPagePrefix');
+                    tocPagePrefix.href = posts[key].subPages.posts[j].post.filename;
+                    tocPagePrefix.textContent = posts[key].subPages.posts[j].prefix;
+
+                    var tocPageTextWrapper = document.createElement('div');
+                    tocPageTextWrapper.classList.add('tocPageTextWrapperWide');
+
+                    var tocPageText = document.createElement('a');
+                    tocPageText.classList.add('tocPageText');
+                    tocPageText.href = posts[key].subPages.posts[j].post.filename;
+                    tocPageText.textContent = posts[key].subPages.posts[j].post.title;
+
+                    tocPagePrefixWrapper.appendChild(tocPagePrefix);
+                    tocPageTextWrapper.appendChild(tocPageText);
+
+                    tocPage.appendChild(tocPagePrefixWrapper);
+                    tocPage.appendChild(tocPageTextWrapper);
+
+                    $('.peblSidebarExtendedFrame')[0].appendChild(tocPage);
+                }
+            }
         }
     });
 
@@ -717,15 +873,35 @@ function getTagCount(elem, tagArr) {
         globalPebl.getToc(function(toc) {
             Object.keys(toc).forEach(function(section) {
                 Object.keys(toc[section]).forEach(function(subsection) {
-                    for (var i = 0; i < tagArr.length; i++) {
-                        var thing = parseFilterTag(tagArr[i]);
-                        var bucket = thing.bucket;
-                        var tag = thing.tag;
-                        if (toc[section][subsection].tags != null && toc[section][subsection].tags[bucket] != null) {
-                            if (toc[section][subsection].tags[bucket].indexOf(tag) == -1)
-                                break;
-                            else if (i == tagArr.length - 1) {
-                                counter.add(toc[section][subsection].location);
+                    if (toc[section][subsection].skip == undefined && toc[section][subsection].pages) {
+                        //Has subPages
+                        Object.keys(toc[section][subsection].pages).forEach(function(page) {
+                            for (var i = 0; i < tagArr.length; i++) {
+                                var thing = parseFilterTag(tagArr[i]);
+                                var bucket = thing.bucket;
+                                var tag = thing.tag;
+
+                                if (toc[section][subsection].pages[page].tags[bucket].indexOf(tag) == -1)
+                                        break;
+                                else if (i == tagArr.length - 1) {
+                                    counter.add(toc[section][subsection].pages[page].location);
+                                }
+                            }
+                        });
+                    } else {
+                        for (var i = 0; i < tagArr.length; i++) {
+                            var thing = parseFilterTag(tagArr[i]);
+                            var bucket = thing.bucket;
+                            var tag = thing.tag;
+                            //Just a subsection
+                            if (toc[section][subsection].skip != undefined) {
+                                if (toc[section][subsection].tags != null && toc[section][subsection].tags[bucket] != null) {
+                                    if (toc[section][subsection].tags[bucket].indexOf(tag) == -1)
+                                        break;
+                                    else if (i == tagArr.length - 1) {
+                                        counter.add(toc[section][subsection].location);
+                                    }
+                                }
                             }
                         }
                     }
