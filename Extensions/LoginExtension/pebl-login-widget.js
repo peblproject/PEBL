@@ -1,8 +1,7 @@
 
-
 $(document).ready(function() {
     if (window.ReadiumSDK == null && window.top.ReadiumSDK == null) {
-	PEBL.start(false, function(readypebl) {
+    	PEBL.start(false, function(readypebl) {
 	    pebl = readypebl;
 	    if (!window.PEBLbuttonLogin)
 		pebl.login(function() {
@@ -40,7 +39,7 @@ window.Lightbox = {
     	$('#lrsURLInput').val(settingsObject.lrsURL);
     	$('#lrsPasswordInput').val(settingsObject.lrsPassword);
     	$('#lrsTokenInput').val(settingsObject.lrsToken);
-      $('#lrsUsernameInput').val(settingsObject.lrsUsername);
+	$('#lrsUsernameInput').val(settingsObject.lrsUsername);
     },
 
     closeLRSSettings : function() {
@@ -52,13 +51,13 @@ window.Lightbox = {
     	var lrsURL = $('#lrsURLInput').val();
     	var lrsPassword = $('#lrsPasswordInput').val();
     	var lrsToken = $('#lrsTokenInput').val();
-      var lrsUsername = $('#lrsUsernameInput').val();
+	var lrsUsername = $('#lrsUsernameInput').val();
 
     	var settingsObject = {
-    		"lrsURL": lrsURL,
-    		"lrsPassword": lrsPassword,
-    		"lrsToken": lrsToken,
-        "lrsUsername": lrsUsername
+    	    "lrsURL": lrsURL,
+    	    "lrsPassword": lrsPassword,
+    	    "lrsToken": lrsToken,
+            "lrsUsername": lrsUsername
     	};
     	localStorage.setItem("LRSAuth", JSON.stringify(settingsObject));
     },
@@ -71,13 +70,13 @@ window.Lightbox = {
     	var currentSettings = window.Lightbox.getLRSSettings();
 
     	var settingsObject = {
-    		"lrsURL": lrsURL,
-    		"lrsPassword": lrsPassword,
-    		"lrsToken": lrsToken,
-        "lrsUsername": lrsUsername
+    	    "lrsURL": lrsURL,
+    	    "lrsPassword": lrsPassword,
+    	    "lrsToken": lrsToken,
+            "lrsUsername": lrsUsername
     	};
     	if (reset || currentSettings == null)
-    		localStorage.setItem("LRSAuth", JSON.stringify(settingsObject));
+    	    localStorage.setItem("LRSAuth", JSON.stringify(settingsObject));
     },
 
     getLRSSettings : function() {
@@ -94,9 +93,9 @@ window.Lightbox = {
     	var settingsObject = window.Lightbox.getLRSSettings();
     	var lrsPassword;
     	if (settingsObject.lrsPassword != null && settingsObject.lrsPassword.length > 0)
-    		lrsPassword = settingsObject.lrsPassword;
+    	    lrsPassword = settingsObject.lrsPassword;
     	else
-    		lrsPassword = null;
+    	    lrsPassword = null;
     	callback(lrsPassword);
     },
 
@@ -104,20 +103,20 @@ window.Lightbox = {
     	var settingsObject = window.Lightbox.getLRSSettings();
     	var lrsToken;
     	if (settingsObject.lrsToken != null && settingsObject.lrsToken.length > 0)
-    		lrsToken = settingsObject.lrsToken;
+    	    lrsToken = settingsObject.lrsToken;
     	else
-    		lrsToken = null;
+    	    lrsToken = null;
     	callback(lrsToken);
     },
 
     getLRSUsername : function(callback) {
-      var settingsObject = window.Lightbox.getLRSSettings();
-      var lrsUsername;
-      if (settingsObject.lrsUsername != null && settingsObject.lrsUsername.length > 0)
-        lrsUsername = settingsObject.lrsUsername;
-      else
-        lrsUsername = null;
-      callback(lrsUsername);
+	var settingsObject = window.Lightbox.getLRSSettings();
+	var lrsUsername;
+	if (settingsObject.lrsUsername != null && settingsObject.lrsUsername.length > 0)
+            lrsUsername = settingsObject.lrsUsername;
+	else
+            lrsUsername = null;
+	callback(lrsUsername);
     },
 
     createLoginForm : function () {
@@ -161,17 +160,178 @@ window.Lightbox = {
 	lightBoxContentSecondary.appendChild(lrsDefaultButton[0]);
     },
 
-    createLoginButton : function (element) {
-	var loginForm = $('<form action="https://people.extension.org/opie" method="GET">' +
- 	'<input type="hidden" name="openid.identity" value="http://specs.openid.net/auth/2.0/identifier_select"/>' +
-	'<input type="hidden" name="openid.claimed_id" value="http://specs.openid.net/auth/2.0/identifier_select"/>' + 
-	'<input type="hidden" name="openid.mode" value="checkid_setup"/>' +
-	'<input type="hidden" name="openid.ns" value="http://specs.openid.net/auth/2.0" />' +
-	'<input type="hidden" name="openid.return_to" id="loginReturn" value="" />' +
-	'<input id="openIDLoginButton" type="submit" value="Login" onclick="document.getElementById(\'loginReturn\').value = window.top.location.toString();" />' +
-      '</form>');
+    openIDLogin : function () {
 
-	document.getElementById(element).appendChild(loginForm[0]);
+	var loginButton = $('<input type="submit" value="Login" />');
+	
+	var loginFrame = $('#loginIFrame');
+	if (loginFrame.length == 0) {
+	    loginFrame = $('<iframe id="loginIFrame" style="width:100%;margin-bottom:20px;margin-top:30px;height:550px"></iframe>');
+
+	    lf = loginFrame;
+
+	    loginFrame.off();
+	    loginFrame.on("load", function (x) {
+		var src = window.top.location.protocol + "//" + window.top.location.host + ((window.top.location.port=="") ? "" : ":" + window.top.location.port);
+		var iFrameLocation = loginFrame[0].contentWindow.location;
+
+		if ((iFrameLocation.protocol + "//" + iFrameLocation.host + ((iFrameLocation.port=="") ? "" : ":" + iFrameLocation.port)) == src) {		    
+		    var query = iFrameLocation.toString();
+
+		    $(document.body).append(loginFrame);
+		    
+		    window.Lightbox.close($(document.getElementById('lightBoxContent')));		    
+		    
+		    if (query.indexOf("?") != -1) {
+			var keyValues = query.substring(query.indexOf("?")+1).split("&");			   
+			
+			for (var i = 0; i < keyValues.length; i++) {
+			    var kv = keyValues[i].split("=");
+			    if (kv[0] == "openid.identity") {
+				username = decodeURIComponent(kv[1]);
+			    }
+			}	   
+		    }
+		    pebl.loginAsUser(username, "", function (x) {
+
+		    });
+		}
+	    });
+	    
+	    $(document.body).append(loginFrame);
+	} else {
+	    loginFrame.src = "";
+	}
+
+	var lightBoxContent = $(document.getElementById('lightBoxContent'));
+	if (lightBoxContent.length == 0) {
+	    window.Lightbox.create("login", false);
+	    lightBoxContent = $(document.getElementById('lightBoxContent'));
+	}
+	
+	var loginStart = $("#loginRefresh");
+	if (loginStart.length == 0)
+	    loginStart = $('<input id="loginRefresh" type="button" style="margin-top:20px" value="Return To Login Screen" />');
+	loginStart.off();
+	loginStart.on("click", function () {
+	    Lightbox.openIDLogin();
+	});
+
+	lightBoxContent.append(loginStart);	
+	lightBoxContent.append(loginFrame);
+	var loginForm = $('#loginFormSubmit');
+	if (loginForm.length == 0) {
+	    loginForm = $('<form id="loginFormSubmit" action="https://people.extension.org/opie" method="GET">' +
+ 			  '<input type="hidden" name="openid.identity" value="http://specs.openid.net/auth/2.0/identifier_select"/>' +
+			  '<input type="hidden" name="openid.claimed_id" value="http://specs.openid.net/auth/2.0/identifier_select"/>' +  
+			  '<input type="hidden" name="openid.mode" value="checkid_setup"/>' +
+			  '<input type="hidden" name="openid.ns" value="http://specs.openid.net/auth/2.0" />' +
+			  '<input type="hidden" name="openid.return_to" id="returnValue" value="" />' +
+			  '</form>');
+	    
+	    $(loginFrame[0].contentDocument.body).append(loginForm);
+	    loginFrame[0].contentDocument.getElementById("returnValue").value = window.top.location.protocol + "//" + window.top.location.host + ((window.top.location.port=="") ? "" : ":" + window.top.location.port);
+	}
+	
+	loginFrame[0].contentDocument.getElementById("loginFormSubmit").submit();	   
+    },
+    
+    createLoginButton : function (element) {
+	var loginButton = $('<input type="submit" value="Login" />');
+	
+	var loginFrame = $('#loginIFrame');
+	var loginFunction;
+	var logoutFunction;
+	if (loginFrame.length == 0) {
+	    loginFrame = $('<iframe id="loginIFrame" style="width:100%;margin-bottom:20px;margin-top:30px;height:550px"></iframe>');
+
+	    lf = loginFrame;	   
+	    
+	    $(document.body).append(loginFrame);
+	} else {
+	    loginFrame.src = "";
+	}
+
+	loginFrame.off();
+	loginFrame.on("load", function (x) {
+	    var src = window.top.location.protocol + "//" + window.top.location.host + ((window.top.location.port=="") ? "" : ":" + window.top.location.port);
+	    var iFrameLocation = loginFrame[0].contentWindow.location;
+
+	    if ((iFrameLocation.protocol + "//" + iFrameLocation.host + ((iFrameLocation.port=="") ? "" : ":" + iFrameLocation.port)) == src) {		    
+		var query = iFrameLocation.toString();
+
+		$(document.body).append(loginFrame);
+		
+		window.Lightbox.close($(document.getElementById('lightBoxContent')));		    
+		
+		if (query.indexOf("?") != -1) {
+		    var keyValues = query.substring(query.indexOf("?")+1).split("&");			   
+		    
+		    for (var i = 0; i < keyValues.length; i++) {
+			var kv = keyValues[i].split("=");
+			if (kv[0] == "openid.identity") {
+			    username = decodeURIComponent(kv[1]);
+			}
+		    }	   
+		}
+		pebl.loginAsUser(username, "", logoutFunction);
+	    }
+	});
+
+	logoutFunction = function () {
+	    loginButton.off();
+	    loginButton.val("logout");
+	    loginButton.on("click", function () {
+		loginButton.val("login");
+		loginButton.off();
+		loginButton.on("click", loginFunction);
+		pebl.logout();
+	    });
+	}
+	
+	loginFunction = function (){
+	    var lightBoxContent = $(document.getElementById('lightBoxContent'));
+	    if (lightBoxContent.length == 0) {
+		window.Lightbox.create("login", false);
+		lightBoxContent = $(document.getElementById('lightBoxContent'));
+	    }
+	    var loginStart = $('#loginRefresh');
+	    if (loginStart.length == 0)
+		loginStart = $('<input id="loginRefresh" type="button" style="margin-top:20px" value="Return To Login Screen" />');
+	    loginStart.off();
+	    loginStart.on("click", function () {
+		Lightbox.openIDLogin();
+	    });
+
+	    lightBoxContent.append(loginStart);
+	    lightBoxContent.append(loginFrame);
+	    var loginForm = $('#loginFormSubmit');
+	    if (loginForm.length == 0) {
+		loginForm = $('<form id="loginFormSubmit" action="https://people.extension.org/opie" method="GET">' +
+ 			      '<input type="hidden" name="openid.identity" value="http://specs.openid.net/auth/2.0/identifier_select"/>' +
+			      '<input type="hidden" name="openid.claimed_id" value="http://specs.openid.net/auth/2.0/identifier_select"/>' +  
+			      '<input type="hidden" name="openid.mode" value="checkid_setup"/>' +
+			      '<input type="hidden" name="openid.ns" value="http://specs.openid.net/auth/2.0" />' +
+			      '<input type="hidden" name="openid.return_to" id="returnValue" value="" />' +
+			      '</form>');
+		
+		$(loginFrame[0].contentDocument.body).append(loginForm);
+		loginFrame[0].contentDocument.getElementById("returnValue").value = window.top.location.protocol + "//" + window.top.location.host + ((window.top.location.port=="") ? "" : ":" + window.top.location.port);
+	    }
+	    
+	    loginFrame[0].contentDocument.getElementById("loginFormSubmit").submit();
+	};
+
+	loginButton.off();
+	if (window.pebl && !pebl.userManager.loggedIn()) {	
+	    loginButton.on("click", loginFunction);
+	    
+	    $('#' + element).append(loginButton);
+	} else {
+	    logoutFunction()
+	    
+	    $('#' + element).append(loginButton);
+	}
     },
 
     createLoginFormWithFields : function () {
@@ -192,9 +352,9 @@ window.Lightbox = {
     
     create : function (lightBoxType, allowClickOut) {
 	var lightBox,
-        lightBoxContent,
-        lightBoxContentSecondary,
-        dimOverlay;
+            lightBoxContent,
+            lightBoxContentSecondary,
+            dimOverlay;
 
 	lightBox = document.createElement('div');
 	lightBox.id = 'lightBox';

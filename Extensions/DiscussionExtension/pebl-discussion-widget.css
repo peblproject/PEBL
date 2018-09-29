@@ -274,6 +274,10 @@ button.discussionCloseButton {
     padding-bottom: 20px;
 }
 
+.lightBoxLoginForm {
+    max-height: none;
+}
+
 .lightBoxTitle {
     position: relative;
     background-color: rgb(240, 240, 240);
