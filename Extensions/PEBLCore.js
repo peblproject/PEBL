@@ -23491,6 +23491,9 @@ window.IndexedDBInterop.prototype.addToc = function(user, containerPath, data) {
 };
 
 window.IndexedDBInterop.prototype.getToc = function(user, containerPath, callback) {
+    if (containerPath == null)
+	return [];
+    
     var os = this.db.transaction(["tocs"], "readonly").objectStore("tocs");
     var index = os.index(MASTER_INDEX);
     getAll(index,
