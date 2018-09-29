@@ -1,14 +1,10 @@
 
-$(document).ready(function() {
-	PEBL.start(false, function(readypebl) {
-	    pebl = readypebl;
-	    if (!window.PEBLbuttonLogin)
-		pebl.login(function() {
-		    dosomething();
-		});
+PEBL.registerReadyCallback(function() {
+    if (!window.PEBLbuttonLogin)
+	pebl.login(function() {
+	    dosomething();
 	});
 });
-
 
 window.Lightbox = {
     close : function() {
