@@ -1,4 +1,4 @@
-$(document).ready(function() {
+PEBL.registerReadyCallback(function() {
     $('.discussion_discussionExtension').each(function() {
         var buttonText = $(this)[0].getAttribute('data-buttonText');
         var prompt = $(this)[0].getAttribute('data-prompt');
