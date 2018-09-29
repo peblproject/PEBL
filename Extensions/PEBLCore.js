@@ -37746,7 +37746,6 @@ PEBL = stjs.extend(PEBL, null, [], function(constructor, prototype) {
     constructor.start = function(teacher, callback, inRegistry) {
         if (PEBL.instance == null) {
             var pebl = new PEBL();
-            PEBL.instance = pebl;
             pebl.loaded = false;
             pebl.teacher = teacher;
             UserProfile.TLADemo = PEBL.TLAEnabled;
@@ -37798,6 +37797,7 @@ PEBL = stjs.extend(PEBL, null, [], function(constructor, prototype) {
             pebl.assetManager = new LocalAssetAdapter(pebl.userManager, pebl.storage, pebl.activityManager);
             pebl.networkManager = new LocalNetworkAdapter(pebl.userManager, pebl.storage, pebl.activityManager, pebl.assetManager, PEBL.TLAEnabled);
             pebl.loaded = true;
+            PEBL.instance = pebl;
             for (var i = 0; i < PEBL.onReadyCallbacks.length; i++) 
                 PEBL.onReadyCallbacks[i](pebl);
             callback(pebl);
