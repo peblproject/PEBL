@@ -37798,9 +37798,9 @@ PEBL = stjs.extend(PEBL, null, [], function(constructor, prototype) {
             pebl.networkManager = new LocalNetworkAdapter(pebl.userManager, pebl.storage, pebl.activityManager, pebl.assetManager, PEBL.TLAEnabled);
             pebl.loaded = true;
             PEBL.instance = pebl;
+            callback(pebl);
             for (var i = 0; i < PEBL.onReadyCallbacks.length; i++) 
                 PEBL.onReadyCallbacks[i](pebl);
-            callback(pebl);
         }
     };
     prototype.retrieveActivityListing = function(callback) {
