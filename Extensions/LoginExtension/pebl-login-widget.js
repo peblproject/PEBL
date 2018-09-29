@@ -1,14 +1,12 @@
 
 $(document).ready(function() {
-    if (window.ReadiumSDK == null && window.top.ReadiumSDK == null) {
-    	PEBL.start(false, function(readypebl) {
+	PEBL.start(false, function(readypebl) {
 	    pebl = readypebl;
 	    if (!window.PEBLbuttonLogin)
 		pebl.login(function() {
 		    dosomething();
 		});
 	});
-    }
 });
 
 
