@@ -94,7 +94,7 @@ function replySubmit(event) {
     replyClose();
 }
 
-function messageHandler(responseBox, thread) {
+function messageHandler(responseBox, thread, replyDisabled) {
     return function (newMessages) {
     newMessages.sort(sortMessages);
     for (var i = 0; i < newMessages.length; i++) {
@@ -118,16 +118,18 @@ function messageHandler(responseBox, thread) {
             messageContainer.append(userIdBox);
             messageContainer.append(timestampBox);
             messageContainer.append(textBox);
-            var messageReplyButton = document.createElement('a');
-            messageReplyButton.classList.add('messageReplyButton');
-            messageReplyButton.textContent = 'Reply';
-            messageReplyButton.href = '#!';
-            messageReplyButton.addEventListener('click', function(event) {
-                replyDiscussion(event);
-            });
+            if (!replyDisabled) {
+                var messageReplyButton = document.createElement('a');
+                messageReplyButton.classList.add('messageReplyButton');
+                messageReplyButton.textContent = 'Reply';
+                messageReplyButton.href = '#!';
+                messageReplyButton.addEventListener('click', function(event) {
+                    replyDiscussion(event);
+                });
+                messageContainer.append($(messageReplyButton));
+            }
             var chatReplies = document.createElement('div');
             chatReplies.classList.add('chatReplies');
-            messageContainer.append($(messageReplyButton));
             messageContainer.append($(chatReplies));
             // if (mine) {
             //     var messageDeleteButtonWrapper = document.createElement('div');

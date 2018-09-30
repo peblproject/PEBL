@@ -2106,13 +2106,13 @@ function handleNotesButtonClick() {
 
     if ($('#dynamicPage').length) {
         var currentDynamicPage = $('#dynamicPage').attr('resource-id');
-        discussionId = currentBook + '_' + currentDynamicPage + '_' + pebl.userManager.profile.name + '_Notes';
+        discussionId = currentDynamicPage + '_' + pebl.userManager.profile.name + '_Notes';
 
         var title = $('#dynamicPage').attr('title');
         discussionTitle = 'Added Resource - ' + title + ' Notes';
 
     } else {
-        discussionId = currentBook + '_' + currentPage + '_' + pebl.userManager.profile.name + '_Notes';
+        discussionId = currentPage + '_' + pebl.userManager.profile.name + '_Notes';
         discussionTitle = $('h1.title').text() + ' Notes';
     }
 
@@ -2136,7 +2136,7 @@ function handleNotesButtonClick() {
     lightBoxContent.appendChild(questionBox);
 
     var notesResponses = $('<div class="notesResponses" style="display:none;"><div id="discussionSpanContainer" style="text-align: center; margin-top: 10px; margin-bottom: 10px; display: none;"><span class="discussionSpan">You haven\'t added any notes yet.</span></div></div>');
-    var notesInput = $('<div class="notesInput" style="display:none;"><textarea id="notesTextArea" placeholder="Add a note."></textarea><button class="discussionCloseButton" onclick="closeLightBox();">Cancel</button><button class="notesSubmit">Add note</button></div>');
+    var notesInput = $('<div class="notesInput" style="display:none;"><textarea id="notesTextArea" placeholder="Add a note."></textarea><button class="discussionCloseButton" onclick="closeLightBox();">Cancel</button><button class="notesSubmit chatSubmit">Add note</button></div>');
     var notes = $('<div class="notesBox"></div>');
     notes.append(notesInput);
     notes.append(notesResponses);
@@ -2149,7 +2149,7 @@ function handleNotesButtonClick() {
     //Subscribe to thread without clicking submit
     var notesInputBox = $('button.notesSubmit').parent();
     var responseBox = notesInputBox.siblings('.notesResponses');
-    var messageHandle = messageHandler(responseBox);
+    var messageHandle = messageHandler(responseBox, null, true);
     globalPebl.subscribeToDiscussion(discussionId, messageHandle);
     responseBox.slideDown();
 
