@@ -160,16 +160,16 @@ window.Lightbox = {
 	
 	var loginFrame = $('#loginIFrame');
 	if (loginFrame.length == 0) {
-	    loginFrame = $('<iframe id="loginIFrame" style="width:100%;margin-bottom:20px;margin-top:30px;height:550px"></iframe>');
+	    loginFrame = $('<iframe id="loginIFrame" src="about:blank" style="width:100%;margin-bottom:20px;margin-top:30px;height:550px"></iframe>');
 
 	    lf = loginFrame;
 
 	    loginFrame.off();
 	    loginFrame.on("load", function (x) {
-		var src = window.top.location.protocol + "//" + window.top.location.host + ((window.top.location.port=="") ? "" : ":" + window.top.location.port);
+		var src = window.top.location.protocol + "//" + window.top.location.host;
 		var iFrameLocation = loginFrame[0].contentWindow.location;
 
-		if ((iFrameLocation.protocol + "//" + iFrameLocation.host + ((iFrameLocation.port=="") ? "" : ":" + iFrameLocation.port)) == src) {		    
+		if ((iFrameLocation.protocol + "//" + iFrameLocation.host) == src) {		    
 		    var query = iFrameLocation.toString();
 
 		    $(document.body).append(loginFrame);
@@ -194,7 +194,7 @@ window.Lightbox = {
 	    
 	    $(document.body).append(loginFrame);
 	} else {
-	    loginFrame.src = "";
+	    loginFrame.src = "about:blank";
 	}
 
 	var lightBoxContent = $(document.getElementById('lightBoxContent'));
@@ -224,7 +224,7 @@ window.Lightbox = {
 			  '</form>');
 	    
 	    $(loginFrame[0].contentDocument.body).append(loginForm);
-	    loginFrame[0].contentDocument.getElementById("returnValue").value = window.top.location.protocol + "//" + window.top.location.host + ((window.top.location.port=="") ? "" : ":" + window.top.location.port);
+	    loginFrame[0].contentDocument.getElementById("returnValue").value = window.top.location.protocol + "//" + window.top.location.host;
 	}
 	
 	loginFrame[0].contentDocument.getElementById("loginFormSubmit").submit();	   
@@ -237,21 +237,21 @@ window.Lightbox = {
 	var loginFunction;
 	var logoutFunction;
 	if (loginFrame.length == 0) {
-	    loginFrame = $('<iframe id="loginIFrame" style="width:100%;margin-bottom:20px;margin-top:30px;height:550px"></iframe>');
+	    loginFrame = $('<iframe id="loginIFrame" src="about:blank" style="width:100%;margin-bottom:20px;margin-top:30px;height:550px"></iframe>');
 
 	    lf = loginFrame;	   
 	    
 	    $(document.body).append(loginFrame);
 	} else {
-	    loginFrame.src = "";
+	    loginFrame.src = "about:blank";
 	}
 
 	loginFrame.off();
 	loginFrame.on("load", function (x) {
-	    var src = window.top.location.protocol + "//" + window.top.location.host + ((window.top.location.port=="") ? "" : ":" + window.top.location.port);
+	    var src = window.top.location.protocol + "//" + window.top.location.host;
 	    var iFrameLocation = loginFrame[0].contentWindow.location;
 
-	    if ((iFrameLocation.protocol + "//" + iFrameLocation.host + ((iFrameLocation.port=="") ? "" : ":" + iFrameLocation.port)) == src) {		    
+	    if ((iFrameLocation.protocol + "//" + iFrameLocation.host) == src) {		    
 		var query = iFrameLocation.toString();
 
 		$(document.body).append(loginFrame);
@@ -310,7 +310,7 @@ window.Lightbox = {
 			      '</form>');
 		
 		$(loginFrame[0].contentDocument.body).append(loginForm);
-		loginFrame[0].contentDocument.getElementById("returnValue").value = window.top.location.protocol + "//" + window.top.location.host + ((window.top.location.port=="") ? "" : ":" + window.top.location.port);
+		loginFrame[0].contentDocument.getElementById("returnValue").value = window.top.location.protocol + "//" + window.top.location.host;
 	    }
 	    
 	    loginFrame[0].contentDocument.getElementById("loginFormSubmit").submit();
