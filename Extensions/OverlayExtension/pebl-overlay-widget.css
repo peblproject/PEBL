@@ -357,7 +357,7 @@ p.discussionQuestionBoxText {
     width: 100%;
     display: flex;
     justify-content: space-between;
-    bottom: 20px;
+    bottom: 10px;
 }
 
 .footerIcon {
@@ -395,11 +395,11 @@ p.discussionQuestionBoxText {
 }
 
 .findButtonContainer {
-    margin-left: 25px;
+    margin-left: 10px;
 }
 
 .notesButtonContainer {
-    margin-right: 25px;
+    margin-right: 10px;
 }
 
 .addedResourcesButtonContainer.hidden {
@@ -432,7 +432,7 @@ p.discussionQuestionBoxText {
     text-shadow: none;
     border: none;
     border-radius: 5px;
-    font-size: 20px;
+    font-size: 16px;
     padding: 0 !important;
     box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
     z-index: 4999;

@@ -949,7 +949,7 @@ function createFooterFindButton() {
     var findButtonTextContainer = document.createElement('div');
 
     var findButtonText = document.createElement('span');
-    findButtonText.textContent = 'Find Resources';
+    findButtonText.textContent = 'Knowledge Network';  // Recently changed from "Find Resources"
 
     findButtonTextContainer.appendChild(findButtonText);
 
@@ -1103,7 +1103,7 @@ function createFooterNotesButton() {
     var notesTextContainer = document.createElement('div');
 
     var notesText = document.createElement('span');
-    notesText.textContent = 'Notes';
+    notesText.textContent = 'My Notes';      // Recently changed from "Notes"
 
     notesTextContainer.appendChild(notesText);
 
@@ -1212,7 +1212,7 @@ function createSearchButton() {
     var searchButtonLabel = document.createElement('div');
     searchButtonLabel.classList.add('searchButtonLabel');
     searchButtonLabel.id = 'searchButtonLabel';
-    searchButtonLabel.textContent = 'Search Network';
+    searchButtonLabel.textContent = 'Knowledge Network';     // Recently changed from "Search Network"
     searchButtonContainer.appendChild(searchButtonLabel);
 
     return searchButtonContainer;
@@ -1547,7 +1547,7 @@ function createAskExpert() {
     var askFrame = document.createElement('iframe');
     askFrame.id = 'askFrame';
     askFrame.classList.add('askFrame');
-    askFrame.src = 'https://ask.extension.org/ask';
+    askFrame.src = 'https://ask.extension.org/';        // Recently changed to use new front end
     wrapper.appendChild(askFrame);
     askContainer.appendChild(wrapper);
     document.getElementById('peblOverlay').appendChild(askContainer);
