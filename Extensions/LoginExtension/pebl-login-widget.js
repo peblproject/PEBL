@@ -1,10 +1,18 @@
 
 if (!window.PEBLPreventAutoLogin) {
     PEBL.registerReadyCallback(function() {
-	if (!window.PEBLbuttonLogin)
-	    pebl.login(function() {
-		dosomething();
-	    });
+	var e = document.getElementById("top-menu");
+	if (e != null) {
+	    
+	    var li = $('<li id="loginTopMenu" class="menu-item menu-item-type-post_type menu-item-object-page"></li>');
+	    e.append(li);
+	    Lightbox.createLoginButton("loginTopMenu");
+	} else {
+	    if (!window.PEBLbuttonLogin)
+		pebl.login(function() {
+		    dosomething();
+		});
+	}
     });
 }
 
