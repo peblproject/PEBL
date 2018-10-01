@@ -82,6 +82,12 @@ p.discussionQuestionBoxText {
     flex-shrink: 1;
 }
 
+.contentContainer.contractedVertical {
+    max-height: 0;
+    overflow: hidden;
+    padding: 0;
+}
+
 .contentContainer.contracted,
 .contentFlexContainer.contracted {
     padding: 0;
@@ -408,7 +414,15 @@ p.discussionQuestionBoxText {
     animation-duration: 0s;
 }
 
+.addedResourcesButtonContainer.expanded {
+    height: calc(68vh - 60px);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
 .addedResourcesButtonContainer {
+    display: flex;
+    flex-direction: column;
     background-color: rgb(7, 126, 188);
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
@@ -421,6 +435,7 @@ p.discussionQuestionBoxText {
     text-align: center;
     animation-name: slideResourceButtonContainer;
     animation-duration: 1s;
+    transition: all 1s ease;
 }
 
 .findButton, .discussButton, .notesButton {
@@ -488,8 +503,7 @@ p.discussionQuestionBoxText {
 
 .addedResourcesButton {
     -webkit-appearance: none;
-    width: 100%;
-    height: 100%;
+    height: 50px;
     color: white;
     background-color: transparent;
     border: none;
@@ -517,13 +531,10 @@ p.discussionQuestionBoxText {
 }
 
 .addedResourcesContainer {
-    width: 70%;
-    height: 50%;
+    height: 90%;
     background-color: white;
     padding: 20px;
-    left: 12%;
-    top: 10vh;
-    position: fixed;
+    position: relative;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
     border-radius: 5px;
@@ -1061,19 +1072,20 @@ i.peblNotificationButton {
 .tocDeleteConfirmDialogText {
     position: relative;
     left: 25%;
+    top: 10px;
 }
 
 .tocDeleteCancelButton {
     position: relative;
     height: 50px;
     width: 50%;
-    top: 50px;
-    left: -143px;
+    top: 30px;
+    left: 0;
     background: transparent !important;
     border: none;
     border-top: 1px solid gray;
     font-size: 17px;
-    color: rgb(7, 126, 188) !important;
+    color: gray;
     margin: 0 !important;
     padding: 0 !important;
     text-shadow: none !important;
@@ -1084,7 +1096,8 @@ i.peblNotificationButton {
     position: relative;
     height: 50px;
     width: 50%;
-    right: -150px;
+    right: 0;
+    top: 30px;
     background: transparent !important;
     border: none;
     border-top: 1px solid gray;

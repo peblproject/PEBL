@@ -73,8 +73,8 @@ $(document).ready(function() {
 
     var checkAccount = setInterval(setAccountName, 1000);
     //var fixIframes = setInterval(fixIframeScrolling, 500);
-    var updateAddedResourceCount = setInterval(getAddedResources, 5000);
-    var updateNotificationsCount = setInterval(getNotificationsCount, 5000);
+    var updateAddedResourceCount = setInterval(getAddedResources, 2000);
+    var updateNotificationsCount = setInterval(getNotificationsCount, 2000);
     var searchTerms = [];
 
     openDocumentAtDestination();
@@ -1965,8 +1965,10 @@ function hideToolbar() {
 }
 
 function hideAddedResources() {
-    $('.clearLayer').remove();
+    $('.contentContainer').removeClass('contractedVertical');
+    $('.addedResourcesButtonContainer').removeClass('expanded');
     $('#addedResourcesContainer').remove();
+    $('.addedResourcesButton').children('span').first().text('View');
 }
 
 function closeDynamicPage() {
@@ -2215,7 +2217,7 @@ function handleAddedResourcesButtonClick() {
                     //Pages
                     if (!pageKey.includes('Subsection')) {
                         //Documents
-                        if (tocObject[sectionKey][pageKey].card === currentPage) {
+                        if (tocObject[sectionKey][pageKey].card === currentPrefix) {
                             var tocPage = document.createElement('div');
                             tocPage.classList.add('tocPage');
                             tocPage.id = pageKey;
@@ -2264,15 +2266,11 @@ function handleAddedResourcesButtonClick() {
                     }
                 });
             });
-            var clearLayer = document.createElement('div');
-            clearLayer.classList.add('clearLayer');
-            document.body.appendChild(clearLayer);
-            document.body.appendChild(addedResourcesContainer);
 
-            $('.clearLayer').on('click', function(e) {
-                $('.clearLayer').remove();
-                $('#addedResourcesContainer').remove();
-            });
+            $('.addedResourcesButtonContainer')[0].appendChild(addedResourcesContainer);
+            $('.contentContainer').addClass('contractedVertical');
+            $('.addedResourcesButtonContainer').addClass('expanded');
+            $('.addedResourcesButton').children('span').first().text('Hide');
         });
     }
 
@@ -2368,6 +2366,7 @@ function getAddedResources() {
                 $('.addedResourcesButtonContainer').removeClass('hidden');
                 $('.contentContainer').addClass('flatBottom')
             } else {
+                hideAddedResources();
                 $('.addedResourcesButtonContainer').addClass('hidden');
                 $('.contentContainer').removeClass('flatBottom');
             }
