@@ -5,8 +5,9 @@ if (!window.PEBLPreventAutoLogin) {
 	if (e != null) {
 	    
 	    var li = $('<li id="loginTopMenu" class="menu-item menu-item-type-post_type menu-item-object-page"></li>');
-	    e.append(li[0]);
+	    $(e).append(li[0]);
 	    Lightbox.createLoginButton("loginTopMenu");
+	    pebl.loginStoredUser();
 	} else {
 	    if (!window.PEBLbuttonLogin)
 		pebl.login(function() {
