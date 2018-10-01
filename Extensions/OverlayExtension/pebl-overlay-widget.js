@@ -1668,60 +1668,63 @@ function createTOC() {
                     tocSubsectionTitle.appendChild(tocSubsectionTitleTextWrapper);
                     tocSection.appendChild(tocSubsectionTitle);
 
+                    //Add Dynamic content associated with a subsection
+                    var cardMatch = tocObject[sectionKey][pageKey].prefix;
+                    Object.keys(tocObject[sectionKey]).forEach(function(dynamicKey) {
+                        if (!dynamicKey.includes('Subsection') && tocObject[sectionKey][dynamicKey].card === cardMatch) {
+                            var tocPage = document.createElement('div');
+                            tocPage.classList.add('tocPage');
+
+                            var tocPageIconWrapper = document.createElement('div');
+                            tocPageIconWrapper.classList.add('tocPageIconWrapper');
+
+                            var tocPageIcon = document.createElement('i');
+                            tocPageIcon.classList.add('tocPageIcon', 'fa', 'fa-link');
+
+                            tocPageIconWrapper.appendChild(tocPageIcon);
+
+                            var tocPageTextWrapper = document.createElement('div');
+                            tocPageTextWrapper.classList.add('tocPageTextWrapperDynamic');
+
+                            var tocPageText = document.createElement('a');
+                            tocPageText.classList.add('tocPageText');
+                            tocPageText.setAttribute('style', 'color: rgb(115, 115, 115) !important;');
+                            tocPageText.textContent = tocObject[sectionKey][dynamicKey].documentName;
+                            tocPageText.setAttribute('slide', dynamicKey);
+                            tocPageText.setAttribute('url', tocObject[sectionKey][dynamicKey].url);
+                            tocPageText.setAttribute('docType', tocObject[sectionKey][dynamicKey].docType);
+                            tocPageText.setAttribute('externalURL', tocObject[sectionKey][dynamicKey].externalURL);
+                            tocPageText.href = tocObject[sectionKey][pageKey].location;
+                            tocPageText.setAttribute('tocLink', 'true');
+                            tocPageText.addEventListener('click', function() {
+                                handleTocPageTextClick(event);
+                            });
+
+                            tocPageTextWrapper.appendChild(tocPageText);
+
+                            var tocPageDeleteButtonWrapper = document.createElement('div');
+                            tocPageDeleteButtonWrapper.classList.add('tocPageDeleteButtonWrapper');
+
+                            var tocPageDeleteButton = document.createElement('span');
+                            tocPageDeleteButton.classList.add('tocPageDeleteButton');
+                            tocPageDeleteButton.innerHTML = '&#215;';
+                            tocPageDeleteButton.setAttribute('section-id', sectionKey);
+                            tocPageDeleteButton.setAttribute('document-id', dynamicKey);
+
+                            tocPageDeleteButtonWrapper.appendChild(tocPageDeleteButton);
+
+                            tocPage.appendChild(tocPageIconWrapper);
+                            tocPage.appendChild(tocPageTextWrapper);
+                            tocPage.appendChild(tocPageDeleteButtonWrapper);
+                            tocSection.appendChild(tocPage);
+                        }
+                    });
+
+
                     Object.keys(tocObject[sectionKey][pageKey].pages).sort(toc_sort).forEach(function(cardKey) {
                         
                         if (tocObject[sectionKey][pageKey].skip !== undefined) {
-                            //Do something different if its just a subsection
-                            var cardMatch = tocObject[sectionKey][pageKey].prefix;
-                            Object.keys(tocObject[sectionKey]).forEach(function(dynamicKey) {
-                                if (!dynamicKey.includes('Subsection') && tocObject[sectionKey][dynamicKey].card === cardMatch) {
-                                    var tocPage = document.createElement('div');
-                                    tocPage.classList.add('tocPage');
-
-                                    var tocPageIconWrapper = document.createElement('div');
-                                    tocPageIconWrapper.classList.add('tocPageIconWrapper');
-
-                                    var tocPageIcon = document.createElement('i');
-                                    tocPageIcon.classList.add('tocPageIcon', 'fa', 'fa-link');
-
-                                    tocPageIconWrapper.appendChild(tocPageIcon);
-
-                                    var tocPageTextWrapper = document.createElement('div');
-                                    tocPageTextWrapper.classList.add('tocPageTextWrapperDynamic');
-
-                                    var tocPageText = document.createElement('a');
-                                    tocPageText.classList.add('tocPageText');
-                                    tocPageText.setAttribute('style', 'color: rgb(115, 115, 115) !important;');
-                                    tocPageText.textContent = tocObject[sectionKey][dynamicKey].documentName;
-                                    tocPageText.setAttribute('slide', dynamicKey);
-                                    tocPageText.setAttribute('url', tocObject[sectionKey][dynamicKey].url);
-                                    tocPageText.setAttribute('docType', tocObject[sectionKey][dynamicKey].docType);
-                                    tocPageText.setAttribute('externalURL', tocObject[sectionKey][dynamicKey].externalURL);
-                                    tocPageText.href = tocObject[sectionKey][pageKey].location;
-                                    tocPageText.setAttribute('tocLink', 'true');
-                                    tocPageText.addEventListener('click', function() {
-                                        handleTocPageTextClick(event);
-                                    });
-
-                                    tocPageTextWrapper.appendChild(tocPageText);
-
-                                    // var tocPageDeleteButtonWrapper = document.createElement('div');
-                                    // tocPageDeleteButtonWrapper.classList.add('tocPageDeleteButtonWrapper');
-
-                                    // var tocPageDeleteButton = document.createElement('span');
-                                    // tocPageDeleteButton.classList.add('tocPageDeleteButton');
-                                    // tocPageDeleteButton.innerHTML = '&#215;';
-                                    // tocPageDeleteButton.setAttribute('section-id', sectionKey);
-                                    // tocPageDeleteButton.setAttribute('document-id', dynamicKey);
-
-                                    // tocPageDeleteButtonWrapper.appendChild(tocPageDeleteButton);
-
-                                    tocPage.appendChild(tocPageIconWrapper);
-                                    tocPage.appendChild(tocPageTextWrapper);
-                                    //tocPage.appendChild(tocPageDeleteButtonWrapper);
-                                    tocSection.appendChild(tocPage);
-                                }
-                            });
+                            
                         } else {
                             var tocPage = document.createElement('div');
                             tocPage.classList.add('tocPage');
@@ -1753,10 +1756,9 @@ function createTOC() {
 
                             tocPage.appendChild(tocPageTextWrapper);
                             tocSection.appendChild(tocPage);
-
+                            
                             var cardMatch = tocObject[sectionKey][pageKey].pages[cardKey].prefix;
-
-                            //Add any dynamic documents associated with that page
+                            //Add any dynamic documents associated with subpages
                             Object.keys(tocObject[sectionKey]).forEach(function(dynamicKey) {
                                 if (!dynamicKey.includes('Subsection') && tocObject[sectionKey][dynamicKey].card === cardMatch) {
                                     var tocPage = document.createElement('div');
@@ -1789,20 +1791,20 @@ function createTOC() {
 
                                     tocPageTextWrapper.appendChild(tocPageText);
 
-                                    // var tocPageDeleteButtonWrapper = document.createElement('div');
-                                    // tocPageDeleteButtonWrapper.classList.add('tocPageDeleteButtonWrapper');
+                                    var tocPageDeleteButtonWrapper = document.createElement('div');
+                                    tocPageDeleteButtonWrapper.classList.add('tocPageDeleteButtonWrapper');
 
-                                    // var tocPageDeleteButton = document.createElement('span');
-                                    // tocPageDeleteButton.classList.add('tocPageDeleteButton');
-                                    // tocPageDeleteButton.innerHTML = '&#215;';
-                                    // tocPageDeleteButton.setAttribute('section-id', sectionKey);
-                                    // tocPageDeleteButton.setAttribute('document-id', dynamicKey);
+                                    var tocPageDeleteButton = document.createElement('span');
+                                    tocPageDeleteButton.classList.add('tocPageDeleteButton');
+                                    tocPageDeleteButton.innerHTML = '&#215;';
+                                    tocPageDeleteButton.setAttribute('section-id', sectionKey);
+                                    tocPageDeleteButton.setAttribute('document-id', dynamicKey);
 
-                                    // tocPageDeleteButtonWrapper.appendChild(tocPageDeleteButton);
+                                    tocPageDeleteButtonWrapper.appendChild(tocPageDeleteButton);
 
                                     tocPage.appendChild(tocPageIconWrapper);
                                     tocPage.appendChild(tocPageTextWrapper);
-                                    //tocPage.appendChild(tocPageDeleteButtonWrapper);
+                                    tocPage.appendChild(tocPageDeleteButtonWrapper);
                                     tocSection.appendChild(tocPage);
                                 }
                             });
@@ -1813,8 +1815,6 @@ function createTOC() {
                     //Do nothing
                     
                 }
-
-
             });
             tocContainer.appendChild(tocSection);
         });
@@ -2327,6 +2327,14 @@ function getCurrentPrefix(page) {
                     currentPrefix = obj[section][subsection].prefix;
                     currentSection = "Section" + obj[section].Section.prefix;
                     return getAddedResources();
+                } else if (obj[section][subsection].pages) {
+                    Object.keys(obj[section][subsection].pages).forEach(function(key) {
+                        if (obj[section][subsection].pages[key].location && obj[section][subsection].pages[key].location == page) {
+                            currentPrefix = obj[section][subsection].pages[key].prefix;
+                            currentSection = "Section" + obj[section].Section.prefix;
+                            return getAddedResources();
+                        }
+                   });
                 }
             });
         });
@@ -2345,11 +2353,11 @@ function getAddedResources() {
 
             Object.keys(tocObject).forEach(function(sectionKey) {
                 //Sections
-                Object.keys(tocObject[sectionKey]).forEach(function(pageKey) {
+                Object.keys(tocObject[sectionKey]).forEach(function(page) {
                     //Pages
-                    if (!pageKey.includes('Subsection')) {
+                    if (!page.includes('Subsection')) {
                         //Documents
-                        if (tocObject[sectionKey][pageKey].card === currentPrefix) {
+                        if (tocObject[sectionKey][page].card === currentPrefix) {
                             docCounter++;
                         }
                     }
