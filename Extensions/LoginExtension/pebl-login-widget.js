@@ -1,10 +1,21 @@
 
 if (!window.PEBLPreventAutoLogin) {
     PEBL.registerReadyCallback(function() {
-	if (!window.PEBLbuttonLogin)
-	    pebl.login(function() {
-		dosomething();
+	var e = document.getElementById("top-menu");
+	if (e != null) {
+	    
+	    var li = $('<li id="loginTopMenu" class="menu-item menu-item-type-post_type menu-item-object-page"></li>');
+	    $(e).append(li[0]);
+	    pebl.loginStoredUser(function () {
+		Lightbox.createLoginButton("loginTopMenu");
 	    });
+	    
+	} else {
+	    if (!window.PEBLbuttonLogin)
+		pebl.login(function() {
+		    dosomething();
+		});
+	}
     });
 }
 
@@ -291,7 +302,7 @@ window.Lightbox = {
 	loginFunction = function (){
 	    var lightBoxContent = $(document.getElementById('lightBoxContent'));
 	    if (lightBoxContent.length == 0) {
-		window.Lightbox.create("login", false);
+		window.Lightbox.create("login", true);
 		lightBoxContent = $(document.getElementById('lightBoxContent'));
 	    }
 	    var loginStart = $('#loginRefresh');

@@ -308,13 +308,13 @@ function handleChatButtonClick() {
     if (window.top.pebl != null || pebl != null) {
     if ((this.id != null) && (this.id != "")) {
         if (element.parent().children(".chatBox").length == 0) {
-            if (globalPebl.userManager.isLoggedIn) {
-                openDiscussionLightbox(question, this);
-                $('#discussionTextArea').focus();
-            } else if (window.Lightbox) {
-                window.Lightbox.create('login', false);
-                window.Lightbox.createLoginButton('lightBoxContent');
-            }
+            // if (globalPebl.userManager.isLoggedIn) {
+            openDiscussionLightbox(question, this);
+            $('#discussionTextArea').focus();
+            // } else if (window.Lightbox) {
+            //     window.Lightbox.create('login', false);
+            //     window.Lightbox.createLoginButton('lightBoxContent');
+            // }
         }
     }
     }
