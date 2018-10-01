@@ -34613,7 +34613,7 @@ UserAdapter = stjs.extend(UserAdapter, null, [], function(constructor, prototype
     prototype.getUser = function() {};
     prototype.login = function(callback) {};
     prototype.loginAsUser = function(username, password, callback) {};
-    prototype.logout = function() {};
+    prototype.logout = function(callback) {};
     prototype.loggedIn = function() {};
     prototype.isSameUser = function() {};
 }, {}, {});
@@ -35229,7 +35229,7 @@ LLUserAdapter = stjs.extend(LLUserAdapter, null, [UserAdapter], function(constru
             }
         });
     };
-    prototype.logout = function() {
+    prototype.logout = function(callback) {
         var self = this;
         this.isLoggedIn = false;
         this.storage.storeCurrentUser(LLUserAdapter.guest, function() {
@@ -35376,7 +35376,7 @@ MoodleUserAdapter = stjs.extend(MoodleUserAdapter, null, [UserAdapter], function
         });
     };
     prototype.loginAsUser = function(username, password, callback) {};
-    prototype.logout = function() {
+    prototype.logout = function(callback) {
         this.isLoggedIn = false;
         var self = this;
         this.storage.storeCurrentUser(MoodleUserAdapter.guest, function() {
@@ -35559,6 +35559,13 @@ OpenIDUserAdapter = stjs.extend(OpenIDUserAdapter, null, [UserAdapter], function
     prototype.handleProfile = function(userId, loginCallback) {
         var self = this;
         return function(profile) {
+            if (OpenIDUserAdapter.guest.getIdentity().equals(userId)) {
+                self.isLoggedIn = false;
+                if (loginCallback != null) {
+                    loginCallback();
+                }
+                return;
+            }
             self.profile = profile;
             if (self.profile == null) {
                 self.profile = new UserProfile(null);
@@ -35584,7 +35591,7 @@ OpenIDUserAdapter = stjs.extend(OpenIDUserAdapter, null, [UserAdapter], function
     prototype.login = function(loginCallback) {
         var self = this;
         this.storage.getCurrentUser(function(storedId) {
-            if (storedId != null && !self.constructor.guest.getIdentity().equals(storedId)) {
+            if (storedId != null) {
                 self.isLoggedIn = true;
                 self.storage.getUserProfile(storedId, self.handleProfile(storedId, loginCallback));
             } else 
@@ -35597,7 +35604,7 @@ OpenIDUserAdapter = stjs.extend(OpenIDUserAdapter, null, [UserAdapter], function
             this.storage.getUserProfile(username, this.handleProfile(username, callback));
         }
     };
-    prototype.logout = function() {
+    prototype.logout = function(callback) {
         var self = this;
         this.isLoggedIn = false;
         this.storage.storeCurrentUser(OpenIDUserAdapter.guest, function() {
@@ -35605,6 +35612,9 @@ OpenIDUserAdapter = stjs.extend(OpenIDUserAdapter, null, [UserAdapter], function
             var e = window.document.getElementById("loginIFrame");
             if (e != null) {
                 (e).src = "https://people.extension.org/signout";
+            }
+            if (callback != null) {
+                callback();
             }
         });
     };
@@ -35684,7 +35694,7 @@ OpenIDConnectUserAdapter = stjs.extend(OpenIDConnectUserAdapter, null, [UserAdap
         this.authChannel.init(initConfig).success(didLogin).error(this.errored);
     };
     prototype.loginAsUser = function(username, password, callback) {};
-    prototype.logout = function() {
+    prototype.logout = function(callback) {
         var self = this;
         var options = {};
         options["redirectUri"] = window.location.href;
@@ -35836,7 +35846,7 @@ ADLDemoUserAdapter = stjs.extend(ADLDemoUserAdapter, null, [UserAdapter], functi
             }
         });
     };
-    prototype.logout = function() {
+    prototype.logout = function(callback) {
         var self = this;
         this.isLoggedIn = false;
         this.storage.storeCurrentUser(ADLDemoUserAdapter.guest, function() {
@@ -37836,6 +37846,15 @@ PEBL = stjs.extend(PEBL, null, [], function(constructor, prototype) {
             loginRoutine();
         }
     };
+    prototype.loginStoredUser = function(callback) {
+        var self = this;
+        this.storage.getCurrentUser(function(id) {
+            if ((id == null) && (callback != null)) {
+                callback();
+            } else 
+                self.loginAsUser(id, null, callback);
+        });
+    };
     prototype.loginAsUser = function(username, password, loggedIn) {
         var self = this;
         if ((this.userManager != null) && (!this.userManager.loggedIn())) {
@@ -37852,14 +37871,14 @@ PEBL = stjs.extend(PEBL, null, [], function(constructor, prototype) {
             });
         }
     };
-    prototype.logout = function() {
+    prototype.logout = function(callback) {
         if (this.userManager != null) {
             this.xapiGenerator.logout();
             var self = this;
             this.networkManager.disable(function() {
                 if (PEBL.TLAEnabled) 
                     self.launcherManager.close();
-                self.userManager.logout();
+                self.userManager.logout(callback);
             });
         }
     };

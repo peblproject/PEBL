@@ -1,10 +1,12 @@
 
-PEBL.registerReadyCallback(function() {
-    if (!window.PEBLbuttonLogin)
-	pebl.login(function() {
-	    dosomething();
-	});
-});
+if (!window.PEBLPreventAutoLogin) {
+    PEBL.registerReadyCallback(function() {
+	if (!window.PEBLbuttonLogin)
+	    pebl.login(function() {
+		dosomething();
+	    });
+    });
+}
 
 window.Lightbox = {
     close : function() {
@@ -160,28 +162,29 @@ window.Lightbox = {
 	
 	var loginFrame = $('#loginIFrame');
 	if (loginFrame.length == 0) {
-	    loginFrame = $('<iframe id="loginIFrame" style="width:100%;margin-bottom:20px;margin-top:30px;height:550px"></iframe>');
+	    loginFrame = $('<iframe id="loginIFrame" src="about:blank" style="width:100%;margin-bottom:20px;margin-top:30px;height:550px"></iframe>');
 
 	    lf = loginFrame;
 
 	    loginFrame.off();
 	    loginFrame.on("load", function (x) {
-		var src = window.top.location.protocol + "//" + window.top.location.host + ((window.top.location.port=="") ? "" : ":" + window.top.location.port);
+		var src = window.top.location.protocol + "//" + window.top.location.host;
 		var iFrameLocation = loginFrame[0].contentWindow.location;
 
-		if ((iFrameLocation.protocol + "//" + iFrameLocation.host + ((iFrameLocation.port=="") ? "" : ":" + iFrameLocation.port)) == src) {		    
+		if ((iFrameLocation.protocol + "//" + iFrameLocation.host) == src) {		    
 		    var query = iFrameLocation.toString();
 
 		    $(document.body).append(loginFrame);
 		    
 		    window.Lightbox.close($(document.getElementById('lightBoxContent')));		    
+		    var username = null;
 		    
 		    if (query.indexOf("?") != -1) {
 			var keyValues = query.substring(query.indexOf("?")+1).split("&");			   
 			
 			for (var i = 0; i < keyValues.length; i++) {
 			    var kv = keyValues[i].split("=");
-			    if (kv[0] == "openid.identity") {
+			    if ((kv[0] == "openid.identity") || (kv[0] == "openid_identity")) {
 				username = decodeURIComponent(kv[1]);
 			    }
 			}	   
@@ -194,7 +197,7 @@ window.Lightbox = {
 	    
 	    $(document.body).append(loginFrame);
 	} else {
-	    loginFrame.src = "";
+	    loginFrame[0].src = "";
 	}
 
 	var lightBoxContent = $(document.getElementById('lightBoxContent'));
@@ -224,7 +227,7 @@ window.Lightbox = {
 			  '</form>');
 	    
 	    $(loginFrame[0].contentDocument.body).append(loginForm);
-	    loginFrame[0].contentDocument.getElementById("returnValue").value = window.top.location.protocol + "//" + window.top.location.host + ((window.top.location.port=="") ? "" : ":" + window.top.location.port);
+	    loginFrame[0].contentDocument.getElementById("returnValue").value = window.top.location.protocol + "//" + window.top.location.host;
 	}
 	
 	loginFrame[0].contentDocument.getElementById("loginFormSubmit").submit();	   
@@ -237,33 +240,35 @@ window.Lightbox = {
 	var loginFunction;
 	var logoutFunction;
 	if (loginFrame.length == 0) {
-	    loginFrame = $('<iframe id="loginIFrame" style="width:100%;margin-bottom:20px;margin-top:30px;height:550px"></iframe>');
+	    loginFrame = $('<iframe id="loginIFrame" src="about:blank" style="width:100%;margin-bottom:20px;margin-top:30px;height:550px"></iframe>');
 
 	    lf = loginFrame;	   
 	    
 	    $(document.body).append(loginFrame);
 	} else {
-	    loginFrame.src = "";
+	    loginFrame[0].src = "";
 	}
 
 	loginFrame.off();
 	loginFrame.on("load", function (x) {
-	    var src = window.top.location.protocol + "//" + window.top.location.host + ((window.top.location.port=="") ? "" : ":" + window.top.location.port);
+	    var src = window.top.location.protocol + "//" + window.top.location.host;
 	    var iFrameLocation = loginFrame[0].contentWindow.location;
 
-	    if ((iFrameLocation.protocol + "//" + iFrameLocation.host + ((iFrameLocation.port=="") ? "" : ":" + iFrameLocation.port)) == src) {		    
+	    if ((iFrameLocation.protocol + "//" + iFrameLocation.host) == src) {		    
 		var query = iFrameLocation.toString();
 
 		$(document.body).append(loginFrame);
 		
 		window.Lightbox.close($(document.getElementById('lightBoxContent')));		    
+
+		var username = null;
 		
 		if (query.indexOf("?") != -1) {
-		    var keyValues = query.substring(query.indexOf("?")+1).split("&");			   
+		    var keyValues = query.substring(query.indexOf("?")+1).split("&");			   		   
 		    
 		    for (var i = 0; i < keyValues.length; i++) {
 			var kv = keyValues[i].split("=");
-			if (kv[0] == "openid.identity") {
+			if ((kv[0] == "openid.identity") || (kv[0] == "openid_identity")) {
 			    username = decodeURIComponent(kv[1]);
 			}
 		    }	   
@@ -310,9 +315,9 @@ window.Lightbox = {
 			      '</form>');
 		
 		$(loginFrame[0].contentDocument.body).append(loginForm);
-		loginFrame[0].contentDocument.getElementById("returnValue").value = window.top.location.protocol + "//" + window.top.location.host + ((window.top.location.port=="") ? "" : ":" + window.top.location.port);
+		loginFrame[0].contentDocument.getElementById("returnValue").value = window.top.location.protocol + "//" + window.top.location.host;
 	    }
-	    
+
 	    loginFrame[0].contentDocument.getElementById("loginFormSubmit").submit();
 	};
 
