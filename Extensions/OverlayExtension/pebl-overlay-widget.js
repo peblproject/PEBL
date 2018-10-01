@@ -304,7 +304,7 @@ function createFooter() {
 }
 
 function createTags() {
-    var tags = JSON.parse($('#fake-page').attr('categories'));
+    var tags = window.pageCategories;
 
     var showCardTagsButton = document.createElement('button');
     showCardTagsButton.classList.add('showCardTagsButton', 'contracted', 'hidden');
@@ -372,8 +372,8 @@ function createSidebar() {
         $('#peblSidebar').remove();
     }
 
-    var allCatAttr = $('#fake-page').attr('allCategories');
-    var categories = allCatAttr ? JSON.parse(allCatAttr) : JSON.parse($('#fake-page').attr('categories'));
+    var allCatAttr = window.pageAllCategories;
+    var categories = allCatAttr ? allCatAttr : window.pageCategories;
     
 
     var sidebar = document.createElement('div');
