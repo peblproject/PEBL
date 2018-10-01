@@ -302,7 +302,7 @@ window.Lightbox = {
 	loginFunction = function (){
 	    var lightBoxContent = $(document.getElementById('lightBoxContent'));
 	    if (lightBoxContent.length == 0) {
-		window.Lightbox.create("login", false);
+		window.Lightbox.create("login", true);
 		lightBoxContent = $(document.getElementById('lightBoxContent'));
 	    }
 	    var loginStart = $('#loginRefresh');
