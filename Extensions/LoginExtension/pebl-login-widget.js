@@ -1,10 +1,11 @@
-
+/*
 PEBL.registerReadyCallback(function() {
     if (!window.PEBLbuttonLogin)
 	pebl.login(function() {
 	    dosomething();
 	});
 });
+*/
 
 window.Lightbox = {
     close : function() {
@@ -175,6 +176,7 @@ window.Lightbox = {
 		    $(document.body).append(loginFrame);
 		    
 		    window.Lightbox.close($(document.getElementById('lightBoxContent')));		    
+		    var username = null;
 		    
 		    if (query.indexOf("?") != -1) {
 			var keyValues = query.substring(query.indexOf("?")+1).split("&");			   
@@ -194,7 +196,7 @@ window.Lightbox = {
 	    
 	    $(document.body).append(loginFrame);
 	} else {
-	    loginFrame.src = "about:blank";
+	    loginFrame[0].src = "about:blank";
 	}
 
 	var lightBoxContent = $(document.getElementById('lightBoxContent'));
@@ -243,7 +245,7 @@ window.Lightbox = {
 	    
 	    $(document.body).append(loginFrame);
 	} else {
-	    loginFrame.src = "about:blank";
+	    loginFrame[0].src = "about:blank";
 	}
 
 	loginFrame.off();
@@ -257,9 +259,11 @@ window.Lightbox = {
 		$(document.body).append(loginFrame);
 		
 		window.Lightbox.close($(document.getElementById('lightBoxContent')));		    
+
+		var username = null;
 		
 		if (query.indexOf("?") != -1) {
-		    var keyValues = query.substring(query.indexOf("?")+1).split("&");			   
+		    var keyValues = query.substring(query.indexOf("?")+1).split("&");			   		   
 		    
 		    for (var i = 0; i < keyValues.length; i++) {
 			var kv = keyValues[i].split("=");
@@ -312,7 +316,7 @@ window.Lightbox = {
 		$(loginFrame[0].contentDocument.body).append(loginForm);
 		loginFrame[0].contentDocument.getElementById("returnValue").value = window.top.location.protocol + "//" + window.top.location.host;
 	    }
-	    
+
 	    loginFrame[0].contentDocument.getElementById("loginFormSubmit").submit();
 	};
 
