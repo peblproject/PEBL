@@ -8,14 +8,24 @@ var globalReadium;
 var filterTags = [];
 var allTags = [];
 var searchableTOC = null;
+var currentPrefix = null;
+var currentSection = null;
 
 window.addEventListener("message", receiveMessage, false);
 
 function receiveMessage(event) {
     var data = event.data;
+    var obj;
+    try {
+        obj = JSON.parse(data);
+    } catch(e) {
+
+    }
 
     if (data === 'ready') {
         frameIsReady = true;
+    } else if (obj && obj.message === "pullResource") {
+        globalPebl.eventPulled(obj.target, obj.location, currentPrefix, obj.url, obj.docType, obj.name, obj.externalURL);
     }
 }
 
@@ -294,7 +304,7 @@ function createFooter() {
 }
 
 function createTags() {
-    var tags = JSON.parse($('#fake-page').attr('categories'));
+    var tags = window.pageCategories;
 
     var showCardTagsButton = document.createElement('button');
     showCardTagsButton.classList.add('showCardTagsButton', 'contracted', 'hidden');
@@ -362,8 +372,8 @@ function createSidebar() {
         $('#peblSidebar').remove();
     }
 
-    var allCatAttr = $('#fake-page').attr('allCategories');
-    var categories = allCatAttr ? JSON.parse(allCatAttr) : JSON.parse($('#fake-page').attr('categories'));
+    var allCatAttr = window.pageAllCategories;
+    var categories = allCatAttr ? allCatAttr : window.pageCategories;
     
 
     var sidebar = document.createElement('div');
@@ -451,7 +461,7 @@ function createSidebar() {
 }
 
 function closeSidebarExtendedFrame() {
-    $('.contentContainer').removeClass('contracted');
+    $('.contentFlexContainer').removeClass('contracted');
     $('.peblSidebarExtendedFrame').addClass('contracted');
     $('.peblSidebarSearchField').val('');
     resetTagFilter();
@@ -863,7 +873,7 @@ function displayFilteredTOC(posts) {
         }
     });
 
-    $('.contentContainer').addClass('contracted');
+    $('.contentFlexContainer').addClass('contracted');
     $('.peblSidebarExtendedFrame').removeClass('contracted');
 }
 
@@ -918,7 +928,7 @@ function getTagCount(elem, tagArr) {
 }
 
 function attachAddedResources() {
-    document.getElementsByClassName('contentContainerWrapper')[0].appendChild(createFooterAddedResourcesButton());
+    document.getElementsByClassName('contentFlexContainer')[0].appendChild(createFooterAddedResourcesButton());
 }
 
 function createFooterFindButton() {
@@ -939,7 +949,7 @@ function createFooterFindButton() {
     var findButtonTextContainer = document.createElement('div');
 
     var findButtonText = document.createElement('span');
-    findButtonText.textContent = 'Find Resources';
+    findButtonText.textContent = 'Knowledge Network';  // Recently changed from "Find Resources"
 
     findButtonTextContainer.appendChild(findButtonText);
 
@@ -1093,7 +1103,7 @@ function createFooterNotesButton() {
     var notesTextContainer = document.createElement('div');
 
     var notesText = document.createElement('span');
-    notesText.textContent = 'Notes';
+    notesText.textContent = 'My Notes';      // Recently changed from "Notes"
 
     notesTextContainer.appendChild(notesText);
 
@@ -1202,7 +1212,7 @@ function createSearchButton() {
     var searchButtonLabel = document.createElement('div');
     searchButtonLabel.classList.add('searchButtonLabel');
     searchButtonLabel.id = 'searchButtonLabel';
-    searchButtonLabel.textContent = 'Search Network';
+    searchButtonLabel.textContent = 'Knowledge Network';     // Recently changed from "Search Network"
     searchButtonContainer.appendChild(searchButtonLabel);
 
     return searchButtonContainer;
@@ -1306,9 +1316,9 @@ function setNotificationBadgeCounter(n) {
 }
 
 function setAccountName() {
-    if (typeof pebl !== 'undefined' && pebl.userManager.isLoggedIn === true) {
-        $('#accountName').text(pebl.userManager.profile.name);
-    }
+    // if (typeof pebl !== 'undefined' && pebl.userManager.isLoggedIn === true) {
+    //     $('#accountName').text(pebl.userManager.profile.name);
+    // }
 }
 
 //Tutorial
@@ -1424,7 +1434,7 @@ function createNotifications() {
 
         Object.keys(notificationsObj).forEach(function(key) {
             var pulled;
-            if (notificationsObj[key].payload.actorId === globalPebl.getUserName()) {
+            if (notificationsObj[key].payload.actorId === globalPebl.userManager.profile.identity) {
                 pulled = true;
             } else {
                 pulled = false;
@@ -1461,8 +1471,8 @@ function createNotifications() {
 
             notificationElement.appendChild(notificationElementSenderText);
             notificationElement.appendChild(notificationElementContentText);
-            notificationElement.appendChild(toSpan);
-            notificationElement.appendChild(notificationElementLocationText);
+            // notificationElement.appendChild(toSpan);
+            // notificationElement.appendChild(notificationElementLocationText);
 
             notificationElementWrapper.appendChild(notificationElement);
             notificationsContainer.appendChild(notificationElementWrapper);
@@ -1537,7 +1547,7 @@ function createAskExpert() {
     var askFrame = document.createElement('iframe');
     askFrame.id = 'askFrame';
     askFrame.classList.add('askFrame');
-    askFrame.src = 'https://ask.extension.org/ask';
+    askFrame.src = 'https://ask.extension.org/';        // Recently changed to use new front end
     wrapper.appendChild(askFrame);
     askContainer.appendChild(wrapper);
     document.getElementById('peblOverlay').appendChild(askContainer);
@@ -1547,7 +1557,7 @@ function createAskExpert() {
 
 
 function createRegistrySearch() {
-    var currentPage = $('body')[0].baseURI.split('/').pop().slice(0, -6).substring(5);
+    var currentPage = $('body')[0].baseURI.split('/').pop().slice(0, -6);
     clearUI();
     //Create the registrySearch page
     var registryContainer = document.createElement('div');
@@ -1575,11 +1585,12 @@ function createRegistrySearch() {
         if (frameIsReady) {
             clearInterval(waitingForReady);
             var iframe = document.getElementById('registryFrame');
-            var currentUser = pebl.userManager.profile.identity;
+            var currentUser = globalPebl.userManager.profile.identity;
             var obj = {
                 "messageType": "Login",
                 "user": currentUser,
-                "currentPage": currentPage
+                "currentPage": currentPage,
+                "currentSection": currentSection
             }
             var message = JSON.stringify(obj);
             iframe.contentWindow.postMessage(message, '*');
@@ -1657,61 +1668,63 @@ function createTOC() {
                     tocSubsectionTitle.appendChild(tocSubsectionTitleTextWrapper);
                     tocSection.appendChild(tocSubsectionTitle);
 
+                    //Add Dynamic content associated with a subsection
+                    var cardMatch = tocObject[sectionKey][pageKey].prefix;
+                    Object.keys(tocObject[sectionKey]).forEach(function(dynamicKey) {
+                        if (!dynamicKey.includes('Subsection') && tocObject[sectionKey][dynamicKey].card === cardMatch) {
+                            var tocPage = document.createElement('div');
+                            tocPage.classList.add('tocPage');
+
+                            var tocPageIconWrapper = document.createElement('div');
+                            tocPageIconWrapper.classList.add('tocPageIconWrapper');
+
+                            var tocPageIcon = document.createElement('i');
+                            tocPageIcon.classList.add('tocPageIcon', 'fa', 'fa-link');
+
+                            tocPageIconWrapper.appendChild(tocPageIcon);
+
+                            var tocPageTextWrapper = document.createElement('div');
+                            tocPageTextWrapper.classList.add('tocPageTextWrapperDynamic');
+
+                            var tocPageText = document.createElement('a');
+                            tocPageText.classList.add('tocPageText');
+                            tocPageText.setAttribute('style', 'color: rgb(115, 115, 115) !important;');
+                            tocPageText.textContent = tocObject[sectionKey][dynamicKey].documentName;
+                            tocPageText.setAttribute('slide', dynamicKey);
+                            tocPageText.setAttribute('url', tocObject[sectionKey][dynamicKey].url);
+                            tocPageText.setAttribute('docType', tocObject[sectionKey][dynamicKey].docType);
+                            tocPageText.setAttribute('externalURL', tocObject[sectionKey][dynamicKey].externalURL);
+                            tocPageText.href = tocObject[sectionKey][pageKey].location;
+                            tocPageText.setAttribute('tocLink', 'true');
+                            tocPageText.addEventListener('click', function() {
+                                handleTocPageTextClick(event);
+                            });
+
+                            tocPageTextWrapper.appendChild(tocPageText);
+
+                            var tocPageDeleteButtonWrapper = document.createElement('div');
+                            tocPageDeleteButtonWrapper.classList.add('tocPageDeleteButtonWrapper');
+
+                            var tocPageDeleteButton = document.createElement('span');
+                            tocPageDeleteButton.classList.add('tocPageDeleteButton');
+                            tocPageDeleteButton.innerHTML = '&#215;';
+                            tocPageDeleteButton.setAttribute('section-id', sectionKey);
+                            tocPageDeleteButton.setAttribute('document-id', dynamicKey);
+
+                            tocPageDeleteButtonWrapper.appendChild(tocPageDeleteButton);
+
+                            tocPage.appendChild(tocPageIconWrapper);
+                            tocPage.appendChild(tocPageTextWrapper);
+                            tocPage.appendChild(tocPageDeleteButtonWrapper);
+                            tocSection.appendChild(tocPage);
+                        }
+                    });
+
+
                     Object.keys(tocObject[sectionKey][pageKey].pages).sort(toc_sort).forEach(function(cardKey) {
                         
                         if (tocObject[sectionKey][pageKey].skip !== undefined) {
-                            //Do something different if its just a subsection
-                            var cardMatch = tocObject[sectionKey][pageKey].prefix;
-                            Object.keys(tocObject[sectionKey]).forEach(function(dynamicKey) {
-                                if (!dynamicKey.includes('Subsection') && tocObject[sectionKey][dynamicKey].card === cardMatch) {
-                                    var tocPage = document.createElement('div');
-                                    tocPage.classList.add('tocPage');
-
-                                    var tocPageIconWrapper = document.createElement('div');
-                                    tocPageIconWrapper.classList.add('tocPageIconWrapper');
-
-                                    var tocPageIcon = document.createElement('img');
-                                    tocPageIcon.src = 'image/peblDynamicIcon.png';
-                                    tocPageIcon.classList.add('tocPageIcon');
-
-                                    tocPageIconWrapper.appendChild(tocPageIcon);
-
-                                    var tocPageTextWrapper = document.createElement('div');
-                                    tocPageTextWrapper.classList.add('tocPageTextWrapperDynamic');
-
-                                    var tocPageText = document.createElement('a');
-                                    tocPageText.classList.add('tocPageText');
-                                    tocPageText.setAttribute('style', 'color: rgb(115, 115, 115) !important;');
-                                    tocPageText.textContent = tocObject[sectionKey][dynamicKey].documentName;
-                                    tocPageText.setAttribute('slide', dynamicKey);
-                                    tocPageText.setAttribute('url', tocObject[sectionKey][dynamicKey].url);
-                                    tocPageText.setAttribute('docType', tocObject[sectionKey][dynamicKey].docType);
-                                    tocPageText.setAttribute('externalURL', tocObject[sectionKey][dynamicKey].externalURL);
-                                    tocPageText.href = tocObject[sectionKey][pageKey].location;
-                                    tocPageText.setAttribute('tocLink', 'true');
-                                    tocPageText.addEventListener('click', function() {
-                                        handleTocPageTextClick(event);
-                                    });
-
-                                    tocPageTextWrapper.appendChild(tocPageText);
-
-                                    // var tocPageDeleteButtonWrapper = document.createElement('div');
-                                    // tocPageDeleteButtonWrapper.classList.add('tocPageDeleteButtonWrapper');
-
-                                    // var tocPageDeleteButton = document.createElement('span');
-                                    // tocPageDeleteButton.classList.add('tocPageDeleteButton');
-                                    // tocPageDeleteButton.innerHTML = '&#215;';
-                                    // tocPageDeleteButton.setAttribute('section-id', sectionKey);
-                                    // tocPageDeleteButton.setAttribute('document-id', dynamicKey);
-
-                                    // tocPageDeleteButtonWrapper.appendChild(tocPageDeleteButton);
-
-                                    tocPage.appendChild(tocPageIconWrapper);
-                                    tocPage.appendChild(tocPageTextWrapper);
-                                    //tocPage.appendChild(tocPageDeleteButtonWrapper);
-                                    tocSection.appendChild(tocPage);
-                                }
-                            });
+                            
                         } else {
                             var tocPage = document.createElement('div');
                             tocPage.classList.add('tocPage');
@@ -1745,8 +1758,7 @@ function createTOC() {
                             tocSection.appendChild(tocPage);
 
                             var cardMatch = tocObject[sectionKey][pageKey].pages[cardKey].prefix;
-
-                            //Add any dynamic documents associated with that page
+                            //Add any dynamic documents associated with subpages
                             Object.keys(tocObject[sectionKey]).forEach(function(dynamicKey) {
                                 if (!dynamicKey.includes('Subsection') && tocObject[sectionKey][dynamicKey].card === cardMatch) {
                                     var tocPage = document.createElement('div');
@@ -1755,9 +1767,8 @@ function createTOC() {
                                     var tocPageIconWrapper = document.createElement('div');
                                     tocPageIconWrapper.classList.add('tocPageIconWrapper');
 
-                                    var tocPageIcon = document.createElement('img');
-                                    tocPageIcon.src = 'image/peblDynamicIcon.png';
-                                    tocPageIcon.classList.add('tocPageIcon');
+                                    var tocPageIcon = document.createElement('i');
+                                    tocPageIcon.classList.add('tocPageIcon', 'fa', 'fa-link');
 
                                     tocPageIconWrapper.appendChild(tocPageIcon);
 
@@ -1780,20 +1791,20 @@ function createTOC() {
 
                                     tocPageTextWrapper.appendChild(tocPageText);
 
-                                    // var tocPageDeleteButtonWrapper = document.createElement('div');
-                                    // tocPageDeleteButtonWrapper.classList.add('tocPageDeleteButtonWrapper');
+                                    var tocPageDeleteButtonWrapper = document.createElement('div');
+                                    tocPageDeleteButtonWrapper.classList.add('tocPageDeleteButtonWrapper');
 
-                                    // var tocPageDeleteButton = document.createElement('span');
-                                    // tocPageDeleteButton.classList.add('tocPageDeleteButton');
-                                    // tocPageDeleteButton.innerHTML = '&#215;';
-                                    // tocPageDeleteButton.setAttribute('section-id', sectionKey);
-                                    // tocPageDeleteButton.setAttribute('document-id', dynamicKey);
+                                    var tocPageDeleteButton = document.createElement('span');
+                                    tocPageDeleteButton.classList.add('tocPageDeleteButton');
+                                    tocPageDeleteButton.innerHTML = '&#215;';
+                                    tocPageDeleteButton.setAttribute('section-id', sectionKey);
+                                    tocPageDeleteButton.setAttribute('document-id', dynamicKey);
 
-                                    // tocPageDeleteButtonWrapper.appendChild(tocPageDeleteButton);
+                                    tocPageDeleteButtonWrapper.appendChild(tocPageDeleteButton);
 
                                     tocPage.appendChild(tocPageIconWrapper);
                                     tocPage.appendChild(tocPageTextWrapper);
-                                    //tocPage.appendChild(tocPageDeleteButtonWrapper);
+                                    tocPage.appendChild(tocPageDeleteButtonWrapper);
                                     tocSection.appendChild(tocPage);
                                 }
                             });
@@ -1804,8 +1815,6 @@ function createTOC() {
                     //Do nothing
                     
                 }
-
-
             });
             tocContainer.appendChild(tocSection);
         });
@@ -2028,7 +2037,7 @@ function handleFindButtonClick() {
 function handleDiscussButtonClick() {
     closeLightBox();
     var currentBook = globalPebl.activityManager.currentBook;
-    var currentPage = $('body')[0].baseURI.split('/').pop().slice(0, -6).substring(5);
+    var currentPage = $('body')[0].baseURI.split('/').pop().slice(0, -6);
     var discussionId;
     var discussionTitle;
 
@@ -2100,19 +2109,19 @@ function handleDiscussButtonClick() {
 function handleNotesButtonClick() {
     closeLightBox();
     var currentBook = globalPebl.activityManager.currentBook;
-    var currentPage = $('body')[0].baseURI.split('/').pop().slice(0, -6).substring(5);
+    var currentPage = $('body')[0].baseURI.split('/').pop().slice(0, -6);
     var discussionId;
     var discussionTitle;
 
     if ($('#dynamicPage').length) {
         var currentDynamicPage = $('#dynamicPage').attr('resource-id');
-        discussionId = currentBook + '_' + currentDynamicPage + '_' + pebl.userManager.profile.name + '_Notes';
+        discussionId = currentDynamicPage + '_' + globalPebl.userManager.profile.name + '_Notes';
 
         var title = $('#dynamicPage').attr('title');
         discussionTitle = 'Added Resource - ' + title + ' Notes';
 
     } else {
-        discussionId = currentBook + '_' + currentPage + '_' + pebl.userManager.profile.name + '_Notes';
+        discussionId = currentPage + '_' + globalPebl.userManager.profile.name + '_Notes';
         discussionTitle = $('h1.title').text() + ' Notes';
     }
 
@@ -2136,7 +2145,7 @@ function handleNotesButtonClick() {
     lightBoxContent.appendChild(questionBox);
 
     var notesResponses = $('<div class="notesResponses" style="display:none;"><div id="discussionSpanContainer" style="text-align: center; margin-top: 10px; margin-bottom: 10px; display: none;"><span class="discussionSpan">You haven\'t added any notes yet.</span></div></div>');
-    var notesInput = $('<div class="notesInput" style="display:none;"><textarea id="notesTextArea" placeholder="Add a note."></textarea><button class="discussionCloseButton" onclick="closeLightBox();">Cancel</button><button class="notesSubmit">Add note</button></div>');
+    var notesInput = $('<div class="notesInput" style="display:none;"><textarea id="notesTextArea" placeholder="Add a note."></textarea><button class="discussionCloseButton" onclick="closeLightBox();">Cancel</button><button class="notesSubmit chatSubmit">Add note</button></div>');
     var notes = $('<div class="notesBox"></div>');
     notes.append(notesInput);
     notes.append(notesResponses);
@@ -2149,7 +2158,7 @@ function handleNotesButtonClick() {
     //Subscribe to thread without clicking submit
     var notesInputBox = $('button.notesSubmit').parent();
     var responseBox = notesInputBox.siblings('.notesResponses');
-    var messageHandle = messageHandler(responseBox);
+    var messageHandle = messageHandler(responseBox, null, true);
     globalPebl.subscribeToDiscussion(discussionId, messageHandle);
     responseBox.slideDown();
 
@@ -2189,7 +2198,7 @@ function handleAddedResourcesButtonClick() {
     if ($('#addedResourcesContainer').length) {
         hideAddedResources();
     } else {
-        var currentPage = $('body')[0].baseURI.split('/').pop().slice(0, -6).substring(5);
+        var currentPage = $('body')[0].baseURI.split('/').pop().slice(0, -6);
         var addedResourcesContainer = document.createElement('div');
         addedResourcesContainer.classList.add('addedResourcesContainer');
         if (Math.abs(window.orientation) === 90) {
@@ -2214,9 +2223,8 @@ function handleAddedResourcesButtonClick() {
                             var tocPageIconWrapper = document.createElement('div');
                             tocPageIconWrapper.classList.add('tocPageIconWrapper');
 
-                            var tocPageIcon = document.createElement('img');
-                            tocPageIcon.src = 'image/peblDynamicIcon.png';
-                            tocPageIcon.classList.add('tocPageIcon');
+                            var tocPageIcon = document.createElement('i');
+                            tocPageIcon.classList.add('tocPageIcon', 'fa', 'fa-link');
 
                             // tocPageIconWrapper.appendChild(tocPageIcon);
 
@@ -2311,8 +2319,33 @@ function getNotificationsCount() {
     });
 }
 
+function getCurrentPrefix(page) {
+    globalPebl.getToc(function(obj) {
+        Object.keys(obj).forEach(function(section) {
+            Object.keys(obj[section]).forEach(function(subsection) {
+                if (obj[section][subsection].location && obj[section][subsection].location == page) {
+                    currentPrefix = obj[section][subsection].prefix;
+                    currentSection = "Section" + obj[section].Section.prefix;
+                    return getAddedResources();
+                } else if (obj[section][subsection].pages) {
+                    Object.keys(obj[section][subsection].pages).forEach(function(key) {
+                        if (obj[section][subsection].pages[key].location && obj[section][subsection].pages[key].location == page) {
+                            currentPrefix = obj[section][subsection].pages[key].prefix;
+                            currentSection = "Section" + obj[section].Section.prefix;
+                            return getAddedResources();
+                        }
+                   });
+                }
+            });
+        });
+    });
+}
+
 function getAddedResources() {
-    var currentPage = $('body')[0].baseURI.split('/').pop().slice(0, -6).substring(5);
+    var currentPage = $('body')[0].baseURI.split('/').pop();
+    if (currentPrefix == null) {
+        return getCurrentPrefix(currentPage);
+    }
     var docCounter = 0;
     if (currentPage && currentPage !== '') {
         globalPebl.getToc(function(obj) {
@@ -2320,11 +2353,11 @@ function getAddedResources() {
 
             Object.keys(tocObject).forEach(function(sectionKey) {
                 //Sections
-                Object.keys(tocObject[sectionKey]).forEach(function(pageKey) {
+                Object.keys(tocObject[sectionKey]).forEach(function(page) {
                     //Pages
-                    if (!pageKey.includes('Subsection')) {
+                    if (!page.includes('Subsection')) {
                         //Documents
-                        if (tocObject[sectionKey][pageKey].card === currentPage) {
+                        if (tocObject[sectionKey][page].card === currentPrefix) {
                             docCounter++;
                         }
                     }

@@ -36,7 +36,8 @@ button.chat,
 button.discussionCloseButton,
 button.chatSubmit,
 button.replyCloseButton,
-button.replySubmitButton,
+button.replySubmitButton
+button.notesSubmit,
 a.button {
     cursor: pointer;
     -webkit-border-radius: 5;
@@ -51,6 +52,7 @@ a.button {
 }
 
 button.chatSubmit,
+button.notesSubmit,
 button.replySubmitButton {
     background: #077ebc;
 }
@@ -175,14 +177,6 @@ button.discussionCloseButton {
 }
 
 /* Notes styles */
-.notesSubmit {
-    float: right;
-    margin-bottom: 10px !important;
-}
-
-.notesInput .notesSubmit {
-    margin: 0;
-}
 
 .notesInput label {
     display: block;
