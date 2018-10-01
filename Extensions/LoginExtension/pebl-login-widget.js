@@ -183,7 +183,7 @@ window.Lightbox = {
 			
 			for (var i = 0; i < keyValues.length; i++) {
 			    var kv = keyValues[i].split("=");
-			    if (kv[0] == "openid.identity") {
+			    if ((kv[0] == "openid.identity") || (kv[0] == "openid_identity")) {
 				username = decodeURIComponent(kv[1]);
 			    }
 			}	   
@@ -196,7 +196,7 @@ window.Lightbox = {
 	    
 	    $(document.body).append(loginFrame);
 	} else {
-	    loginFrame[0].src = "about:blank";
+	    loginFrame[0].src = "";
 	}
 
 	var lightBoxContent = $(document.getElementById('lightBoxContent'));
@@ -245,7 +245,7 @@ window.Lightbox = {
 	    
 	    $(document.body).append(loginFrame);
 	} else {
-	    loginFrame[0].src = "about:blank";
+	    loginFrame[0].src = "";
 	}
 
 	loginFrame.off();
@@ -267,7 +267,7 @@ window.Lightbox = {
 		    
 		    for (var i = 0; i < keyValues.length; i++) {
 			var kv = keyValues[i].split("=");
-			if (kv[0] == "openid.identity") {
+			if ((kv[0] == "openid.identity") || (kv[0] == "openid_identity")) {
 			    username = decodeURIComponent(kv[1]);
 			}
 		    }	   
