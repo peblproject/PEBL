@@ -1,11 +1,12 @@
 
-PEBL.registerReadyCallback(function() {
-    if (!window.PEBLbuttonLogin)
-	pebl.login(function() {
-	    dosomething();
-	});
-});
-
+if (!window.PEBLPreventAutoLogin) {
+    PEBL.registerReadyCallback(function() {
+	if (!window.PEBLbuttonLogin)
+	    pebl.login(function() {
+		dosomething();
+	    });
+    });
+}
 
 window.Lightbox = {
     close : function() {
