@@ -1337,7 +1337,7 @@ function createUITutorial() {
     var tutorialMessage = document.createElement('p');
     tutorialMessage.id = 'tutorialMessage';
     tutorialMessage.classList.add('tutorialMessage');
-    tutorialMessage.textContent = 'This is your PEBL toolbar, most of the functionality is located here. Take advantage of it!';
+    tutorialMessage.textContent = 'Because you are a first time user, you will now receive a short tour of PeBL features, starting with this Menu button. This button displays the PeBL toolbar. Most of the functionality is located here.';
     tutorialMessageContainer.appendChild(tutorialMessage);
 
     var tutorialMessageNextButton = document.createElement('label');
@@ -1369,7 +1369,7 @@ function nextTutorialStage() {
                 marginLeft: '50px'
             }, 500);
 
-            $('#tutorialMessage').text('The table of contents section allows you to view and navigate to all of major sections of your book.');
+            $('#tutorialMessage').text('The Table of Contents allows you to view and navigate to all major sections of your book.');
             $('#tutorialMessageContainer').attr('Stage', '2');
         }, 500);
     } else if (currentStage === '2') {
@@ -1381,7 +1381,7 @@ function nextTutorialStage() {
             marginLeft: '50px'
         }, 500);
 
-        $('#tutorialMessage').text('The Registry Search feature allows you to find the information you need quickly and easily from a wide variety of sources.');
+        $('#tutorialMessage').text('The Search Network feature allows you to find the information you need quickly and easily, from a wide variety of sources.');
         $('#tutorialMessageContainer').attr('Stage', '3');
     } else if (currentStage === '3') {
         $('#tutorialMessageContainer').animate({
@@ -2444,6 +2444,8 @@ function niceName(str) {
     str = str.replace(/\w\S*/g, function(txt) {
         return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
+    str = str.replace('Dei', 'DEI');
+    str = str.replace('Md', 'MD');
     return str;
 }
 
