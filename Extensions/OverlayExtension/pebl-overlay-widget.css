@@ -22,6 +22,12 @@ p.discussionQuestionBoxText {
     font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
 }
 
+.contentFlexContainer {
+    flex-basis: 0;
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
 .contentContainerWrapper {
     position: relative;
     height: 100%;
@@ -62,7 +68,12 @@ p.discussionQuestionBoxText {
     z-index: 10;
     background-color: white;
     max-width: 100%;
-    transition: all 2s ease;
+    transition: all 1s ease;
+}
+
+.contentFlexContainer {
+    max-width: 100%;
+    transition: all 1s ease;
 }
 
 .contentContainer {
@@ -71,11 +82,12 @@ p.discussionQuestionBoxText {
     flex-shrink: 1;
 }
 
-.contentContainer.contracted {
+.contentContainer.contracted,
+.contentFlexContainer.contracted {
     padding: 0;
     margin: 0;
     flex-shrink: 1000;
-    min-width: 0;
+    max-width: 0;
     min-height: 0;
     overflow: hidden;
 }
@@ -982,6 +994,7 @@ i.peblNotificationButton {
     width: 20px;
     margin-top: 8px;
     padding-left: 122px;
+    color: rgb(115, 115, 115) !important;
 }
 
 .tocPageTextWrapper,

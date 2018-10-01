@@ -8,14 +8,24 @@ var globalReadium;
 var filterTags = [];
 var allTags = [];
 var searchableTOC = null;
+var currentPrefix = null;
+var currentSection = null;
 
 window.addEventListener("message", receiveMessage, false);
 
 function receiveMessage(event) {
     var data = event.data;
+    var obj;
+    try {
+        obj = JSON.parse(data);
+    } catch(e) {
+
+    }
 
     if (data === 'ready') {
         frameIsReady = true;
+    } else if (obj && obj.message === "pullResource") {
+        globalPebl.eventPulled(obj.target, obj.location, currentPrefix, obj.url, obj.docType, obj.name, obj.externalURL);
     }
 }
 
@@ -451,7 +461,7 @@ function createSidebar() {
 }
 
 function closeSidebarExtendedFrame() {
-    $('.contentContainer').removeClass('contracted');
+    $('.contentFlexContainer').removeClass('contracted');
     $('.peblSidebarExtendedFrame').addClass('contracted');
     $('.peblSidebarSearchField').val('');
     resetTagFilter();
@@ -863,7 +873,7 @@ function displayFilteredTOC(posts) {
         }
     });
 
-    $('.contentContainer').addClass('contracted');
+    $('.contentFlexContainer').addClass('contracted');
     $('.peblSidebarExtendedFrame').removeClass('contracted');
 }
 
@@ -918,7 +928,7 @@ function getTagCount(elem, tagArr) {
 }
 
 function attachAddedResources() {
-    document.getElementsByClassName('contentContainerWrapper')[0].appendChild(createFooterAddedResourcesButton());
+    document.getElementsByClassName('contentFlexContainer')[0].appendChild(createFooterAddedResourcesButton());
 }
 
 function createFooterFindButton() {
@@ -1424,7 +1434,7 @@ function createNotifications() {
 
         Object.keys(notificationsObj).forEach(function(key) {
             var pulled;
-            if (notificationsObj[key].payload.actorId === globalPebl.getUserName()) {
+            if (notificationsObj[key].payload.actorId === globalPebl.userManager.profile.identity) {
                 pulled = true;
             } else {
                 pulled = false;
@@ -1461,8 +1471,8 @@ function createNotifications() {
 
             notificationElement.appendChild(notificationElementSenderText);
             notificationElement.appendChild(notificationElementContentText);
-            notificationElement.appendChild(toSpan);
-            notificationElement.appendChild(notificationElementLocationText);
+            // notificationElement.appendChild(toSpan);
+            // notificationElement.appendChild(notificationElementLocationText);
 
             notificationElementWrapper.appendChild(notificationElement);
             notificationsContainer.appendChild(notificationElementWrapper);
@@ -1547,7 +1557,7 @@ function createAskExpert() {
 
 
 function createRegistrySearch() {
-    var currentPage = $('body')[0].baseURI.split('/').pop().slice(0, -6).substring(5);
+    var currentPage = $('body')[0].baseURI.split('/').pop().slice(0, -6);
     clearUI();
     //Create the registrySearch page
     var registryContainer = document.createElement('div');
@@ -1579,7 +1589,8 @@ function createRegistrySearch() {
             var obj = {
                 "messageType": "Login",
                 "user": currentUser,
-                "currentPage": currentPage
+                "currentPage": currentPage,
+                "currentSection": currentSection
             }
             var message = JSON.stringify(obj);
             iframe.contentWindow.postMessage(message, '*');
@@ -1670,9 +1681,8 @@ function createTOC() {
                                     var tocPageIconWrapper = document.createElement('div');
                                     tocPageIconWrapper.classList.add('tocPageIconWrapper');
 
-                                    var tocPageIcon = document.createElement('img');
-                                    tocPageIcon.src = 'image/peblDynamicIcon.png';
-                                    tocPageIcon.classList.add('tocPageIcon');
+                                    var tocPageIcon = document.createElement('i');
+                                    tocPageIcon.classList.add('tocPageIcon', 'fa', 'fa-link');
 
                                     tocPageIconWrapper.appendChild(tocPageIcon);
 
@@ -1755,9 +1765,8 @@ function createTOC() {
                                     var tocPageIconWrapper = document.createElement('div');
                                     tocPageIconWrapper.classList.add('tocPageIconWrapper');
 
-                                    var tocPageIcon = document.createElement('img');
-                                    tocPageIcon.src = 'image/peblDynamicIcon.png';
-                                    tocPageIcon.classList.add('tocPageIcon');
+                                    var tocPageIcon = document.createElement('i');
+                                    tocPageIcon.classList.add('tocPageIcon', 'fa', 'fa-link');
 
                                     tocPageIconWrapper.appendChild(tocPageIcon);
 
@@ -2028,7 +2037,7 @@ function handleFindButtonClick() {
 function handleDiscussButtonClick() {
     closeLightBox();
     var currentBook = globalPebl.activityManager.currentBook;
-    var currentPage = $('body')[0].baseURI.split('/').pop().slice(0, -6).substring(5);
+    var currentPage = $('body')[0].baseURI.split('/').pop().slice(0, -6);
     var discussionId;
     var discussionTitle;
 
@@ -2100,7 +2109,7 @@ function handleDiscussButtonClick() {
 function handleNotesButtonClick() {
     closeLightBox();
     var currentBook = globalPebl.activityManager.currentBook;
-    var currentPage = $('body')[0].baseURI.split('/').pop().slice(0, -6).substring(5);
+    var currentPage = $('body')[0].baseURI.split('/').pop().slice(0, -6);
     var discussionId;
     var discussionTitle;
 
@@ -2189,7 +2198,7 @@ function handleAddedResourcesButtonClick() {
     if ($('#addedResourcesContainer').length) {
         hideAddedResources();
     } else {
-        var currentPage = $('body')[0].baseURI.split('/').pop().slice(0, -6).substring(5);
+        var currentPage = $('body')[0].baseURI.split('/').pop().slice(0, -6);
         var addedResourcesContainer = document.createElement('div');
         addedResourcesContainer.classList.add('addedResourcesContainer');
         if (Math.abs(window.orientation) === 90) {
@@ -2214,9 +2223,8 @@ function handleAddedResourcesButtonClick() {
                             var tocPageIconWrapper = document.createElement('div');
                             tocPageIconWrapper.classList.add('tocPageIconWrapper');
 
-                            var tocPageIcon = document.createElement('img');
-                            tocPageIcon.src = 'image/peblDynamicIcon.png';
-                            tocPageIcon.classList.add('tocPageIcon');
+                            var tocPageIcon = document.createElement('i');
+                            tocPageIcon.classList.add('tocPageIcon', 'fa', 'fa-link');
 
                             // tocPageIconWrapper.appendChild(tocPageIcon);
 
@@ -2311,8 +2319,25 @@ function getNotificationsCount() {
     });
 }
 
+function getCurrentPrefix(page) {
+    globalPebl.getToc(function(obj) {
+        Object.keys(obj).forEach(function(section) {
+            Object.keys(obj[section]).forEach(function(subsection) {
+                if (obj[section][subsection].location && obj[section][subsection].location == page) {
+                    currentPrefix = obj[section][subsection].prefix;
+                    currentSection = "Section" + obj[section].Section.prefix;
+                    return getAddedResources();
+                }
+            });
+        });
+    });
+}
+
 function getAddedResources() {
-    var currentPage = $('body')[0].baseURI.split('/').pop().slice(0, -6).substring(5);
+    var currentPage = $('body')[0].baseURI.split('/').pop();
+    if (currentPrefix == null) {
+        return getCurrentPrefix(currentPage);
+    }
     var docCounter = 0;
     if (currentPage && currentPage !== '') {
         globalPebl.getToc(function(obj) {
@@ -2324,7 +2349,7 @@ function getAddedResources() {
                     //Pages
                     if (!pageKey.includes('Subsection')) {
                         //Documents
-                        if (tocObject[sectionKey][pageKey].card === currentPage) {
+                        if (tocObject[sectionKey][pageKey].card === currentPrefix) {
                             docCounter++;
                         }
                     }
