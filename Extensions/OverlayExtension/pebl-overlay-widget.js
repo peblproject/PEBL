@@ -1316,9 +1316,9 @@ function setNotificationBadgeCounter(n) {
 }
 
 function setAccountName() {
-    if (typeof pebl !== 'undefined' && pebl.userManager.isLoggedIn === true) {
-        $('#accountName').text(pebl.userManager.profile.name);
-    }
+    // if (typeof pebl !== 'undefined' && pebl.userManager.isLoggedIn === true) {
+    //     $('#accountName').text(pebl.userManager.profile.name);
+    // }
 }
 
 //Tutorial
@@ -1585,7 +1585,7 @@ function createRegistrySearch() {
         if (frameIsReady) {
             clearInterval(waitingForReady);
             var iframe = document.getElementById('registryFrame');
-            var currentUser = pebl.userManager.profile.identity;
+            var currentUser = globalPebl.userManager.profile.identity;
             var obj = {
                 "messageType": "Login",
                 "user": currentUser,
@@ -1756,7 +1756,7 @@ function createTOC() {
 
                             tocPage.appendChild(tocPageTextWrapper);
                             tocSection.appendChild(tocPage);
-                            
+
                             var cardMatch = tocObject[sectionKey][pageKey].pages[cardKey].prefix;
                             //Add any dynamic documents associated with subpages
                             Object.keys(tocObject[sectionKey]).forEach(function(dynamicKey) {
@@ -2115,13 +2115,13 @@ function handleNotesButtonClick() {
 
     if ($('#dynamicPage').length) {
         var currentDynamicPage = $('#dynamicPage').attr('resource-id');
-        discussionId = currentDynamicPage + '_' + pebl.userManager.profile.name + '_Notes';
+        discussionId = currentDynamicPage + '_' + globalPebl.userManager.profile.name + '_Notes';
 
         var title = $('#dynamicPage').attr('title');
         discussionTitle = 'Added Resource - ' + title + ' Notes';
 
     } else {
-        discussionId = currentPage + '_' + pebl.userManager.profile.name + '_Notes';
+        discussionId = currentPage + '_' + globalPebl.userManager.profile.name + '_Notes';
         discussionTitle = $('h1.title').text() + ' Notes';
     }
 

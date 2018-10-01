@@ -1,4 +1,16 @@
 $(document).ready(function() {
+    var setGlobalPebl = setInterval(function() {
+        if (window.top && window.top.pebl) {
+            globalPebl = window.top.pebl;
+            clearInterval(setGlobalPebl);
+        }
+        else if (window.pebl) {
+            globalPebl = window.pebl
+            clearInterval(setGlobalPebl);
+        }
+        console.log('globalpebl');
+    }, 10);
+
     $('.discussion_discussionExtension').each(function() {
         var buttonText = $(this)[0].getAttribute('data-buttonText');
         var prompt = $(this)[0].getAttribute('data-prompt');
@@ -100,11 +112,7 @@ function messageHandler(responseBox, thread, replyDisabled) {
     for (var i = 0; i < newMessages.length; i++) {
         var message = newMessages[i];
         if ($("#" + message.id).length == 0) {
-            var mine;
-            if (window.top.pebl != null)
-                mine = window.top.pebl.getUserName() == message.name;
-            else
-                mine = pebl.getUserName() == message.name;
+            var mine = globalPebl.getUserName() == message.name;;
             var userIcon = document.createElement('i');
             userIcon.classList.add('fa', 'fa-user');
             var userIdBox = $('<span class="userId"></span>');
@@ -151,10 +159,7 @@ function messageHandler(responseBox, thread, replyDisabled) {
             responseBox.prepend(messageContainer);
             var thread = 'peblThread://' + message.id;
             var messageHandle = messageHandler($(chatReplies), thread);
-            if (window.top.pebl != null)
-                window.top.pebl.subscribeToDiscussion(thread, messageHandle);
-            else
-                pebl.subscribeToDiscussion(thread, messageHandle);
+            globalPebl.subscribeToDiscussion(thread, messageHandle);
         }
     }
     };
@@ -164,10 +169,7 @@ function createThread(thread, element, moreInput) {
     var chatInputBox = $(element).parent();
     var responseBox = chatInputBox.siblings('.chatResponses');
     var messageHandle = messageHandler(responseBox, thread);
-    if (window.top.pebl != null)
-        window.top.pebl.subscribeToDiscussion(thread, messageHandle);
-    else
-        pebl.subscribeToDiscussion(thread, messageHandle);
+    globalPebl.subscribeToDiscussion(thread, messageHandle);
     var input = $(element).parent().find("textarea").val();
     var prompt = $(element).parent().parent().parent().children("p").text();
     if (input.trim() != "") {
@@ -177,10 +179,7 @@ function createThread(thread, element, moreInput) {
         "thread" : thread,
         "text" : input
     };
-    if (window.top.pebl != null)
-        window.top.pebl.postMessage(message);
-    else
-        pebl.postMessage(message);
+    globalPebl.postMessage(message);
     if (!moreInput)
         chatInputBox.slideUp(400,
                  function () {
@@ -196,10 +195,7 @@ function createThread(thread, element, moreInput) {
 function createSubThread(thread, prompt, textarea, responseBox) {
     var messageHandle = messageHandler(responseBox, thread);
     var input = textarea.val();
-    if (window.top.pebl != null)
-        window.top.pebl.subscribeToDiscussion(thread, messageHandle);
-    else
-        pebl.subscribeToDiscussion(thread, messageHandle);
+    globalPebl.subscribeToDiscussion(thread, messageHandle);
     if (input.trim() != "") {
         var message = {
             "prompt": prompt,
@@ -207,10 +203,7 @@ function createSubThread(thread, prompt, textarea, responseBox) {
             "thread": thread,
             "text": input
         };
-        if (window.top.pebl != null)
-            window.top.pebl.postMessage(message);
-        else
-            pebl.postMessage(message);
+        globalPebl.postMessage(message);
         textarea.val("");
     }
 }
@@ -294,10 +287,8 @@ function createDiscussionBox(element, chatButton) {
 
     var responseBox = $('.chatResponses');
     var messageHandle = messageHandler(responseBox, chatButton.id);
-    if (window.top.pebl != null)
-        window.top.pebl.subscribeToDiscussion(chatButton.id, messageHandle);
-    else
-        pebl.subscribeToDiscussion(chatButton.id, messageHandle);
+    globalPebl.subscribeToDiscussion(chatButton.id, messageHandle);
+    
     responseBox.slideDown();
 
     chatInput.on('click', 'button.chatSubmit', function () {
@@ -317,7 +308,7 @@ function handleChatButtonClick() {
     if (window.top.pebl != null || pebl != null) {
     if ((this.id != null) && (this.id != "")) {
         if (element.parent().children(".chatBox").length == 0) {
-            if (window.pebl.userManager.isLoggedIn) {
+            if (globalPebl.userManager.isLoggedIn) {
                 openDiscussionLightbox(question, this);
                 $('#discussionTextArea').focus();
             } else if (window.Lightbox) {
