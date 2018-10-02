@@ -10,6 +10,7 @@ var allTags = [];
 var searchableTOC = null;
 var currentPrefix = null;
 var currentSection = null;
+var searchTerms = [];
 
 window.addEventListener("message", receiveMessage, false);
 
@@ -75,7 +76,6 @@ $(document).ready(function() {
     //var fixIframes = setInterval(fixIframeScrolling, 500);
     var updateAddedResourceCount = setInterval(getAddedResources, 2000);
     var updateNotificationsCount = setInterval(getNotificationsCount, 2000);
-    var searchTerms = [];
 
     openDocumentAtDestination();
 
