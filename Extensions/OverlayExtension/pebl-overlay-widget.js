@@ -2057,7 +2057,23 @@ function handleOverlayCloseButtonClick() {
 }
 
 function handleFindButtonClick() {
-    $('#findMenuContainer').removeClass('hidden');
+    handleExpandButtonClick();
+    handleRegistryButtonClick();
+
+    var waitingForReady = setInterval(function() {
+        if (frameIsReady) {
+            clearInterval(waitingForReady);
+            var iframe = document.getElementById('registryFrame');
+            var obj = {
+                "messageType": "Find",
+                "findType": ["Resources"],
+                "searchTerms": searchTerms
+            }
+            var message = JSON.stringify(obj);
+            iframe.contentWindow.postMessage(message, '*');
+        }
+    }, 500);
+    //$('#findMenuContainer').removeClass('hidden');
 }
 
 function handleDiscussButtonClick() {
