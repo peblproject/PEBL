@@ -1204,6 +1204,10 @@ i.dynamicPageCloseButton, i.overlayCloseButton {
     font-weight: bold;
 }
 
+i.dynamicPageCloseButton {
+    top: 51px;
+}
+
 i.peblSidebarExtendedFrameCloseButton {
     cursor: pointer;
     position: absolute;

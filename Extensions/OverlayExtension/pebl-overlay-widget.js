@@ -225,14 +225,38 @@ $(document).ready(function() {
     });
 
     $(document.body).on('click', '.notificationElementWrapper', function(e) {
-        sendDocumentToDestination($(this).attr('url'), $(this).attr('docType'), $(this).attr('externalURL'), $(this).attr('title'));
-        globalPebl.removeNotification($(this).attr('notification-id'));
-        if ($('body')[0].baseURI.split('/').pop() === $(this).attr('destination')) {
-            $('#notificationsContainer').remove();
-            openDocumentAtDestination();
-        } else {
-            globalReadium.reader.openContentUrl($(this).attr('destination'));
-        }
+        var prefix = $(this).attr('destination');
+        var url = $(this).attr('url');
+        var docType = $(this).attr('docType');
+        var externalURL = $(this).attr('externalURL');
+        var title = $(this).attr('title');
+        var notificationID = $(this).attr('notification-id');
+        var destination = null;
+        globalPebl.getToc(function(toc) {
+            Object.keys(toc).forEach(function(section) {
+                Object.keys(toc[section]).forEach(function(subsection) {
+                    if (toc[section][subsection].prefix && toc[section][subsection].prefix === prefix) {
+                        destination = toc[section][subsection].location;
+                    } else if (toc[section][subsection].pages) {
+                        Object.keys(toc[section][subsection].pages).forEach(function(page) {
+                            if (toc[section][subsection].pages[page].prefix && toc[section][subsection].pages[page].prefix === prefix) {
+                                destination = toc[section][subsection].pages[page].location;
+                            }
+                        });
+                    }
+                });
+            });
+            if (destination != null) {
+                sendDocumentToDestination(url, docType, externalURL, title);
+                globalPebl.removeNotification(notificationID);
+                if ($('body')[0].baseURI.split('/').pop() === destination) {
+                    $('#notificationsContainer').remove();
+                    openDocumentAtDestination();
+                } else {
+                    globalReadium.reader.openContentUrl(destination);
+                }
+            }
+        });
     });
 
     window.onorientationchange = handleOrientationChange;
@@ -1445,7 +1469,7 @@ function createNotifications() {
             notificationElementWrapper.setAttribute('docType', notificationsObj[key].payload.docType);
             notificationElementWrapper.setAttribute('externalURL', notificationsObj[key].payload.externalURL);
             notificationElementWrapper.setAttribute('title', notificationsObj[key].payload.name);
-            notificationElementWrapper.setAttribute('destination', 'Page-' + notificationsObj[key].payload.card + '.xhtml');
+            notificationElementWrapper.setAttribute('destination', notificationsObj[key].payload.card);
             notificationElementWrapper.setAttribute('notification-id', notificationsObj[key].id);
 
             var notificationElement = document.createElement('p');
