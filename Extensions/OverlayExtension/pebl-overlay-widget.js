@@ -232,6 +232,7 @@ $(document).ready(function() {
         var title = $(this).attr('title');
         var notificationID = $(this).attr('notification-id');
         var destination = null;
+        globalPebl.removeNotification(notificationID);
         globalPebl.getToc(function(toc) {
             Object.keys(toc).forEach(function(section) {
                 Object.keys(toc[section]).forEach(function(subsection) {
@@ -1504,7 +1505,6 @@ function createNotifications() {
 
             notificationElementWrapper.appendChild(notificationElement);
             notificationsContainer.appendChild(notificationElementWrapper);
-            globalPebl.removeNotification(notificationsObj[key].id);
         });
 
         document.getElementById('peblNotificationButtonContainer').appendChild(notificationsContainer);
