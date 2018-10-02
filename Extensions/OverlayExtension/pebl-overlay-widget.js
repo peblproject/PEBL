@@ -454,9 +454,14 @@ function createSidebar() {
                 element.appendChild(count);
                 container.appendChild(element);
             }
-
-            sidebarTagList.appendChild(header);
-            sidebarTagList.appendChild(container);
+            //TODO: Don't hard code this order
+            if (i === "md_addiction") {
+                $(sidebarTagList).prepend($(container));
+                $(sidebarTagList).prepend($(header));
+            } else {
+                sidebarTagList.appendChild(header);
+                sidebarTagList.appendChild(container);
+            }
         }
     }
 
