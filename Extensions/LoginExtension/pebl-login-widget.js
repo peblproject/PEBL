@@ -290,9 +290,9 @@ window.Lightbox = {
 
 	logoutFunction = function () {
 	    loginButton.off();
-	    loginButton.val("logout");
+	    loginButton.val("Logout");
 	    loginButton.on("click", function () {
-		loginButton.val("login");
+		loginButton.val("Login");
 		loginButton.off();
 		loginButton.on("click", loginFunction);
 		pebl.logout();
