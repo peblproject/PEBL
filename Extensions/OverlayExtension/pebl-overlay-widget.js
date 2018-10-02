@@ -2065,6 +2065,11 @@ function handleFindButtonClick() {
     handleExpandButtonClick();
     handleRegistryButtonClick();
 
+    var keywords = [];
+    if (window.pageMetadata && window.pageMetadata["_seopress_analysis_target_kw"]) {
+        keywords = window.pageMetadata["_seopress_analysis_target_kw"].split(',');
+    }
+
     var waitingForReady = setInterval(function() {
         if (frameIsReady) {
             clearInterval(waitingForReady);
@@ -2072,7 +2077,7 @@ function handleFindButtonClick() {
             var obj = {
                 "messageType": "Find",
                 "findType": ["Resources"],
-                "searchTerms": searchTerms
+                "searchTerms": keywords
             }
             var message = JSON.stringify(obj);
             iframe.contentWindow.postMessage(message, '*');
