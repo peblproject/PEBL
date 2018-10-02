@@ -248,7 +248,6 @@ $(document).ready(function() {
             });
             if (destination != null) {
                 sendDocumentToDestination(url, docType, externalURL, title);
-                globalPebl.removeNotification(notificationID);
                 if ($('body')[0].baseURI.split('/').pop() === destination) {
                     $('#notificationsContainer').remove();
                     openDocumentAtDestination();
@@ -1505,6 +1504,7 @@ function createNotifications() {
 
             notificationElementWrapper.appendChild(notificationElement);
             notificationsContainer.appendChild(notificationElementWrapper);
+            globalPebl.removeNotification(notificationsObj[key].id);
         });
 
         document.getElementById('peblNotificationButtonContainer').appendChild(notificationsContainer);
