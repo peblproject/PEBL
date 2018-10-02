@@ -372,7 +372,7 @@ p.discussionQuestionBoxText {
 
 .footerIcon {
     position: relative;
-    padding-bottom: 15px;
+    padding-bottom: 0;
     font-size: 8vmin !important;
 }
 
