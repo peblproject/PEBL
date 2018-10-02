@@ -126,6 +126,7 @@ button.discussionCloseButton {
     margin-left: -1em;
     margin-right: -1em;
     overflow: auto;
+    -webkit-overflow-scrolling: touch;
     font-family: "Helvetica Neue", sans-serif;
     font-style: normal;
     font-weight: normal;
@@ -198,6 +199,7 @@ button.discussionCloseButton {
     margin-right: -1em;
     max-height: none;
     overflow: auto;
+    -webkit-overflow-scrolling: touch;
     font-family: "Helvetica Neue", sans-serif;
     font-style: normal;
     font-weight: normal;
