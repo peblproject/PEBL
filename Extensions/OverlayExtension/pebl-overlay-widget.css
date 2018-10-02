@@ -847,8 +847,8 @@ i.peblNotificationButton {
     height: calc(93vh - 100px);
     -webkit-box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
     box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
-    width: 98%;
-    margin: 5px;
+    width: 100%;
+    margin: 0;
     position: relative;
 }
 
@@ -876,14 +876,14 @@ i.peblNotificationButton {
 
 .tocContainer {
     flex-basis: 100%;
-    width: 98%;
+    width: 100%;
     height: calc(93vh - 100px);
     position: relative;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
     background-color: white;
     z-index: 10001;
-    margin: 5px;
+    margin: 0;
     -webkit-box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
     box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
 }
@@ -1158,8 +1158,8 @@ i.peblNotificationButton {
 
 .dynamicPageHeader {
     position: fixed;
-    width: 98%;
-    left: 1%;
+    width: 100%;
+    left: 0;
     top: 50px;
     background-color: rgb(228, 228, 228);
     height: 50px;
@@ -1180,8 +1180,8 @@ i.peblNotificationButton {
 
 .dynamicPage {
     position: fixed;
-    width: 98%;
-    left: 1%;
+    width: 100%;
+    left: 0;
     top: 100px;
     bottom: 50px;
     background-color: white;
@@ -1194,8 +1194,8 @@ i.peblNotificationButton {
     position: relative;
     height: 99%;
     border: none;
-    width: 98%;
-    margin: 5px;
+    width: 100%;
+    margin: 0;
 }
 
 i.dynamicPageCloseButton, i.overlayCloseButton {
