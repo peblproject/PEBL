@@ -455,7 +455,7 @@ function createSidebar() {
                 container.appendChild(element);
             }
             //TODO: Don't hard code this order
-            if (i === "md_addiction") {
+            if (i === "md_addiction" || i === "dei_competency") {
                 $(sidebarTagList).prepend($(container));
                 $(sidebarTagList).prepend($(header));
             } else {
