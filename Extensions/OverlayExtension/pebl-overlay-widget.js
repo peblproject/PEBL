@@ -2073,7 +2073,7 @@ function handleFindButtonClick() {
     if (window.pageMetadata && window.pageMetadata["_seopress_analysis_target_kw"]) {
         keywords = window.pageMetadata["_seopress_analysis_target_kw"].split(',');
     } else if ($('#fake-page')[0].hasAttribute('keywords')) {
-        keywords = $('fake-page').attr('keywords').split(',');
+        keywords = $('#fake-page').attr('keywords').split(',');
     }
 
     var waitingForReady = setInterval(function() {
