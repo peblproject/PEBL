@@ -372,6 +372,7 @@ function createTags() {
     $('.contentContainer').prepend(showCardTagsButton);
     if ($('.cardTagContainer').children().length > 0) {
         $('.showCardTagsButton').removeClass('hidden');
+		toggleCardTags();  // Now turning on tags by default when they are present
     }
 }
 
