@@ -330,49 +330,51 @@ function createFooter() {
 function createTags() {
     var tags = window.pageCategories;
 
-    var showCardTagsButton = document.createElement('button');
-    showCardTagsButton.classList.add('showCardTagsButton', 'contracted', 'hidden');
-    showCardTagsButton.addEventListener('click', function() {
-        toggleCardTags();
-    });
+    if (tags) {
+        var showCardTagsButton = document.createElement('button');
+        showCardTagsButton.classList.add('showCardTagsButton', 'contracted', 'hidden');
+        showCardTagsButton.addEventListener('click', function() {
+            toggleCardTags();
+        });
 
-    var tagContainer = document.createElement('div');
-    tagContainer.classList.add('cardTagContainer', 'contracted');
+        var tagContainer = document.createElement('div');
+        tagContainer.classList.add('cardTagContainer', 'contracted');
 
-    Object.keys(tags).forEach(function(key, index) {
-        if (tags[key].length > 0) {
-            var tagGroup = document.createElement('div');
-            tagGroup.classList.add('cardTagGroup');
+        Object.keys(tags).forEach(function(key, index) {
+            if (tags[key].length > 0) {
+                var tagGroup = document.createElement('div');
+                tagGroup.classList.add('cardTagGroup');
 
-            for (var i = 0; i < tags[key].length; i++) {
-                var tag = document.createElement('div');
-                tag.classList.add('cardTag', key);
-                tag.setAttribute('data-bucket', key);
-                tag.setAttribute('data-tag', tags[key][i]);
-                tag.addEventListener('click', function(event) {
-                    var bucket = event.currentTarget.getAttribute('data-bucket');
-                    var tag = event.currentTarget.getAttribute('data-tag');
+                for (var i = 0; i < tags[key].length; i++) {
+                    var tag = document.createElement('div');
+                    tag.classList.add('cardTag', key);
+                    tag.setAttribute('data-bucket', key);
+                    tag.setAttribute('data-tag', tags[key][i]);
+                    tag.addEventListener('click', function(event) {
+                        var bucket = event.currentTarget.getAttribute('data-bucket');
+                        var tag = event.currentTarget.getAttribute('data-tag');
 
-                    var elem = $('#peblSidebar').find('div[data-bucket="' + bucket + '"]').filter('div[data-tag="' + tag + '"]');
-                    $('.peblSidebarTagList').scrollTop($('.peblSidebarTagList').scrollTop() + (elem.position().top - $('.peblSidebarTagList').position().top) - ($('.peblSidebarTagList').height()/2) + (elem.height()/2)  );
-                    elem.click();
-                });
+                        var elem = $('#peblSidebar').find('div[data-bucket="' + bucket + '"]').filter('div[data-tag="' + tag + '"]');
+                        $('.peblSidebarTagList').scrollTop($('.peblSidebarTagList').scrollTop() + (elem.position().top - $('.peblSidebarTagList').position().top) - ($('.peblSidebarTagList').height()/2) + (elem.height()/2)  );
+                        elem.click();
+                    });
 
-                var tagText = document.createElement('span');
-                tagText.classList.add('cardTagText');
-                tagText.textContent = tags[key][i];
+                    var tagText = document.createElement('span');
+                    tagText.classList.add('cardTagText');
+                    tagText.textContent = tags[key][i];
 
-                tag.appendChild(tagText);
-                tagGroup.appendChild(tag);
+                    tag.appendChild(tagText);
+                    tagGroup.appendChild(tag);
+                }
+                tagContainer.appendChild(tagGroup);
             }
-            tagContainer.appendChild(tagGroup);
+        });
+        $('.contentContainer').prepend(tagContainer);
+        $('.contentContainer').prepend(showCardTagsButton);
+        if ($('.cardTagContainer').children().length > 0) {
+            $('.showCardTagsButton').removeClass('hidden');
+            toggleCardTags();  // Now turning on tags by default when they are present
         }
-    });
-    $('.contentContainer').prepend(tagContainer);
-    $('.contentContainer').prepend(showCardTagsButton);
-    if ($('.cardTagContainer').children().length > 0) {
-        $('.showCardTagsButton').removeClass('hidden');
-		toggleCardTags();  // Now turning on tags by default when they are present
     }
 }
 
@@ -400,94 +402,95 @@ function createSidebar() {
     var allCatAttr = window.pageAllCategories;
     var categories = allCatAttr ? allCatAttr : window.pageCategories;
     
+    if (categories) {
+        var sidebar = document.createElement('div');
+        sidebar.id = 'peblSidebar';
+        sidebar.classList.add('peblSidebar');
 
-    var sidebar = document.createElement('div');
-    sidebar.id = 'peblSidebar';
-    sidebar.classList.add('peblSidebar');
+        var sidebarTagList = document.createElement('div');
+        sidebarTagList.classList.add('peblSidebarTagList');
 
-    var sidebarTagList = document.createElement('div');
-    sidebarTagList.classList.add('peblSidebarTagList');
+        sidebar.appendChild(createSidebarSearch());
 
-    sidebar.appendChild(createSidebarSearch());
-
-    for (var i in categories) {
-        for (var j = 0; j < categories[i].length; j++) {
-            allTags.push(i + "|" + categories[i][j]);
-        }
-    }
-
-    for (var i in categories) {
-        if (categories[i].length > 0) {
-            var header = document.createElement('div');
-            header.classList.add('sidebarTagHeader');
-
-            var headerText = document.createElement('span');
-            headerText.classList.add('sidebarTagHeaderText');
-            headerText.textContent = niceName(i);
-
-            header.appendChild(headerText);
-
-            var container = document.createElement('div');
-            container.classList.add('sidebarTagContainer');
-
+        for (var i in categories) {
             for (var j = 0; j < categories[i].length; j++) {
-                var element = document.createElement('div');
-                element.classList.add('sidebarTagElement');
-                element.addEventListener('click', function() {
-                    filterPosts(event);
-                });
-                element.setAttribute('data-bucket', i);
-                element.setAttribute('data-tag', categories[i][j]);
-
-                var text = document.createElement('span');
-                text.classList.add('sidebarTagText');
-                text.textContent = categories[i][j];
-
-                var count = document.createElement('span');
-                count.classList.add('sidebarTagCount');
-                (function(count, i, j, categories) {
-                    setTimeout(function() {
-                        getTagCount(count, [i + "|" + categories[i][j]]);
-                    }, 1000);
-                })(count, i, j, categories);
-
-                element.appendChild(text);
-                element.appendChild(count);
-                container.appendChild(element);
-            }
-            //TODO: Don't hard code this order
-            if (i === "md_addiction" || i === "dei_competency") {
-                $(sidebarTagList).prepend($(container));
-                $(sidebarTagList).prepend($(header));
-            } else {
-                sidebarTagList.appendChild(header);
-                sidebarTagList.appendChild(container);
+                allTags.push(i + "|" + categories[i][j]);
             }
         }
+
+        for (var i in categories) {
+            if (categories[i].length > 0) {
+                var header = document.createElement('div');
+                header.classList.add('sidebarTagHeader');
+
+                var headerText = document.createElement('span');
+                headerText.classList.add('sidebarTagHeaderText');
+                headerText.textContent = niceName(i);
+
+                header.appendChild(headerText);
+
+                var container = document.createElement('div');
+                container.classList.add('sidebarTagContainer');
+
+                for (var j = 0; j < categories[i].length; j++) {
+                    var element = document.createElement('div');
+                    element.classList.add('sidebarTagElement');
+                    element.addEventListener('click', function() {
+                        filterPosts(event);
+                    });
+                    element.setAttribute('data-bucket', i);
+                    element.setAttribute('data-tag', categories[i][j]);
+
+                    var text = document.createElement('span');
+                    text.classList.add('sidebarTagText');
+                    text.textContent = categories[i][j];
+
+                    var count = document.createElement('span');
+                    count.classList.add('sidebarTagCount');
+                    (function(count, i, j, categories) {
+                        setTimeout(function() {
+                            getTagCount(count, [i + "|" + categories[i][j]]);
+                        }, 1000);
+                    })(count, i, j, categories);
+
+                    element.appendChild(text);
+                    element.appendChild(count);
+                    container.appendChild(element);
+                }
+                //TODO: Don't hard code this order
+                if (i === "md_addiction" || i === "dei_competency") {
+                    $(sidebarTagList).prepend($(container));
+                    $(sidebarTagList).prepend($(header));
+                } else {
+                    sidebarTagList.appendChild(header);
+                    sidebarTagList.appendChild(container);
+                }
+            }
+        }
+
+        sidebar.appendChild(sidebarTagList);
+
+        var sidebarExpandButton = document.createElement('div');
+        sidebarExpandButton.classList.add('peblSidebarExpandButton', 'contracted');
+        sidebarExpandButton.addEventListener('click', function() {
+            $('#peblSidebar').toggleClass('expanded');
+            $(this).toggleClass('expanded');
+            $(this).toggleClass('contracted');
+        });
+
+        var sidebarExtendedFrame = document.createElement('div');
+        sidebarExtendedFrame.classList.add('peblSidebarExtendedFrame', 'contracted');
+
+        var sidebarExtendedFrameCloseButton = document.createElement('i');
+        sidebarExtendedFrameCloseButton.classList.add('fa', 'fa-times', 'peblSidebarExtendedFrameCloseButton');
+        sidebarExtendedFrameCloseButton.addEventListener('click', closeSidebarExtendedFrame);
+
+        sidebarExtendedFrame.appendChild(sidebarExtendedFrameCloseButton);
+
+        $('.contentContainerWrapper').append(sidebarExtendedFrame);
+        $('.contentContainerWrapper').append(sidebarExpandButton);
+        $('.contentContainerWrapper').append(sidebar);
     }
-
-    sidebar.appendChild(sidebarTagList);
-
-    var sidebarExpandButton = document.createElement('div');
-    sidebarExpandButton.classList.add('peblSidebarExpandButton', 'contracted');
-    sidebarExpandButton.addEventListener('click', function() {
-        $('#peblSidebar').toggleClass('expanded');
-        $(this).toggleClass('expanded');
-        $(this).toggleClass('contracted');
-    });
-
-    var sidebarExtendedFrame = document.createElement('div');
-    sidebarExtendedFrame.classList.add('peblSidebarExtendedFrame', 'contracted');
-
-    var sidebarExtendedFrameCloseButton = document.createElement('i');
-    sidebarExtendedFrameCloseButton.classList.add('fa', 'fa-times', 'peblSidebarExtendedFrameCloseButton');
-    sidebarExtendedFrameCloseButton.addEventListener('click', closeSidebarExtendedFrame);
-
-    sidebarExtendedFrame.appendChild(sidebarExtendedFrameCloseButton);
-
-    $('.contentContainerWrapper').append(sidebarExtendedFrame);
-    $('.contentContainerWrapper').append(sidebarExpandButton);
-    $('.contentContainerWrapper').append(sidebar);
 }
 
 function closeSidebarExtendedFrame() {
@@ -2069,6 +2072,8 @@ function handleFindButtonClick() {
     var keywords = [];
     if (window.pageMetadata && window.pageMetadata["_seopress_analysis_target_kw"]) {
         keywords = window.pageMetadata["_seopress_analysis_target_kw"].split(',');
+    } else if ($('#fake-page')[0].hasAttribute('keywords')) {
+        keywords = $('fake-page').attr('keywords').split(',');
     }
 
     var waitingForReady = setInterval(function() {
@@ -2372,7 +2377,7 @@ function getCurrentPrefix(page) {
     globalPebl.getToc(function(obj) {
         Object.keys(obj).forEach(function(section) {
             Object.keys(obj[section]).forEach(function(subsection) {
-                if (obj[section][subsection].location && obj[section][subsection].location == page) {
+                if (obj[section][subsection].location && !obj[section][subsection].fake && obj[section][subsection].location == page) {
                     currentPrefix = obj[section][subsection].prefix;
                     currentSection = "Section" + obj[section].Section.prefix;
                     return getAddedResources();
