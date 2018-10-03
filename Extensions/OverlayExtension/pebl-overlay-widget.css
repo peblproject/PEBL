@@ -53,27 +53,42 @@ p.discussionQuestionBoxText {
 
 .contentContainer,
 .peblSidebarExtendedFrame {
-    border-radius: 10px;
+    /*border-radius: 10px;*/
     padding: 1em;
-    padding-left: 2em;
+    /*padding-left: 2em;
     padding-right: 2em;
     margin-left: 1em;
-    margin-right: 1em;
+    margin-right: 1em;*/
     position: relative;
     max-height: calc(86vh - 100px);
-    -webkit-box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
-    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
     overflow: auto;
     -webkit-overflow-scrolling: touch;
     z-index: 10;
     background-color: white;
     max-width: 100%;
-    transition: all 1s ease;
+    transition: all 0.5s ease;
 }
 
 .contentFlexContainer {
     max-width: 100%;
-    transition: all 1s ease;
+    transition: all 0.5s ease;
+}
+
+.contentInnerFlexContainer {
+    display: flex;
+    -webkit-box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    margin-left: 1em;
+    border-radius: 10px;
+    max-height: 100%;
+    transition: all 0.5s ease;
+}
+
+.contentInnerFlexContainer.contractedVertical {
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    max-height: 0;
 }
 
 .contentContainer {
@@ -92,8 +107,7 @@ p.discussionQuestionBoxText {
     padding: 0;
 }
 
-.contentContainer.contracted,
-.contentFlexContainer.contracted {
+.contentContainer.contracted {
     padding: 0;
     margin: 0;
     flex-shrink: 1000;
@@ -154,9 +168,8 @@ p.discussionQuestionBoxText {
 }
 
 .cardTagContainer {
-    display: flex;
-    flex-direction: column;
-    transition: all 1s ease;
+    display: block;
+    margin-top: 1em;
     overflow: hidden;
 }
 
@@ -213,13 +226,12 @@ p.discussionQuestionBoxText {
 .peblSidebar {
     font-family: Helvetica;
     max-width: 0;
-    max-height: calc(68vh - 60px);
+    max-height: calc(86vh - 100px);
     background: white;
-    transition: width 1s;
     margin-left: 10px;
     display: flex;
     flex-direction: column;
-    transition: all 1s ease;
+    transition: all 0.5s ease;
 }
 
 .peblSidebar.expanded {
@@ -229,11 +241,11 @@ p.discussionQuestionBoxText {
 
 .peblSidebarExpandButton {
     width: 2em;
-    height: calc(68vh - 60px);
+    /*height: calc(68vh - 60px);*/
     background: rgb(7, 126, 188);
     position: relative;
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
     flex-shrink: 0;
 }
 
@@ -274,6 +286,14 @@ p.discussionQuestionBoxText {
     margin: 0;
 }
 
+.peblSidebarExtendedFrame.contractedVertical {
+    min-height: 0;
+    max-height: 0;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+}
+
 .peblSidebarSearchContainer {
     display: flex;
     justify-content: center;
@@ -308,10 +328,6 @@ p.discussionQuestionBoxText {
     display: flex;
     flex-direction: column;
     padding: 5px;
-}
-
-.sidebarTagElement:nth-child(n+2) {
-    border-top: none;
 }
 
 .sidebarTagElement {
@@ -422,6 +438,7 @@ p.discussionQuestionBoxText {
     height: calc(68vh - 60px);
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
+    margin-right: 0;
 }
 
 .addedResourcesButtonContainer {
@@ -430,16 +447,16 @@ p.discussionQuestionBoxText {
     background-color: rgb(7, 126, 188);
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
-    height: 50px;
-    margin-left: 16px;
-    margin-right: 16px;
+    height: 2em;
+    margin-left: 1em;
+    margin-right: 2em;
     position: relative;
-    bottom: 5px;
+    bottom: 0;
     z-index: 5;
     text-align: center;
     animation-name: slideResourceButtonContainer;
-    animation-duration: 1s;
-    transition: all 1s ease;
+    animation-duration: 0.5s;
+    transition: all 0.5s ease;
 }
 
 .findButton, .discussButton, .notesButton {
@@ -533,6 +550,7 @@ p.discussionQuestionBoxText {
 
 
 .addedResourcesContainer {
+    text-align: left;
     height: 90%;
     background-color: white;
     padding: 20px;
@@ -540,7 +558,8 @@ p.discussionQuestionBoxText {
     overflow: auto;
     -webkit-overflow-scrolling: touch;
     border-radius: 5px;
-    box-shadow: 2px 10px 23px -2px rgba(0, 0, 0, 0.58);
+    -webkit-box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
     z-index: 500;
 }
 

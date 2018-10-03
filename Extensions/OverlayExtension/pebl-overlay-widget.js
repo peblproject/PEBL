@@ -31,6 +31,7 @@ function receiveMessage(event) {
 }
 
 $(document).ready(function() {
+    console.log('EXECUTING CODE');
     var setGlobalPebl = setInterval(function() {
         if (window.top && window.top.pebl) {
             globalPebl = window.top.pebl;
@@ -72,7 +73,7 @@ $(document).ready(function() {
     }catch(e){}
     displayUITutorial();
 
-    var checkAccount = setInterval(setAccountName, 1000);
+    //var checkAccount = setInterval(setAccountName, 1000);
     //var fixIframes = setInterval(fixIframeScrolling, 500);
     var updateAddedResourceCount = setInterval(getAddedResources, 2000);
     var updateNotificationsCount = setInterval(getNotificationsCount, 2000);
@@ -338,12 +339,12 @@ function createTags() {
         });
 
         var tagContainer = document.createElement('div');
-        tagContainer.classList.add('cardTagContainer', 'contracted');
+        tagContainer.classList.add('cardTagContainer', 'expanded');
 
         Object.keys(tags).forEach(function(key, index) {
             if (tags[key].length > 0) {
-                var tagGroup = document.createElement('div');
-                tagGroup.classList.add('cardTagGroup');
+                // var tagGroup = document.createElement('div');
+                // tagGroup.classList.add('cardTagGroup');
 
                 for (var i = 0; i < tags[key].length; i++) {
                     var tag = document.createElement('div');
@@ -364,17 +365,17 @@ function createTags() {
                     tagText.textContent = tags[key][i];
 
                     tag.appendChild(tagText);
-                    tagGroup.appendChild(tag);
+                    tagContainer.appendChild(tag);
                 }
-                tagContainer.appendChild(tagGroup);
+                // tagContainer.appendChild(tagGroup);
             }
         });
-        $('.contentContainer').prepend(tagContainer);
-        $('.contentContainer').prepend(showCardTagsButton);
-        if ($('.cardTagContainer').children().length > 0) {
-            $('.showCardTagsButton').removeClass('hidden');
-            toggleCardTags();  // Now turning on tags by default when they are present
-        }
+        $('.contentContainer').append(tagContainer);
+        //$('.contentContainer').prepend(showCardTagsButton);
+        // if ($('.cardTagContainer').children().length > 0) {
+        //     $('.showCardTagsButton').removeClass('hidden');
+        //     toggleCardTags();  // Now turning on tags by default when they are present
+        // }
     }
 }
 
@@ -487,14 +488,14 @@ function createSidebar() {
 
         sidebarExtendedFrame.appendChild(sidebarExtendedFrameCloseButton);
 
-        $('.contentContainerWrapper').append(sidebarExtendedFrame);
-        $('.contentContainerWrapper').append(sidebarExpandButton);
+        $('.contentInnerFlexContainer').append(sidebarExtendedFrame);
+        $('.contentInnerFlexContainer').append(sidebarExpandButton);
         $('.contentContainerWrapper').append(sidebar);
     }
 }
 
 function closeSidebarExtendedFrame() {
-    $('.contentFlexContainer').removeClass('contracted');
+    $('.contentContainer').removeClass('contracted');
     $('.peblSidebarExtendedFrame').addClass('contracted');
     $('.peblSidebarSearchField').val('');
     resetTagFilter();
@@ -906,58 +907,60 @@ function displayFilteredTOC(posts) {
         }
     });
 
-    $('.contentFlexContainer').addClass('contracted');
+    $('.contentContainer').addClass('contracted');
     $('.peblSidebarExtendedFrame').removeClass('contracted');
 }
 
 function getTagCount(elem, tagArr) {
-    if (globalPebl) {
-        var counter = new Set();
-        globalPebl.getToc(function(toc) {
-            Object.keys(toc).forEach(function(section) {
-                Object.keys(toc[section]).forEach(function(subsection) {
-                    if (toc[section][subsection].skip == undefined && toc[section][subsection].pages) {
-                        //Has subPages
-                        Object.keys(toc[section][subsection].pages).forEach(function(page) {
-                            for (var i = 0; i < tagArr.length; i++) {
-                                var thing = parseFilterTag(tagArr[i]);
-                                var bucket = thing.bucket;
-                                var tag = thing.tag;
-
-                                if (toc[section][subsection].pages[page].tags[bucket].indexOf(tag) == -1)
-                                        break;
-                                else if (i == tagArr.length - 1) {
-                                    counter.add(toc[section][subsection].pages[page].location);
-                                }
-                            }
-                        });
-                    } else {
+    if (!globalPebl)
+        setTimeout(function() {
+            getTagCount(elem, tagArr);
+        }, 500);
+    var counter = new Set();
+    globalPebl.getToc(function(toc) {
+        Object.keys(toc).forEach(function(section) {
+            Object.keys(toc[section]).forEach(function(subsection) {
+                if (toc[section][subsection].skip == undefined && toc[section][subsection].pages) {
+                    //Has subPages
+                    Object.keys(toc[section][subsection].pages).forEach(function(page) {
                         for (var i = 0; i < tagArr.length; i++) {
                             var thing = parseFilterTag(tagArr[i]);
                             var bucket = thing.bucket;
                             var tag = thing.tag;
-                            //Just a subsection
-                            if (toc[section][subsection].skip != undefined) {
-                                if (toc[section][subsection].tags != null && toc[section][subsection].tags[bucket] != null) {
-                                    if (toc[section][subsection].tags[bucket].indexOf(tag) == -1)
-                                        break;
-                                    else if (i == tagArr.length - 1) {
-                                        counter.add(toc[section][subsection].location);
-                                    }
+
+                            if (toc[section][subsection].pages[page].tags[bucket].indexOf(tag) == -1)
+                                    break;
+                            else if (i == tagArr.length - 1) {
+                                counter.add(toc[section][subsection].pages[page].location);
+                            }
+                        }
+                    });
+                } else {
+                    for (var i = 0; i < tagArr.length; i++) {
+                        var thing = parseFilterTag(tagArr[i]);
+                        var bucket = thing.bucket;
+                        var tag = thing.tag;
+                        //Just a subsection
+                        if (toc[section][subsection].skip != undefined) {
+                            if (toc[section][subsection].tags != null && toc[section][subsection].tags[bucket] != null) {
+                                if (toc[section][subsection].tags[bucket].indexOf(tag) == -1)
+                                    break;
+                                else if (i == tagArr.length - 1) {
+                                    counter.add(toc[section][subsection].location);
                                 }
                             }
                         }
                     }
-                });
+                }
             });
-            elem.textContent = '(' + counter.size + ')';
-            //Hide tags if they don't have any resources associated with them
-            if (counter.size == 0)
-                $(elem).parent().hide();
-            else
-                $(elem).parent().show();
         });
-    }
+        elem.textContent = '(' + counter.size + ')';
+        //Hide tags if they don't have any resources associated with them
+        if (counter.size == 0)
+            $(elem).parent().hide();
+        else
+            $(elem).parent().show();
+    });
 }
 
 function attachAddedResources() {
@@ -1999,9 +2002,19 @@ function hideToolbar() {
 
 function hideAddedResources() {
     $('.contentContainer').removeClass('contractedVertical');
+    $('.peblSidebarExtendedFrame').removeClass('contractedVertical');
+    $('.contentInnerFlexContainer').removeClass('contractedVertical');
     $('.addedResourcesButtonContainer').removeClass('expanded');
     $('#addedResourcesContainer').remove();
     $('.addedResourcesButton').children('span').first().text('View');
+}
+
+function showAddedResources() {
+    $('.contentContainer').addClass('contractedVertical');
+    $('.peblSidebarExtendedFrame').addClass('contractedVertical');
+    $('.contentInnerFlexContainer').addClass('contractedVertical');
+    $('.addedResourcesButtonContainer').addClass('expanded');
+    $('.addedResourcesButton').children('span').first().text('Hide');
 }
 
 function closeDynamicPage() {
@@ -2324,12 +2337,9 @@ function handleAddedResourcesButtonClick() {
             });
 
             $('.addedResourcesButtonContainer')[0].appendChild(addedResourcesContainer);
-            $('.contentContainer').addClass('contractedVertical');
-            $('.addedResourcesButtonContainer').addClass('expanded');
-            $('.addedResourcesButton').children('span').first().text('Hide');
+            showAddedResources();
         });
     }
-
 }
 
 function handleTocPageTextClick(event) {
