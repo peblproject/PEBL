@@ -391,7 +391,7 @@ p.discussionQuestionBoxText {
 .footerIcon {
     position: relative;
     padding-bottom: 0;
-    font-size: 8vmin !important;
+    font-size: 6vmin !important;
 }
 
 
@@ -462,6 +462,9 @@ p.discussionQuestionBoxText {
 }
 
 .findButton, .discussButton, .notesButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     -webkit-appearance: none;
     width: 100%;
     height: 100%;
@@ -471,9 +474,15 @@ p.discussionQuestionBoxText {
     border: none;
     border-radius: 5px;
     font-size: 16px;
-    padding: 0 !important;
+    padding: 10px !important;
     box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
     z-index: 4999;
+}
+
+.findButton > div,
+.discussButton > div,
+.notesButton > div {
+    margin-left: 1em;
 }
 
 .findMenuContainer {
