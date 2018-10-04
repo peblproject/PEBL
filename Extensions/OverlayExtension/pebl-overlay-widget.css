@@ -79,6 +79,7 @@ p.discussionQuestionBoxText {
     -webkit-box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
     box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
     margin-left: 1em;
+    margin-right: 1em;
     border-radius: 10px;
     max-height: 100%;
     transition: all 0.5s ease;
@@ -450,7 +451,7 @@ p.discussionQuestionBoxText {
     border-bottom-right-radius: 10px;
     height: 2em;
     margin-left: 1em;
-    margin-right: 2em;
+    margin-right: 1em;
     position: relative;
     bottom: 0;
     z-index: 5;
