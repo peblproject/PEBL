@@ -32,6 +32,15 @@
     clear: both;
 }
 
+i.discussionCloseButton {
+    position: absolute;
+    right: 0;
+    top: -10px;
+    color: gray;
+    font-size: 3em;
+    cursor: pointer;
+}
+
 button.chat,
 button.discussionCloseButton,
 button.chatSubmit,
@@ -49,6 +58,20 @@ a.button {
     margin-bottom: 1em;
     border: none;
     color: #ffffff;
+}
+
+button.replySubmitButton {
+    cursor: pointer;
+    -webkit-border-radius: 5;
+    -moz-border-radius: 5;
+    border-radius: 5px;
+    text-shadow: 1px 1px 3px #666666;
+    padding: 10px 20px 10px 20px;
+    text-decoration: none;
+    margin-bottom: 1em;
+    border: none;
+    color: #ffffff;
+    background: #077ebc;
 }
 
 button.chatSubmit,
@@ -142,7 +165,8 @@ button.discussionCloseButton {
     border-bottom: 1px solid #ddd;
 }
 
-.chatResponses .response > i {
+.chatResponses .response > i,
+.notesResponses .response > i {
     position: absolute;
     left: 0.5em;
     font-size: 1.5em;
@@ -315,4 +339,5 @@ button.discussionCloseButton {
 
 .discussionQuestionBox {
     margin-top: 1em;
+    width: calc(100% - 3em);
 }

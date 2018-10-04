@@ -2223,10 +2223,11 @@ function handleDiscussButtonClick() {
     questionBox.appendChild(questionBoxText);
 
     lightBoxContent = document.getElementById('lightBoxContent');
+    $(lightBoxContent).append('<i class="fa fa-times discussionCloseButton" onclick="closeLightBox();"></i>')
     lightBoxContent.appendChild(questionBox);
 
     var chatResponses = $('<div class="chatResponses" style="display:none;"><div id="discussionSpanContainer" style="text-align: center; margin-top: 10px; margin-bottom: 10px; display: none;"><span class="discussionSpan">No one has replied to this discussion yet.</span></div></div>');
-    var chatInput = $('<div class="chatInput" style="display:none;"><textarea id="discussTextArea" placeholder="Participate in the discussion."></textarea><button class="discussionCloseButton" onclick="closeLightBox();">Cancel</button><button class="chatSubmit">Submit</button></div>');
+    var chatInput = $('<div class="chatInput" style="display:none;"><textarea id="discussTextArea" placeholder="Participate in the discussion."></textarea><button class="chatSubmit">Submit</button></div>');
     var chat = $('<div class="chatBox"></div>');
 
     chat.append(chatInput);
@@ -2296,10 +2297,11 @@ function handleNotesButtonClick() {
     questionBox.appendChild(questionBoxText);
     
     lightBoxContent = document.getElementById('lightBoxContent');
+    $(lightBoxContent).append('<i class="fa fa-times discussionCloseButton" onclick="closeLightBox();"></i>');
     lightBoxContent.appendChild(questionBox);
 
     var notesResponses = $('<div class="notesResponses" style="display:none;"><div id="discussionSpanContainer" style="text-align: center; margin-top: 10px; margin-bottom: 10px; display: none;"><span class="discussionSpan">You haven\'t added any notes yet.</span></div></div>');
-    var notesInput = $('<div class="notesInput" style="display:none;"><textarea id="notesTextArea" placeholder="Add a note."></textarea><button class="discussionCloseButton" onclick="closeLightBox();">Cancel</button><button class="notesSubmit chatSubmit">Add note</button></div>');
+    var notesInput = $('<div class="notesInput" style="display:none;"><textarea id="notesTextArea" placeholder="Add a note."></textarea><button class="notesSubmit chatSubmit">Add note</button></div>');
     var notes = $('<div class="notesBox"></div>');
     notes.append(notesInput);
     notes.append(notesResponses);

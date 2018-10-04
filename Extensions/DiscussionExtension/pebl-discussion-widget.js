@@ -253,6 +253,7 @@ function openDiscussionLightbox(question, chatButton) {
     questionBox.appendChild(questionBoxText);
 
     lightBoxContent = document.getElementById('lightBoxContent');
+    $(lightBoxContent).append('<i class="fa fa-times discussionCloseButton"></i>');
     lightBoxContent.appendChild(questionBox);
 
     //createDiscussionBox wants a jquery object
@@ -275,7 +276,7 @@ function closeLightBox() {
 
 function createDiscussionBox(element, chatButton) {
     var chatResponses = $('<div class="chatResponses" style="display:none;"><div><!--<a class="showMore">Show more...</a>--></div></div>');
-    var chatInput = $('<div class="chatInput" style="display:none;"><label id="discussionDetailText">Submit your response to see what others said.</label><textarea id="discussionTextArea"></textarea><button class="discussionCloseButton">Cancel</button><button class="chatSubmit">Submit</button></div>');
+    var chatInput = $('<div class="chatInput" style="display:none;"><label id="discussionDetailText"></label><textarea id="discussionTextArea"></textarea><button class="chatSubmit">Submit</button></div>');
     var chat = $('<div class="chatBox"></div>');
     chat.append(chatInput);
     chat.append(chatResponses);
@@ -295,7 +296,7 @@ function createDiscussionBox(element, chatButton) {
         createThread(chatButton.id, $(this), true);
     });
 
-    chatInput.on('click', 'button.discussionCloseButton', function() {
+    element.on('click', 'i.discussionCloseButton', function() {
         closeLightBox();
     });
 }
