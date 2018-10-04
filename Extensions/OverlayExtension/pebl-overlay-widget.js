@@ -31,7 +31,6 @@ function receiveMessage(event) {
 }
 
 $(document).ready(function() {
-    console.log('EXECUTING CODE');
     var setGlobalPebl = setInterval(function() {
         if (window.top && window.top.pebl) {
             globalPebl = window.top.pebl;
@@ -913,11 +912,15 @@ function displayFilteredTOC(posts) {
 
 function getTagCount(elem, tagArr) {
     if (!globalPebl)
-        setTimeout(function() {
+        return setTimeout(function() {
             getTagCount(elem, tagArr);
         }, 500);
     var counter = new Set();
     globalPebl.getToc(function(toc) {
+        if (Object.keys(toc).length < 1)
+            return setTimeout(function() {
+                getTagCount(elem, tagArr);
+            }, 500);
         Object.keys(toc).forEach(function(section) {
             Object.keys(toc[section]).forEach(function(subsection) {
                 if (toc[section][subsection].skip == undefined && toc[section][subsection].pages) {
