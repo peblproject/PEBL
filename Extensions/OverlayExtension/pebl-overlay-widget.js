@@ -1376,7 +1376,7 @@ function createUITutorial() {
     var tutorialMessage = document.createElement('p');
     tutorialMessage.id = 'tutorialMessage';
     tutorialMessage.classList.add('tutorialMessage');
-    tutorialMessage.textContent = 'Because you are a first time user, you will now receive a short tour of PeBL features, starting with this Menu button. This button displays the PeBL toolbar. Most of the functionality is located here.';
+    tutorialMessage.textContent = 'Because you are a first time user, you will now receive a short tour of PeBL eBook features, starting with this Menu button. This button displays the PeBL toolbar. Most of the functionality is located here.';
     tutorialMessageContainer.appendChild(tutorialMessage);
 
     var tutorialMessageNextButton = document.createElement('label');
@@ -1408,7 +1408,7 @@ function nextTutorialStage() {
                 marginLeft: '50px'
             }, 500);
 
-            $('#tutorialMessage').text('The Table of Contents allows you to view and navigate to all major sections of your book.');
+            $('#tutorialMessage').text('The Table of Contents allows you to view and navigate to all major sections of your eFieldbook.');
             $('#tutorialMessageContainer').attr('Stage', '2');
         }, 500);
     } else if (currentStage === '2') {
@@ -1420,7 +1420,7 @@ function nextTutorialStage() {
             marginLeft: '50px'
         }, 500);
 
-        $('#tutorialMessage').text('The Search Network feature allows you to find the information you need quickly and easily, from a wide variety of sources.');
+        $('#tutorialMessage').text('The Knowledge Network feature allows you to find the information you need quickly and easily, from a wide variety of Extension sources.');
         $('#tutorialMessageContainer').attr('Stage', '3');
     } else if (currentStage === '3') {
         $('#tutorialMessageContainer').animate({
@@ -1431,11 +1431,54 @@ function nextTutorialStage() {
             marginLeft: '175px'
         }, 500);
 
-        $('#tutorialMessage').text('The Ask an Expert feature allows you to get in contact with a real professional in one of many fields.');
+        $('#tutorialMessage').text('The Ask an Expert feature allows you to get in contact with an Extension expert in one of many fields.');
+    } else if (currentStage === '4') {
+        $('#tutorialMessageContainer').animate({
+            left: $('#categoryFiltersContainer').offset().left - 150   // TODO: Need to figure out the correct placement
+        }, 500);
+
+        $('#tutorialMessageArrow').animate({
+            marginLeft: '175px'            // TODO: Need to figure out the correct placement
+        }, 500);
+
+        $('#tutorialMessage').text('The Category Filters feature allows you to build and refine filtered lists of eFieldbook resources using descriptive tags.');
+    } else if (currentStage === '5') {
+        $('#tutorialMessageContainer').animate({
+            left: $('#contextualSearchContainer').offset().left - 150   // TODO: Need to figure out the correct placement
+        }, 500);
+
+        $('#tutorialMessageArrow').animate({
+            marginLeft: '175px'            // TODO: Need to figure out the correct placement
+        }, 500);
+
+        $('#tutorialMessage').text('This option will launch a search of Knowledge Network resources that is in context to the current page.');
+    } else if (currentStage === '6') {
+        $('#tutorialMessageContainer').animate({
+            left: $('#discussionContainer').offset().left - 150   // TODO: Need to figure out the correct placement
+        }, 500);
+
+        $('#tutorialMessageArrow').animate({
+            marginLeft: '175px'            // TODO: Need to figure out the correct placement
+        }, 500);
+
+        $('#tutorialMessage').text('The Discuss feature provides a place for PeBL eBook users to share feedback and insights in context to the current page.');
+
+    } else if (currentStage === '7') {
+        $('#tutorialMessageContainer').animate({
+            left: $('#myNotesContainer').offset().left - 150   // TODO: Need to figure out the correct placement
+        }, 500);
+
+        $('#tutorialMessageArrow').animate({
+            marginLeft: '175px'            // TODO: Need to figure out the correct placement
+        }, 500);
+
+        $('#tutorialMessage').text('The My Notes feature lets you collect private notations relative to the current page.');
 
         $('#tutorialMessageNextButton').text('Got it');
         $('#tutorialMessageContainer').attr('Stage', 'End');
-    } else if (currentStage === 'End') {
+    }
+    
+    else if (currentStage === 'End') {
         endTutorial();
         //Collapse the overlay buttons after tutorial ends.
         handleCloseButtonClick();
