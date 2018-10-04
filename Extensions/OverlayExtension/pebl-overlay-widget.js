@@ -1432,45 +1432,77 @@ function nextTutorialStage() {
         }, 500);
 
         $('#tutorialMessage').text('The Ask an Expert feature allows you to get in contact with an Extension expert in one of many fields.');
+        $('#tutorialMessageContainer').attr('Stage', '4');
     } else if (currentStage === '4') {
-        $('#tutorialMessageContainer').animate({
-            left: $('#categoryFiltersContainer').offset().left - 150   // TODO: Need to figure out the correct placement
-        }, 500);
+        $('.peblSidebarExpandButton').click();
+        setTimeout(function() {
+            $('#tutorialMessageContainer').animate({
+                left: $('.peblSidebarExpandButton').offset().left - 260,
+                top: $('.peblSidebarExpandButton').offset().top + ($('.peblSidebarExpandButton').height() / 2) - $('#tutorialMessageContainer').offset().top + 7
+            }, 500);
 
-        $('#tutorialMessageArrow').animate({
-            marginLeft: '175px'            // TODO: Need to figure out the correct placement
-        }, 500);
+            $('#tutorialMessageArrow').css({
+                marginLeft: '0',
+                right: '-20px',
+                top: '50%',
+                left: 'unset',
+                "border-bottom": '10px solid transparent',
+                "border-top": '10px solid transparent',
+                "border-left": '10px solid rgb(7, 126, 188)'
+            });
 
-        $('#tutorialMessage').text('The Category Filters feature allows you to build and refine filtered lists of eFieldbook resources using descriptive tags.');
+            $('#tutorialMessage').text('The Category Filters feature allows you to build and refine filtered lists of eFieldbook resources using descriptive tags.');
+            $('#tutorialMessageContainer').attr('Stage', '5');
+        }, 500)
     } else if (currentStage === '5') {
+        $('.peblSidebarExpandButton').click();
+        var offset = ($('#findButton').width() - $('#tutorialMessageContainer').width()) / 2;
+        if (offset < 0)
+            offset = 0;
         $('#tutorialMessageContainer').animate({
-            left: $('#contextualSearchContainer').offset().left - 150   // TODO: Need to figure out the correct placement
+            left: $('#findButton').offset().left + offset,
+            top: $('#findButton').offset().top - ($('#tutorialMessageContainer').height() + 20)
         }, 500);
 
-        $('#tutorialMessageArrow').animate({
-            marginLeft: '175px'            // TODO: Need to figure out the correct placement
-        }, 500);
+        $('#tutorialMessageArrow').css({
+            right: '50%',
+            left: 'unset',
+            buttom: 'unset',
+            top: 'unset',
+            "border-top": '10px solid rgb(7, 126, 188)',
+            "border-left": '10px solid transparent',
+            "border-right": '10px solid transparent',
+            "border-bottom": '0',
+            "margin-top": '0'
+        });
 
         $('#tutorialMessage').text('This option will launch a search of Knowledge Network resources that is in context to the current page.');
+        $('#tutorialMessageContainer').attr('Stage', '6');
     } else if (currentStage === '6') {
+        var offset = ($('#discussButton').width() - $('#tutorialMessageContainer').width()) / 2;
+        if (offset < 0)
+            offset = 0;
         $('#tutorialMessageContainer').animate({
-            left: $('#discussionContainer').offset().left - 150   // TODO: Need to figure out the correct placement
-        }, 500);
-
-        $('#tutorialMessageArrow').animate({
-            marginLeft: '175px'            // TODO: Need to figure out the correct placement
+            left: $('#discussButton').offset().left + offset
         }, 500);
 
         $('#tutorialMessage').text('The Discuss feature provides a place for PeBL eBook users to share feedback and insights in context to the current page.');
-
+        $('#tutorialMessageContainer').attr('Stage', '7');
     } else if (currentStage === '7') {
+        var offset = ($('#notesButton').width() - $('#tutorialMessageContainer').width());
+        if (offset > 0 && $('#notesButton').width() < $('#tutorialMessageContainer').width())
+            offset = 0;
+        else if (offset > 0)
+            offset = offset / 2;
         $('#tutorialMessageContainer').animate({
-            left: $('#myNotesContainer').offset().left - 150   // TODO: Need to figure out the correct placement
+            left: $('#notesButton').offset().left + offset
         }, 500);
 
-        $('#tutorialMessageArrow').animate({
-            marginLeft: '175px'            // TODO: Need to figure out the correct placement
-        }, 500);
+        if (offset < 0)
+            $('#tutorialMessageArrow').animate({
+                'margin-right': offset
+            }, 500);
+
 
         $('#tutorialMessage').text('The My Notes feature lets you collect private notations relative to the current page.');
 
