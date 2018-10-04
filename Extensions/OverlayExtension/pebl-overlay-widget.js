@@ -1432,7 +1432,12 @@ function nextTutorialStage() {
         }, 500);
 
         $('#tutorialMessage').text('The Ask an Expert feature allows you to get in contact with an Extension expert in one of many fields.');
-        $('#tutorialMessageContainer').attr('Stage', '4');
+        //Skip the sidebar section if it doesn't exist
+        if ($('.peblSidebar').length < 1) {
+            $('#tutorialMessageContainer').attr('Stage', '5');
+        } else {
+            $('#tutorialMessageContainer').attr('Stage', '4');
+        }
     } else if (currentStage === '4') {
         $('.peblSidebarExpandButton').click();
         setTimeout(function() {
