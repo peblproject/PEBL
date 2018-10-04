@@ -27,6 +27,8 @@ function receiveMessage(event) {
         frameIsReady = true;
     } else if (obj && obj.message === "pullResource") {
         globalPebl.eventPulled(obj.target, obj.location, currentPrefix, obj.url, obj.docType, obj.name, obj.externalURL);
+    } else if (obj && obj.message === "iframeUpdate") {
+        $('.registryFrame').css('height', obj.height);
     }
 }
 
