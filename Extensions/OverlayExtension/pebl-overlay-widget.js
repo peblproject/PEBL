@@ -26,7 +26,9 @@ function receiveMessage(event) {
     if (data === 'ready') {
         frameIsReady = true;
     } else if (obj && obj.message === "pullResource") {
-        globalPebl.eventPulled(obj.target, obj.location, currentPrefix, obj.url, obj.docType, obj.name, obj.externalURL);
+        globalPebl.storage.getCurrentBook(function(book) {
+            globalPebl.eventPulled(book, obj.target, obj.location, currentPrefix, obj.url, obj.docType, obj.name, obj.externalURL);
+        });
     } else if (obj && obj.message === "iframeUpdate") {
         $('.registryFrame').css('height', obj.height);
     }
@@ -288,8 +290,8 @@ function createOverlay() {
     headerWrapper.appendChild(createCloseButton());
     headerWrapper.appendChild(createExpandButton());
     //overlay.appendChild(createAccountButton());
-    //iconContainer.appendChild(createHelpButton());
     //iconContainer.appendChild(createNotificationButton());
+    iconContainer.appendChild(createHelpButton());
     iconContainer.appendChild(createAskButton());
     iconContainer.appendChild(createSearchButton());
     iconContainer.appendChild(createTOCButton());
@@ -1191,10 +1193,10 @@ function createHelpButton() {
     helpButtonContainer.id = 'helpButtonContainer';
     helpButtonContainer.classList.add('helpButtonContainer');
 
-    var helpButton = document.createElement('span');
+    var helpButton = document.createElement('i');
     helpButton.id = 'helpButton';
-    helpButton.classList.add('helpButton');
-    helpButton.textContent = '?';
+    helpButton.classList.add('helpButton', 'fa', 'fa-question-circle');
+    helpButton.addEventListener('click', handleHelpButtonClick);
     helpButtonContainer.appendChild(helpButton);
 
     return helpButtonContainer;
@@ -1368,6 +1370,7 @@ function createUITutorial() {
     //Create tutorial elements
     if (overlayIsExtended) {
         retractOverlay();
+        hideToolbar();
     }
 
     var tutorialMessageContainer = document.createElement('div');
@@ -2132,9 +2135,8 @@ function handleTOCButtonClick() {
 }
 
 function handleHelpButtonClick() {
-    expandOverlay();
-    createHelp();
-    $('#helpButtonContainer').addClass('active');
+    localStorage.setItem('tutorialStatus', 'Incomplete');
+    displayUITutorial();
 }
 
 function handleAskButtonClick() {

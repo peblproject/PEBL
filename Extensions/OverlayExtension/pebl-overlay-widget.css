@@ -809,24 +809,16 @@ i.peblNotificationButton {
 
 .helpButtonContainer {
     position: relative;
+    justify-content: center;
+    align-items: center;
     float: right;
-    height: 45px;
-    right: 20px;
-    margin-left: 0.5em;
-    margin-right: 0.5em;
+    display: flex;
 }
 
-.helpButtonContainer.active {
-    border-bottom: 3px solid rgb(7, 126, 188);
-}
-
-.helpButton {
+i.helpButton {
     cursor: pointer;
-    font-weight: bold;
-    font-family: "Helvetica Neue", sans-serif;
-    font-size: 3rem !important;
-    line-height: 50px !important;
-    color: #077ebc;
+    font-size: 2rem;
+    color: rgb(7, 126, 188);
 }
 
 
@@ -878,7 +870,7 @@ i.peblNotificationButton {
 
 .askContainer,
 .registryContainer {
-    height: calc(93vh - 100px);
+    height: calc(93vh - 90px);
     -webkit-box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
     box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
     width: 100%;
@@ -911,7 +903,7 @@ i.peblNotificationButton {
 .tocContainer {
     flex-basis: 100%;
     width: 100%;
-    height: calc(93vh - 100px);
+    height: calc(93vh - 90px);
     position: relative;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
