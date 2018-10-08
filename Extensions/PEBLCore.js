@@ -1,4 +1,4 @@
-	var define = null;
+var define = null;
 
     /*
  *  Copyright 2011 Alexandru Craciun, Eyal Kaspi
@@ -36524,9 +36524,10 @@ XApiGenerator = stjs.extend(XApiGenerator, null, [], function(constructor, proto
         testData["showHideResult"] = showHideResult;
         this.makeStatement(new ADL.XAPIStatement.Verb("http://www.peblproject.com/definitions.html#compatibilityTested", "compatibilityTested"), new ADL.XAPIStatement.Activity(containerPath, "", JSON.stringify(testData)));
     };
-    prototype.pushed = function(target, location, card, url, docType, name, externalURL) {
+    prototype.pushed = function(book, target, location, card, url, docType, name, externalURL) {
         var containerPath = "peblThread://user-" + target;
         var pushData = {};
+        pushData["book"] = book;
         pushData["target"] = target;
         pushData["url"] = url;
         pushData["name"] = name;
@@ -36536,9 +36537,10 @@ XApiGenerator = stjs.extend(XApiGenerator, null, [], function(constructor, proto
         pushData["externalURL"] = externalURL;
         this.makeStatement(new ADL.XAPIStatement.Verb("http://www.peblproject.com/definitions.html#pushed", "pushed"), new ADL.XAPIStatement.Activity(containerPath, "", JSON.stringify(pushData)));
     };
-    prototype.pulled = function(target, location, card, url, docType, name, externalURL) {
+    prototype.pulled = function(book, target, location, card, url, docType, name, externalURL) {
         var containerPath = "peblThread://user-" + target;
         var pushData = {};
+        pushData["book"] = book;
         pushData["target"] = target;
         pushData["url"] = url;
         pushData["name"] = name;
@@ -36991,7 +36993,7 @@ LocalActivityAdapter = stjs.extend(LocalActivityAdapter, null, [ActivityAdapter]
     prototype.initializeToc = function(data) {
         var self = this;
         this.storage.getToc(this.userManager.getUser(), this.currentBook, function(toc) {
-            if (toc.length == 0) {
+            if (toc.length == 0 || toc["Section1"] == null || (toc["Section1"])["Section"] == null) {
                 for (var section in data) {
                     var pages = data[section];
                     for (var pageKey in pages) {
@@ -37624,6 +37626,7 @@ var Reference = function(o) {
         messageData = o;
         this.actorId = o[TimeSeriesData.KEY_ACTOR_ID];
     }
+    this.book = messageData[Reference.KEY_BOOK];
     this.docType = messageData[TimeSeriesData.KEY_DOCTYPE];
     this.location = messageData[Reference.KEY_LOCATION];
     this.card = messageData[Reference.KEY_CARD];
@@ -37640,6 +37643,7 @@ Reference = stjs.extend(Reference, TimeSeriesData, [], function(constructor, pro
     constructor.KEY_URL = "url";
     constructor.KEY_NAME = "name";
     constructor.KEY_EXTERNAL_URL = "externalURL";
+    constructor.KEY_BOOK = "book";
     prototype.name = null;
     prototype.location = null;
     prototype.card = null;
@@ -37647,8 +37651,10 @@ Reference = stjs.extend(Reference, TimeSeriesData, [], function(constructor, pro
     prototype.url = null;
     prototype.docType = null;
     prototype.externalURL = null;
+    prototype.book = null;
     prototype.pack = function() {
         var result = {};
+        result[Reference.KEY_BOOK] = this.book;
         result[Reference.KEY_LOCATION] = this.location;
         result[Reference.KEY_CARD] = this.card;
         result[TimeSeriesData.KEY_TARGET] = this.target;
@@ -37661,6 +37667,7 @@ Reference = stjs.extend(Reference, TimeSeriesData, [], function(constructor, pro
     prototype.toObject = function() {
         var result = {};
         result[TimeSeriesData.KEY_XID] = this.id;
+        result[Reference.KEY_BOOK] = this.book;
         result[Reference.KEY_URL] = this.url;
         result[TimeSeriesData.KEY_ACTOR_ID] = this.actorId;
         result[Reference.KEY_LOCATION] = this.location;
@@ -37735,7 +37742,7 @@ LocalAssetAdapter = stjs.extend(LocalAssetAdapter, null, [AssetAdapter], functio
                     tocEntry["docType"] = ref.docType;
                     tocEntry["card"] = ref.card;
                     tocEntry["externalURL"] = ref.externalURL;
-                    self.storageManager.addToc(self.userManager.getUser(), self.activityManager.getBook(), tocEntry);
+                    self.storageManager.addToc(self.userManager.getUser(), ref.book, tocEntry);
                     if (self.notificationHook != null) 
                         self.notificationHook(ref);
                 } else 
@@ -38314,8 +38321,8 @@ PEBL = stjs.extend(PEBL, null, [], function(constructor, prototype) {
             });
         }
     };
-    prototype.eventPulled = function(target, location, card, url, docType, name, externalURL) {
-        this.xapiGenerator.pulled(target, location, card, url, docType, name, externalURL);
+    prototype.eventPulled = function(book, target, location, card, url, docType, name, externalURL) {
+        this.xapiGenerator.pulled(book, target, location, card, url, docType, name, externalURL);
     };
     prototype.eventChecklisted = function(checklistId, checklistUser, checklistPrompts, checklistResponses) {
         this.xapiGenerator.checklisted(checklistId, checklistUser, checklistPrompts, checklistResponses);
