@@ -23303,7 +23303,7 @@ function cleanRecord(r) {
 
 window.IndexedDBInterop = function (readyCallback) {
     var self = this;
-    var request = window.indexedDB.open("pebl", 7);
+    var request = window.indexedDB.open("pebl", 8);
 
     request.onupgradeneeded = function (event) {
 	var db = event.target.result;
