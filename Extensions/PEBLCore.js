@@ -34917,6 +34917,7 @@ TimeSeriesData = stjs.extend(TimeSeriesData, null, [], function(constructor, pro
     prototype.timestamp = null;
     prototype.parentActivity = null;
     prototype.actorId = null;
+    prototype.stmt = null;
     prototype.compareTo = function(arg0) {
         var r = stjs.trunc((this.timestamp.getTime() - arg0.timestamp.getTime()));
         if (r == 0) 
@@ -34945,7 +34946,7 @@ TimeSeriesData = stjs.extend(TimeSeriesData, null, [], function(constructor, pro
     prototype.toString = function() {
         return JSON.stringify(this.toObject());
     };
-}, {timestamp: "Date"}, {});
+}, {timestamp: "Date", stmt: {name: "Map", arguments: [null, "Object"]}}, {});
 var XApiUtils = function() {};
 XApiUtils = stjs.extend(XApiUtils, null, [], function(constructor, prototype) {
     constructor.sortNewest = function(xapis) {
@@ -35966,6 +35967,7 @@ ADLDemoUserAdapter = stjs.extend(ADLDemoUserAdapter, null, [UserAdapter], functi
 })();
 var Notification = function(message, payload) {
     TimeSeriesData.call(this);
+    this.stmt = {"message": message, "payload": payload};
     this.id = TimeSeriesData.NAMESPACE_NOTIFICATION + payload.id;
     this.timestamp = new Date();
     this.message = message;
@@ -35994,7 +35996,7 @@ Notification = stjs.extend(Notification, TimeSeriesData, [], function(constructo
     prototype.toString = function() {
         return JSON.stringify(this.toObject());
     };
-}, {payload: "TimeSeriesData", timestamp: "Date"}, {});
+}, {payload: "TimeSeriesData", timestamp: "Date", stmt: {name: "Map", arguments: [null, "Object"]}}, {});
 var LocalActivityAdapter = function(userManager, storage) {
     this.subscribedThreads = {};
     this.storage = storage;
@@ -36472,6 +36474,7 @@ XApiGenerator = stjs.extend(XApiGenerator, null, [], function(constructor, proto
 }, {storage: "StorageAdapter", userManager: "UserAdapter", activityManager: "ActivityAdapter"}, {});
 var Voided = function(o) {
     TimeSeriesData.call(this);
+    this.stmt = o;
     this.id = o["id"];
     this.timestamp = XApiUtils.getTimestamp(o);
     this.parentActivity = XApiUtils.getParentActivity(o);
@@ -36489,7 +36492,7 @@ Voided = stjs.extend(Voided, TimeSeriesData, [], function(constructor, prototype
         var verb = XApiUtils.getVerb(record);
         return (verb == "voided");
     };
-}, {timestamp: "Date"}, {});
+}, {timestamp: "Date", stmt: {name: "Map", arguments: [null, "Object"]}}, {});
 /**
  *  Basic HTML5 session storage or local storage
  *  @author aaron.veden@eduworks.com
@@ -36674,6 +36677,7 @@ InMemoryStorageAdapter = stjs.extend(InMemoryStorageAdapter, null, [StorageAdapt
 }, {persistStorage: "Storage", storage: {name: "Map", arguments: [null, null]}}, {});
 var Navigation = function(o) {
     TimeSeriesData.call(this);
+    this.stmt = o;
     this.id = o["id"];
     this.timestamp = XApiUtils.getTimestamp(o);
     this.parentActivity = XApiUtils.getParentActivity(o);
@@ -36694,9 +36698,10 @@ Navigation = stjs.extend(Navigation, TimeSeriesData, [], function(constructor, p
         result[TimeSeriesData.KEY_TYPE] = this.type;
         return result;
     };
-}, {timestamp: "Date"}, {});
+}, {timestamp: "Date", stmt: {name: "Map", arguments: [null, "Object"]}}, {});
 var Session = function(o) {
     TimeSeriesData.call(this);
+    this.stmt = o;
     this.id = o["id"];
     this.timestamp = XApiUtils.getTimestamp(o);
     this.parentActivity = XApiUtils.getParentActivity(o);
@@ -36728,9 +36733,10 @@ Session = stjs.extend(Session, TimeSeriesData, [], function(constructor, prototy
         result[TimeSeriesData.KEY_TYPE] = this.type;
         return result;
     };
-}, {timestamp: "Date"}, {});
+}, {timestamp: "Date", stmt: {name: "Map", arguments: [null, "Object"]}}, {});
 var Action = function(o) {
     TimeSeriesData.call(this);
+    this.stmt = o;
     this.id = o["id"];
     this.timestamp = XApiUtils.getTimestamp(o);
     this.parentActivity = XApiUtils.getParentActivity(o);
@@ -36771,9 +36777,10 @@ Action = stjs.extend(Action, TimeSeriesData, [], function(constructor, prototype
         var verb = XApiUtils.getVerb(record);
         return (verb == "preferred") || (verb == "morphed") || (verb == "interacted");
     };
-}, {timestamp: "Date"}, {});
+}, {timestamp: "Date", stmt: {name: "Map", arguments: [null, "Object"]}}, {});
 var Quiz = function(o) {
     TimeSeriesData.call(this);
+    this.stmt = o;
     this.id = o["id"];
     this.timestamp = XApiUtils.getTimestamp(o);
     this.parentActivity = XApiUtils.getParentActivity(o);
@@ -36802,9 +36809,10 @@ Quiz = stjs.extend(Quiz, TimeSeriesData, [], function(constructor, prototype) {
         var verb = XApiUtils.getVerb(record);
         return (verb == "failed") || (verb == "passed");
     };
-}, {timestamp: "Date"}, {});
+}, {timestamp: "Date", stmt: {name: "Map", arguments: [null, "Object"]}}, {});
 var Message = function(o) {
     TimeSeriesData.call(this);
+    this.stmt = o;
     var messageData;
     if (o["object"] != null) {
         messageData = JSON.parse(XApiUtils.getObjectDescription(o));
@@ -36865,9 +36873,10 @@ Message = stjs.extend(Message, TimeSeriesData, [], function(constructor, prototy
         var verb = XApiUtils.getVerb(record);
         return (verb == "responded");
     };
-}, {timestamp: "Date"}, {});
+}, {timestamp: "Date", stmt: {name: "Map", arguments: [null, "Object"]}}, {});
 var Reference = function(o) {
     TimeSeriesData.call(this);
+    this.stmt = o;
     var messageData;
     if (o["object"] != null) {
         messageData = JSON.parse(XApiUtils.getObjectDescription(o));
@@ -36935,7 +36944,7 @@ Reference = stjs.extend(Reference, TimeSeriesData, [], function(constructor, pro
         var verb = XApiUtils.getVerb(record);
         return (verb == "pushed") || (verb == "pulled");
     };
-}, {timestamp: "Date"}, {});
+}, {timestamp: "Date", stmt: {name: "Map", arguments: [null, "Object"]}}, {});
 /**
  *  Basic HTML5 session storage or local storage
  *  @author aaron.veden@eduworks.com
@@ -37118,6 +37127,7 @@ KeyValueStorageAdapter = stjs.extend(KeyValueStorageAdapter, null, [StorageAdapt
 }, {storage: "Storage"}, {});
 var Question = function(o) {
     TimeSeriesData.call(this);
+    this.stmt = o;
     this.id = o["id"];
     this.timestamp = XApiUtils.getTimestamp(o);
     this.parentActivity = XApiUtils.getParentActivity(o);
@@ -37160,7 +37170,7 @@ Question = stjs.extend(Question, TimeSeriesData, [], function(constructor, proto
         var verb = XApiUtils.getVerb(record);
         return verb == "answered";
     };
-}, {answers: {name: "Array", arguments: [null]}, timestamp: "Date"}, {});
+}, {answers: {name: "Array", arguments: [null]}, timestamp: "Date", stmt: {name: "Map", arguments: [null, "Object"]}}, {});
 var SharedAnnotation = function(o) {
     TimeSeriesData.call(this);
     this.stmt = o;
@@ -37224,7 +37234,6 @@ SharedAnnotation = stjs.extend(SharedAnnotation, TimeSeriesData, [], function(co
     prototype.style = 0;
     prototype.text = null;
     prototype.owner = null;
-    prototype.stmt = null;
     prototype.pack = function() {
         var result = {};
         result[SharedAnnotation.KEY_ID] = this.annId;
@@ -37257,7 +37266,7 @@ SharedAnnotation = stjs.extend(SharedAnnotation, TimeSeriesData, [], function(co
         var verb = XApiUtils.getVerb(record);
         return (verb == "shared");
     };
-}, {stmt: {name: "Map", arguments: [null, "Object"]}, timestamp: "Date"}, {});
+}, {timestamp: "Date", stmt: {name: "Map", arguments: [null, "Object"]}}, {});
 var Annotation = function(o) {
     TimeSeriesData.call(this);
     this.stmt = o;
@@ -37321,7 +37330,6 @@ Annotation = stjs.extend(Annotation, TimeSeriesData, [], function(constructor, p
     prototype.style = 0;
     prototype.text = null;
     prototype.owner = null;
-    prototype.stmt = null;
     prototype.pack = function() {
         var result = {};
         result[Annotation.KEY_ID] = this.annId;
@@ -37354,7 +37362,7 @@ Annotation = stjs.extend(Annotation, TimeSeriesData, [], function(constructor, p
         var verb = XApiUtils.getVerb(record);
         return (verb == "commented");
     };
-}, {stmt: {name: "Map", arguments: [null, "Object"]}, timestamp: "Date"}, {});
+}, {timestamp: "Date", stmt: {name: "Map", arguments: [null, "Object"]}}, {});
 var LocalAssetAdapter = function(userManager, storageManager, activityManager) {
     this.queuedResources = new Array();
     this.userManager = userManager;
@@ -37835,13 +37843,17 @@ LLSyncAction = stjs.extend(LLSyncAction, null, [SyncProcess], function(construct
                 }
                 sa.storage.removeMessage(sa.userManager.getUser(), v.target, v.parentActivity);
             }
+            var up = sa.userManager.getUser();
             for (var thread in buckets) {
                 var bucket = buckets[thread];
                 var cleanMessages = [];
+                var cleanXAPIMessages = [];
                 for (var messageId in bucket) {
                     cleanMessages.push(bucket[messageId]);
+                    cleanXAPIMessages.push(bucket[messageId].stmt);
                 }
                 TimeSeriesData.sort(cleanMessages, false);
+                sa.storage.postMessages(up, thread, cleanXAPIMessages);
                 var callback = callbacks[thread];
                 if (callback != null) 
                     callback(cleanMessages);
