@@ -37744,12 +37744,9 @@ var LLSyncAction = function(endpoint, repeat, userManager, storage, activityMana
 };
 LLSyncAction = stjs.extend(LLSyncAction, null, [SyncProcess], function(constructor, prototype) {
     prototype.bookMinePoll = null;
-    prototype.bookSharedPoll = null;
     prototype.chatPoll = null;
     prototype.bookPollingCallback = null;
-    prototype.bookSharedPollingCallback = null;
     prototype.chatPollingCallback = null;
-    prototype.pulledThread = null;
     prototype.endpoint = null;
     prototype.terminated = false;
     prototype.repeat = false;
@@ -37763,9 +37760,6 @@ LLSyncAction = stjs.extend(LLSyncAction, null, [SyncProcess], function(construct
         if (this.bookMinePoll != null) 
             clearTimeout(this.bookMinePoll);
         this.bookMinePoll = null;
-        if (this.bookSharedPoll != null) 
-            clearTimeout(this.bookSharedPoll);
-        this.bookSharedPoll = null;
         if (this.chatPoll != null) 
             clearTimeout(this.chatPoll);
         this.chatPoll = null;
@@ -37868,7 +37862,11 @@ LLSyncAction = stjs.extend(LLSyncAction, null, [SyncProcess], function(construct
         var pipeline = [];
         var query = {};
         var projection = {"statement": 1, "_id": 0, "voided": 1};
-        var pairs = [{"statement.object.id": "pebl://" + containerPath, "statement.stored": {"$gt": lastSynced}, "agents": sa.userManager.getUser().getHomePage() + "|" + sa.userManager.getUser().getIdentity()}, {"statement.object.id": "pebl://" + containerPath, "statement.stored": {"$gt": lastSynced}, "statement.verb.id": "http://adlnet.gov/expapi/verbs/shared"}];
+        var teacherPack = {"statement.object.id": "pebl://" + containerPath, "statement.stored": {"$gt": lastSynced}};
+        var pairs = [teacherPack, {"statement.object.id": "pebl://" + containerPath, "statement.stored": {"$gt": lastSynced}, "statement.verb.id": "http://adlnet.gov/expapi/verbs/shared"}];
+        if (!teacher) {
+            teacherPack["agents"] = sa.userManager.getUser().getHomePage() + "|" + sa.userManager.getUser().getIdentity();
+        }
         query["$match"] = {"$or": pairs};
         pipeline.push({"$sort": {"stored": -1, "_id": 1}});
         pipeline.push(query);
@@ -37940,7 +37938,7 @@ LLSyncAction = stjs.extend(LLSyncAction, null, [SyncProcess], function(construct
             }
         });
     };
-}, {bookMinePoll: "TimeoutHandler", bookSharedPoll: "TimeoutHandler", chatPoll: "TimeoutHandler", bookPollingCallback: "Callback0", bookSharedPollingCallback: "Callback0", chatPollingCallback: "Callback0", pulledThread: {name: "Map", arguments: [null, null]}, endpoint: "Endpoint", userManager: "UserAdapter", storage: "StorageAdapter", activityManager: "ActivityAdapter", assetManager: "AssetAdapter", llAPI: "LearningLockerAPI"}, {});
+}, {bookMinePoll: "TimeoutHandler", chatPoll: "TimeoutHandler", bookPollingCallback: "Callback0", chatPollingCallback: "Callback0", endpoint: "Endpoint", userManager: "UserAdapter", storage: "StorageAdapter", activityManager: "ActivityAdapter", assetManager: "AssetAdapter", llAPI: "LearningLockerAPI"}, {});
 var LocalNetworkAdapter = function(userManager, storage, activityManager, assetManager, TLAEnabled) {
     this.TLAEnabled = TLAEnabled;
     this.userManager = userManager;
@@ -37963,8 +37961,13 @@ var LocalNetworkAdapter = function(userManager, storage, activityManager, assetM
                 lna.storage.clearOutgoing(lna.userManager.getUser(), toDelete);
             }
         }
-        if (callback != null) 
-            callback(xhr);
+        if (lna.errorHandle != null) {
+            clearTimeout(lna.errorHandle);
+        }
+        lna.errorHandle = setTimeout(function() {
+            if (callback != null) 
+                callback(xhr);
+        }, 3000);
     };
 };
 LocalNetworkAdapter = stjs.extend(LocalNetworkAdapter, null, [NetworkAdapter], function(constructor, prototype) {
@@ -37980,6 +37983,7 @@ LocalNetworkAdapter = stjs.extend(LocalNetworkAdapter, null, [NetworkAdapter], f
     prototype.repeat = false;
     prototype.TLAEnabled = false;
     prototype.teacher = false;
+    prototype.errorHandle = null;
     prototype.pullCompetencies = function() {
         var lna = this;
         this.competencyRequest = new XMLHttpRequest();
@@ -38081,7 +38085,7 @@ LocalNetworkAdapter = stjs.extend(LocalNetworkAdapter, null, [NetworkAdapter], f
                 finished();
         });
     };
-}, {competencyPolling: "TimeoutHandler", pushPolling: "TimeoutHandler", recoveryPolling: "TimeoutHandler", competencyRequest: "XMLHttpRequest", userManager: "UserAdapter", storage: "StorageAdapter", activityManager: "ActivityAdapter", assetManager: "AssetAdapter", endpointHandlers: {name: "Array", arguments: ["SyncProcess"]}}, {});
+}, {competencyPolling: "TimeoutHandler", pushPolling: "TimeoutHandler", recoveryPolling: "TimeoutHandler", competencyRequest: "XMLHttpRequest", userManager: "UserAdapter", storage: "StorageAdapter", activityManager: "ActivityAdapter", assetManager: "AssetAdapter", endpointHandlers: {name: "Array", arguments: ["SyncProcess"]}, errorHandle: "TimeoutHandler"}, {});
 /**
  *  @author aaron.veden@eduworks.com
  */
