@@ -466,13 +466,15 @@ function createSidebar() {
         var sidebarExpandButton = document.createElement('div');
         sidebarExpandButton.classList.add('peblSidebarExpandButton', 'contracted');
         sidebarExpandButton.addEventListener('click', function() {
-            if (!tagCountSet)
+            if (!tagCountSet) {
                 $('.sidebarTagElement').each(function() {
                     var tag = $(this).attr('data-tag');
                     var bucket = $(this).attr('data-bucket');
                     var newFilterTags = filterTags.concat([bucket + "|" + tag]);
                     getTagCount($(this).children('.sidebarTagCount')[0], newFilterTags);
                 });
+                tagCountSet = true;
+            }
             $('#peblSidebar').toggleClass('expanded');
             $(this).toggleClass('expanded');
             $(this).toggleClass('contracted');
