@@ -32,6 +32,8 @@ function receiveMessage(event) {
         });
     } else if (obj && obj.message === "iframeUpdate") {
         $('.registryFrame').css('height', obj.height);
+    } else if (data === 'registryBackToTop') {
+        $('#registryContainer > div')[0].scroll(0,0);
     }
 }
 
@@ -1544,7 +1546,6 @@ function displayUITutorial() {
 //Overlay sections
 
 function createNotifications() {
-
     var notificationsContainer = document.createElement('div');
     notificationsContainer.id = 'notificationsContainer';
     notificationsContainer.classList.add('notificationsContainer');
@@ -2607,7 +2608,7 @@ function preloadIframes() {
     setTimeout(function() {
         $(document.body).append('<iframe src="https://peblproject.com/registry/#welcome" style="display:none;"></iframe>');
         $(document.body).append('<iframe src="https://ask.extension.org/" style="display:none;"></iframe>');
-    }, 5000);
+    }, 1000);
 }
 
 //Weirdest bug ever
