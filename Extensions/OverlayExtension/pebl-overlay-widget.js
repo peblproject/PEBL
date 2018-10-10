@@ -7,6 +7,7 @@ var globalPebl;
 var globalReadium;
 var filterTags = [];
 var allTags = [];
+var tagCountSet = false;
 var searchableTOC = null;
 var currentPrefix = null;
 var currentSection = null;
@@ -60,20 +61,13 @@ $(document).ready(function() {
         }
         console.log('globalreadium');
     }, 10);
-
+    preloadIframes();
     createTags();
     createOverlay();
     createFooter();
     createSidebar();
     attachAddedResources();
     handleOrientationChange();
-
-    try {
-        getAddedResources();
-    }catch(e){}
-    try {
-        getNotificationsCount();
-    }catch(e){}
     displayUITutorial();
 
     //var checkAccount = setInterval(setAccountName, 1000);
@@ -451,11 +445,6 @@ function createSidebar() {
 
                     var count = document.createElement('span');
                     count.classList.add('sidebarTagCount');
-                    (function(count, i, j, categories) {
-                        setTimeout(function() {
-                            getTagCount(count, [i + "|" + categories[i][j]]);
-                        }, 1000);
-                    })(count, i, j, categories);
 
                     element.appendChild(text);
                     element.appendChild(count);
@@ -477,6 +466,15 @@ function createSidebar() {
         var sidebarExpandButton = document.createElement('div');
         sidebarExpandButton.classList.add('peblSidebarExpandButton', 'contracted');
         sidebarExpandButton.addEventListener('click', function() {
+            if (!tagCountSet) {
+                $('.sidebarTagElement').each(function() {
+                    var tag = $(this).attr('data-tag');
+                    var bucket = $(this).attr('data-bucket');
+                    var newFilterTags = filterTags.concat([bucket + "|" + tag]);
+                    getTagCount($(this).children('.sidebarTagCount')[0], newFilterTags);
+                });
+                tagCountSet = true;
+            }
             $('#peblSidebar').toggleClass('expanded');
             $(this).toggleClass('expanded');
             $(this).toggleClass('contracted');
@@ -918,13 +916,13 @@ function getTagCount(elem, tagArr) {
     if (!globalPebl)
         return setTimeout(function() {
             getTagCount(elem, tagArr);
-        }, 500);
+        }, 1000);
     var counter = new Set();
     globalPebl.getToc(function(toc) {
         if (Object.keys(toc).length < 1)
             return setTimeout(function() {
                 getTagCount(elem, tagArr);
-            }, 500);
+            }, 1000);
         Object.keys(toc).forEach(function(section) {
             Object.keys(toc[section]).forEach(function(subsection) {
                 if (toc[section][subsection].skip == undefined && toc[section][subsection].pages) {
@@ -2178,6 +2176,7 @@ function handleFindButtonClick() {
 
     var waitingForReady = setInterval(function() {
         if (frameIsReady) {
+            console.log('frame is ready');
             clearInterval(waitingForReady);
             var iframe = document.getElementById('registryFrame');
             var obj = {
@@ -2602,6 +2601,13 @@ function niceName(str) {
     str = str.replace('Dei', 'DEI');
     str = str.replace('Md', 'MD');
     return str;
+}
+
+function preloadIframes() {
+    setTimeout(function() {
+        $(document.body).append('<iframe src="https://peblproject.com/registry/#welcome" style="display:none;"></iframe>');
+        $(document.body).append('<iframe src="https://ask.extension.org/" style="display:none;"></iframe>');
+    }, 5000);
 }
 
 //Weirdest bug ever
