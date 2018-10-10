@@ -36480,11 +36480,16 @@ var Voided = function(o) {
     this.id = o["id"];
     this.timestamp = XApiUtils.getTimestamp(o);
     this.parentActivity = XApiUtils.getParentActivity(o);
+    if ((this.parentActivity != null) && this.parentActivity.startsWith("peblThread://")) 
+        this.thread = this.parentActivity.substring("peblThread://".length);
+     else 
+        this.thread = this.parentActivity;
     this.actorId = XApiUtils.getActorId(o);
     this.target = XApiUtils.getObjectId(o);
 };
 Voided = stjs.extend(Voided, TimeSeriesData, [], function(constructor, prototype) {
     prototype.target = null;
+    prototype.thread = null;
     prototype.toObject = function() {
         var result = TimeSeriesData.prototype.toObject.call(this);
         result[TimeSeriesData.KEY_TARGET] = this.target;
@@ -36883,11 +36888,19 @@ var Reference = function(o) {
     if (o["object"] != null) {
         messageData = JSON.parse(XApiUtils.getObjectDescription(o));
         this.actorId = XApiUtils.getActorId(o);
-        this.thread = XApiUtils.getObjectId(o);
+        var temp = XApiUtils.getObjectId(o);
+        if ((temp != null) && temp.startsWith("peblThread://")) 
+            this.thread = temp.substring("peblThread://".length);
+         else 
+            this.thread = temp;
     } else {
         messageData = o;
         this.actorId = o[TimeSeriesData.KEY_ACTOR_ID];
-        this.thread = o[Reference.KEY_THREAD];
+        var temp = o[Reference.KEY_THREAD];
+        if ((temp != null) && temp.startsWith("peblThread://")) 
+            this.thread = temp.substring("peblThread://".length);
+         else 
+            this.thread = temp;
     }
     this.book = messageData[Reference.KEY_BOOK];
     this.docType = messageData[TimeSeriesData.KEY_DOCTYPE];
@@ -37814,11 +37827,9 @@ LLSyncAction = stjs.extend(LLSyncAction, null, [SyncProcess], function(construct
                 } else if (Voided.is(xapi)) {
                     var v = new Voided(xapi);
                     deleteIds.push(v);
-                    thread = v.parentActivity;
+                    thread = v.thread;
                 }
                 if (thread != null) {
-                    if (thread.startsWith("peblThread://")) 
-                        thread = thread.substring("peblThread://".length);
                     if (tsd != null) {
                         var stmts = buckets[thread];
                         if (stmts == null) {
