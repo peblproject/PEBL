@@ -1413,6 +1413,7 @@ function createUITutorial() {
 function nextTutorialStage() {
     var currentStage = $('#tutorialMessageContainer').attr('Stage');
     if (currentStage === '1') {
+        localStorage.setItem('tutorialStatus', 'Complete');
         handleExpandButtonClick();
         setTimeout(function() {
             $('#tutorialMessageContainer').animate({
