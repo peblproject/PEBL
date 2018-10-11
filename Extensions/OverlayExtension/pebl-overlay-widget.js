@@ -1384,6 +1384,16 @@ function createUITutorial() {
     tutorialMessage.textContent = 'Because you are a first time user, you will now receive a short tour of PeBL eBook features, starting with this Menu button. This button displays the PeBL toolbar. Most of the functionality is located here.';
     tutorialMessageContainer.appendChild(tutorialMessage);
 
+    var tutorialMessageCancelButon = document.createElement('label');
+    tutorialMessageCancelButon.id = 'tutorialMessageCancelButton';
+    tutorialMessageCancelButon.classList.add('tutorialMessageCancelButton');
+    tutorialMessageCancelButon.textContent = 'Cancel';
+    tutorialMessageCancelButon.addEventListener('click', function() {
+        endTutorial();
+        handleCloseButtonClick();
+    });
+    tutorialMessageContainer.appendChild(tutorialMessageCancelButon);
+
     var tutorialMessageNextButton = document.createElement('label');
     tutorialMessageNextButton.id = 'tutorialMessageNextButton';
     tutorialMessageNextButton.classList.add('tutorialMessageNextButton');
@@ -1488,7 +1498,7 @@ function nextTutorialStage() {
         $('#tutorialMessageArrow').css({
             right: '50%',
             left: 'unset',
-            buttom: 'unset',
+            bottom: '-10px',
             top: 'unset',
             "border-top": '10px solid rgb(7, 126, 188)',
             "border-left": '10px solid transparent',

@@ -1294,10 +1294,26 @@ i.overlayCloseButton {
     font-family: Helvetica;
 }
 
+.tutorialMessageCancelButton {
+    padding: 10px;
+    position: relative;
+    bottom: 5px;
+    margin-left: 10px;
+    float: left;
+    color: white;
+    font-style: normal;
+    font-variant-caps: normal;
+    font-weight: normal;
+    font-size: 15px;
+    line-height: normal;
+    font-family: Helvetica;
+}
+
 .tutorialMessageNextButton {
     padding: 10px;
     position: relative;
-    left: 70%;
+    margin-right: 10px;
+    float: right;
     bottom: 5px;
     color: white;
     font-style: normal;
