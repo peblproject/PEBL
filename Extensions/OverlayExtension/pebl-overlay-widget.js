@@ -1437,10 +1437,10 @@ function nextTutorialStage() {
         }, 500);
 
         $('#tutorialMessage').text('The Ask an Expert feature allows you to get in contact with an Extension expert in one of many fields.');
-
+        $('#tutorialMessageContainer').attr('Stage', '4');
     } else if (currentStage === '4') {
         $('#tutorialMessageContainer').animate({
-            left: $('#helpButtonContainer').offset().left - 150   // TODO: Need to fix positioning since this is new.
+            left: ($('#helpButtonContainer').offset().left - ($('#helpButtonContainer').width() / 2)) - 150
         }, 500);
 
         $('#tutorialMessageArrow').animate({
@@ -1473,7 +1473,7 @@ function nextTutorialStage() {
             });
 
             $('#tutorialMessage').text('The Category Filters feature allows you to build and refine filtered lists of eFieldbook resources using descriptive tags.');
-            $('#tutorialMessageContainer').attr('Stage', '5');
+            $('#tutorialMessageContainer').attr('Stage', '6');
         }, 500)
     } else if (currentStage === '6') {
         $('.peblSidebarExpandButton').click();
