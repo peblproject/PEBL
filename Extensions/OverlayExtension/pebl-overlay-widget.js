@@ -248,7 +248,7 @@ $(document).ready(function() {
             if (destination != null) {
                 sendDocumentToDestination(url, docType, externalURL, title);
                 if ($('body')[0].baseURI.split('/').pop() === destination) {
-                    $('#notificationsContainer').remove();
+                    clearNotifications();
                     openDocumentAtDestination();
                 } else {
                     globalReadium.reader.openContentUrl(destination);
@@ -1317,7 +1317,7 @@ function clearUI() {
 }
 
 function clearNotifications() {
-    $('#notificationsContainer').remove();
+    $('.notificationsWrapper').remove();
 }
 
 function clearHelp() {
@@ -1570,9 +1570,28 @@ function createNotifications() {
     notificationsContainer.id = 'notificationsContainer';
     notificationsContainer.classList.add('notificationsContainer');
 
+    var notificationsWrapper = document.createElement('div');
+    notificationsWrapper.classList.add('notificationsWrapper');
+
+    var notificationsClearButton = document.createElement('div');
+    notificationsClearButton.classList.add('notificationsClearButton');
+    notificationsClearButton.addEventListener('click', function() {
+        $('#notificationsContainer').children('div').each(function() {
+            globalPebl.removeNotification($(this).attr('notification-id'));
+        });
+        clearNotifications();
+    });
+
+    var notificationsClearText = document.createElement('span');
+    notificationsClearText.classList.add('notificationsClearText');
+    notificationsClearText.textContent = 'Clear Notifications';
+
+    notificationsClearButton.appendChild(notificationsClearText);
     
 
     globalPebl.getNotifications(function(obj) {
+        if (Object.keys(obj).length === 0)
+            return;
         var notificationsObj = obj;
 
         Object.keys(notificationsObj).forEach(function(key) {
@@ -1610,18 +1629,21 @@ function createNotifications() {
 
             var notificationElementLocationText = document.createElement('a');
             notificationElementLocationText.classList.add('notificationElementLocationText');
-            notificationElementLocationText.textContent = 'Section ' + notificationsObj[key].payload.card;
+            notificationElementLocationText.textContent = notificationsObj[key].payload.book;
 
             notificationElement.appendChild(notificationElementSenderText);
             notificationElement.appendChild(notificationElementContentText);
-            // notificationElement.appendChild(toSpan);
-            // notificationElement.appendChild(notificationElementLocationText);
+            notificationElement.appendChild(toSpan);
+            notificationElement.appendChild(notificationElementLocationText);
 
             notificationElementWrapper.appendChild(notificationElement);
             notificationsContainer.appendChild(notificationElementWrapper);
         });
 
-        document.getElementById('peblNotificationButtonContainer').appendChild(notificationsContainer);
+        notificationsWrapper.appendChild(notificationsContainer);
+        notificationsWrapper.appendChild(notificationsClearButton);
+
+        document.getElementById('peblNotificationButtonContainer').appendChild(notificationsWrapper);
     });
 }
 
@@ -2138,7 +2160,7 @@ function handleCloseButtonClick() {
 }
 
 function handleNotificationButtonClick() {
-    if ($('#notificationsContainer').length) {
+    if ($('.notificationsWrapper').length) {
         clearNotifications();
     } else {
         createNotifications();
