@@ -1629,7 +1629,7 @@ function createNotifications() {
 
             var notificationElementLocationText = document.createElement('a');
             notificationElementLocationText.classList.add('notificationElementLocationText');
-            notificationElementLocationText.textContent = notificationsObj[key].payload.book;
+            notificationElementLocationText.textContent = niceName(notificationsObj[key].payload.book.replace('.epub', ''));
 
             notificationElement.appendChild(notificationElementSenderText);
             notificationElement.appendChild(notificationElementContentText);
@@ -2642,6 +2642,7 @@ function handleOrientationChange() {
 
 function niceName(str) {
     str = str.replace(/_/g, ' ');
+    str = str.replace(/-/g, ' ');
     str = str.replace(/\w\S*/g, function(txt) {
         return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
