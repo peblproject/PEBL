@@ -27,9 +27,7 @@ function receiveMessage(event) {
     if (data === 'ready') {
         frameIsReady = true;
     } else if (obj && obj.message === "pullResource") {
-        globalPebl.storage.getCurrentBook(function(book) {
-            globalPebl.eventPulled(book, obj.target, obj.location, currentPrefix, obj.url, obj.docType, obj.name, obj.externalURL);
-        });
+        pullResource(obj.target, obj.location, obj.url, obj.docType, obj.name, obj.externalURL);
     } else if (obj && obj.message === "iframeUpdate") {
         $('.registryFrame').css('height', obj.height);
     } else if (data === 'registryBackToTop') {
@@ -2169,10 +2167,14 @@ function handleAskButtonClick() {
 
 function handleRegistryButtonClick() {
     frameIsReady = false;
-    expandOverlay();
-    createRegistrySearch();
-    document.getElementById('searchButton').classList.add('active');
-    document.getElementById('searchButtonLabel').classList.add('active');
+    if (currentSection) {
+        expandOverlay();
+        createRegistrySearch();
+        document.getElementById('searchButton').classList.add('active');
+        document.getElementById('searchButtonLabel').classList.add('active');
+    } else {
+        setTimeout(handleRegistryButtonClick, 1000);
+    }
 }
 
 function handleExpandButtonClick() {
@@ -2631,6 +2633,18 @@ function preloadIframes() {
         $(document.body).append('<iframe src="https://peblproject.com/registry/#welcome" style="display:none;"></iframe>');
         $(document.body).append('<iframe src="https://ask.extension.org/" style="display:none;"></iframe>');
     }, 1000);
+}
+
+function pullResource(target, location, url, docType, name, externalURL)  {
+    if (currentPrefix) {
+        globalPebl.storage.getCurrentBook(function(book) {
+            globalPebl.eventPulled(book, target, location, currentPrefix, url, docType, name, externalURL);
+        });
+    } else {
+        setTimeout(function() {
+            pullResource(target, location, url, docType, name, externalURL);
+        }, 1000);
+    }
 }
 
 //Weirdest bug ever
