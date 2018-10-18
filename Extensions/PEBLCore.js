@@ -1,4 +1,4 @@
-var define = null;
+// var define = null;
 
 /*
  *  Copyright 2011 Alexandru Craciun, Eyal Kaspi
@@ -1213,6 +1213,7 @@ window.ReadiumInterop = {
     			if (window.top.frames[i].embeddedBookName != null)
     				return window.top.frames[i].embeddedBookName;
     		}
+	    return "Library";
     	}
     },
 
@@ -1255,17 +1256,10 @@ var toVoidRecod = function (rec) {
 };
 
 window.LearningLockerAPI.prototype.pull = function (endpoint, searchParams, callback) {
-    // var preflight = new XMLHttpRequest();
-    
-    // preflight.onreadystatechange = function() {
-    // 	if (preflight.readyState == 4) {
-    // 	    if (preflight.status == 200) {
     var request = new XMLHttpRequest();
-    // debugger;
     request.onreadystatechange = function() {
 	if (request.readyState == 4) {
 	    if (request.status == 200) {
-		// debugger;
 		var result = JSON.parse(request.responseText);
 		for (var i = 0; i < result.length; i++) {
 		    var rec = result[i]
@@ -1282,32 +1276,11 @@ window.LearningLockerAPI.prototype.pull = function (endpoint, searchParams, call
     };
 
     request.open("GET", endpoint.url + "api/statements/aggregate?pipeline=" + encodeURIComponent(JSON.stringify(searchParams)), true);
-    // request.open("GET", endpoint.url + "api/statements/aggregate?cache=false&maxTimeMS=5000&maxScan=10000&pipeline=%5B%7B%22%24limit%22%3A%201%7D%2C%20%7B%22%24project%22%3A%20%7B%20%22statement%22%3A%201%2C%20%22_id%22%3A%200%20%7D%7D%5D", true);
     
     request.setRequestHeader("Authorization", "Basic " + endpoint.token);
-    // request.withCredentials = true;
     request.setRequestHeader("Content-Type", "application/json");    
-    // request.setRequestHeader("Access-Control-Allow-Credentials", "true");
-    // request.setRequestHeader("X-Experience-API-Version", "1.0.3");
-    // request.setRequestHeader("Access-Control-Allow-Origin", window.location.protocol + "://" + window.location.host);
-    
+
     request.send();       		    
-    // 	    }
-    // 	}
-    // };
-
-    // preflight.open("OPTIONS", endpoint.url + "api/statements/aggregate?pipeline=" + encodeURIComponent(JSON.stringify(searchParams)), true);
-    // preflight.setRequestHeader("Authorization", endpoint.token);
-    // preflight.withCredentials = true;
-    // preflight.setRequestHeader("X-Experience-API-Version", "1.0.3");
-    // // preflight.setRequestHeader("Content-Type", "application/json");
-    // // preflight.setRequestHeader("Access-Control-Allow-Headers", "authorization,content-type");
-    // preflight.setRequestHeader("Access-Control-Allow-Method", "GET");
-    // preflight.setRequestHeader("Access-Control-Allow-Credentials", "true");
-    // preflight.setRequestHeader("Access-Control-Allow-Origin", window.location.protocol + "://" + window.location.host);
-
-    // debugger;
-    // preflight.send();
 }
 window.FakeCompetency = {
     "getCompetencies" : function (user) {
@@ -23257,7 +23230,10 @@ function getAll(index, query, callback) {
     }
     
     request.onerror = function (e) {
-	//console.log(e);
+	console.log("Error", query, e);
+    };
+    request.onabort = function (e) {
+	console.log("Abort", query, e);
     };
     request.onsuccess = function (e) {
 	var r = e.target.result;
@@ -23303,7 +23279,7 @@ function cleanRecord(r) {
 
 window.IndexedDBInterop = function (readyCallback) {
     var self = this;
-    var request = window.indexedDB.open("pebl", 8);
+    var request = window.indexedDB.open("pebl", 10);
 
     request.onupgradeneeded = function (event) {
 	var db = event.target.result;
@@ -23320,10 +23296,11 @@ window.IndexedDBInterop = function (readyCallback) {
 	var messageStore = db.createObjectStore("messages", {keyPath:"id"});
 	var userStore = db.createObjectStore("user", {keyPath:"identity"});
 	var stateStore = db.createObjectStore("state", {keyPath:"id"});
-	var assetStore = db.createObjectStore("assets", {keyPath:"id"});
+	var assetStore = db.createObjectStore("assets", {keyPath:"id"});	
+	var queuedReferences = db.createObjectStore("queuedReferences", {keyPath:["identity", "id"]});
 	var notificationStore = db.createObjectStore("notifications", {keyPath:["identity", "id"]});
 	var tocStore = db.createObjectStore("tocs", { keyPath:["identity", "containerPath", "section", "pageKey"] });
-    var lrsAuthStore = db.createObjectStore("lrsAuth", {keyPath:"id"});
+	var lrsAuthStore = db.createObjectStore("lrsAuth", {keyPath:"id"});
 
 	eventStore.createIndex(MASTER_INDEX, ["identity", "containerPath"]);
 	annotationStore.createIndex(MASTER_INDEX, ["identity", "containerPath"]);
@@ -23331,8 +23308,10 @@ window.IndexedDBInterop = function (readyCallback) {
 	generalAnnotationStore.createIndex(MASTER_INDEX, "containerPath");
 	outgoingStore.createIndex(MASTER_INDEX, "identity");
 	messageStore.createIndex(MASTER_INDEX, ["identity", "thread"]);
+	queuedReferences.createIndex(MASTER_INDEX, "identity");
 	notificationStore.createIndex(MASTER_INDEX, "identity");
 	tocStore.createIndex(MASTER_INDEX, ["identity", "containerPath"]);
+	
     };
 
     
@@ -23341,8 +23320,13 @@ window.IndexedDBInterop = function (readyCallback) {
 	
 	readyCallback();
     };
+
+    request.onabort = function (e) {
+	console.log("Abort", query, e);
+    };
     
     request.onerror = function (event) {
+
 	// readyCallback(false, event.target.errorCode);
     };
 
@@ -23363,6 +23347,10 @@ window.IndexedDBInterop.prototype.storeCurrentUser = function(user, callback) {
     request.onerror = function (e) {
 	//console.log(e);
     };
+    request.onabort = function (e) {
+	console.log("Abort", query, e);
+    };
+    
     request.onsuccess = function (e) {
 	if (callback != null)
 	    callback();
@@ -23390,6 +23378,10 @@ window.IndexedDBInterop.prototype.storeCurrentBook = function(book) {
     request.onerror = function (e) {
 	//console.log(e);
     };
+    request.onabort = function (e) {
+	console.log("Abort", query, e);
+    };
+    
     request.onsuccess = function (e) {
 	//console.log(e);
     };
@@ -23416,6 +23408,10 @@ window.IndexedDBInterop.prototype.saveEvent = function(user, containerPath, even
     request.onerror = function (e) {
 	//console.log(e);
     };
+    request.onabort = function (e) {
+	console.log("Abort", query, e);
+    };
+    
     request.onsuccess = function (e) {
 	//console.log(e);
     };    
@@ -23488,6 +23484,9 @@ window.IndexedDBInterop.prototype.storeOutgoing = function(user, xapi) {
     request.onerror = function (e) {
 	//console.log(e);
     };
+    request.onabort = function (e) {
+	console.log("Abort", query, e);
+    };
     request.onsuccess = function (e) {
 	//console.log(e);
     };        
@@ -23499,6 +23498,9 @@ window.IndexedDBInterop.prototype.postMessage = function(user, thread, message) 
     var request = this.db.transaction(["messages"], "readwrite").objectStore("messages").put(cleanRecord(message));
     request.onerror = function (e) {
 	//console.log(e);
+    };
+    request.onabort = function (e) {
+	console.log("Abort", query, e);
     };
     request.onsuccess = function (e) {
 	//console.log(e);
@@ -23526,6 +23528,9 @@ window.IndexedDBInterop.prototype.addNotification = function(user, notification)
     request.onerror = function (e) {
 	//console.log(e);
     };
+    request.onabort = function (e) {
+	console.log("Abort", query, e);
+    };
     request.onsuccess = function (e) {
 	//console.log(e);
     };    
@@ -23552,6 +23557,9 @@ window.IndexedDBInterop.prototype.removeNotification = function(user, id) {
     request.onerror = function (e) {
 	//console.log(e);
     };
+    request.onabort = function (e) {
+	console.log("Abort", query, e);
+    };
     request.onsuccess = function (e) {
 	//console.log(e);
     };
@@ -23561,6 +23569,9 @@ window.IndexedDBInterop.prototype.removeToc = function(user, containerPath, sect
     var request = this.db.transaction(["tocs"], "readwrite").objectStore("tocs").delete(window.IDBKeyRange.only([user.identity, containerPath, section, id]));
     request.onerror = function (e) {
 	//console.log(e);
+    };
+    request.onabort = function (e) {
+	console.log("Abort", query, e);
     };
     request.onsuccess = function (e) {
 	//console.log(e);
@@ -23574,10 +23585,29 @@ window.IndexedDBInterop.prototype.addToc = function(user, containerPath, data) {
     request.onerror = function (e) {
 	//console.log(e);
     };
+    request.onabort = function (e) {
+	console.log("Abort", query, e);
+    };
     request.onsuccess = function (e) {
 	//console.log(e);
     };    
 };
+
+window.IndexedDBInterop.prototype.addToc = function(user, containerPath, data) {
+    data.identity = user.identity;
+    data.containerPath = containerPath;
+    var request = this.db.transaction(["tocs"], "readwrite").objectStore("tocs").put(cleanRecord(data));
+    request.onerror = function (e) {
+	//console.log(e);
+    };
+    request.onabort = function (e) {
+	console.log("Abort", query, e);
+    };
+    request.onsuccess = function (e) {
+	//console.log(e);
+    };    
+};
+
 
 window.IndexedDBInterop.prototype.getToc = function(user, containerPath, callback) {
     if (containerPath == null)
@@ -23587,6 +23617,65 @@ window.IndexedDBInterop.prototype.getToc = function(user, containerPath, callbac
     var index = os.index(MASTER_INDEX);
     getAll(index,
 	   window.IDBKeyRange.only([user.identity, containerPath]),
+	   callback);
+};
+
+window.IndexedDBInterop.prototype.removeQueuedReference = function(user, id) {
+    var request = this.db.transaction(["queuedReferences"], "readwrite").objectStore("queuedReferences").delete(window.IDBKeyRange.only([user.identity, id]));
+    request.onerror = function (e) {
+	//console.log(e);
+    };
+    request.onsuccess = function (e) {
+	//console.log(e);
+    };    
+};
+
+window.IndexedDBInterop.prototype.saveQueuedReference = function(user, ref) {    
+    ref.identity = user.identity;
+
+    var request = this.db.transaction(["queuedReferences"], "readwrite").objectStore("queuedReferences").put(cleanRecord(ref));
+    request.onerror = function (e) {
+	//console.log(e);
+    };
+    request.onabort = function (e) {
+	console.log("Abort", query, e);
+    };
+    request.onsuccess = function (e) {
+	//console.log(e);
+    };    
+};
+
+window.IndexedDBInterop.prototype.getQueuedReference = function(user, callback) {
+    var os = this.db.transaction(["queuedReferences"], "readonly").objectStore("queuedReferences")
+    var index = os.index(MASTER_INDEX);
+    var request = index.openCursor(window.IDBKeyRange.only(user.identity));
+    request.onerror = function (e) {
+
+    };
+    request.onsuccess = function (e) {
+	if (e.target.result == null) {
+	    var req = index.openCursor(window.IDBKeyRange.only([user.identity]));
+	    req.onerror = function (e) {
+
+	    };
+	    req.onsuccess = function (e) {
+		if (callback && e.target.result)
+		    callback(e.target.result.value);
+		else
+		    callback(null);
+	    };    
+	} else if (callback && e.target.result)
+	    callback(e.target.result.value);
+	else
+	    callback(null);
+    };    
+};
+
+window.IndexedDBInterop.prototype.getMessages = function(user, thread, callback) {
+    var os = this.db.transaction(["messages"], "readonly").objectStore("messages");
+    var index = os.index(MASTER_INDEX);
+    getAll(index,
+	   window.IDBKeyRange.only([user.identity, thread]),
 	   callback);
 };
 
@@ -23613,8 +23702,12 @@ window.IndexedDBInterop.prototype.saveUserProfile = function(user) {
     request.onerror = function (e) {
 	//console.log(e);
     };
+    request.onabort = function (e) {
+	console.log("Abort", query, e);
+    };
     request.onsuccess = function (e) {
-	//console.log(e);
+	// debugger;
+	// console.log(e);
     };
 };
 
@@ -23631,10 +23724,10 @@ window.IndexedDBInterop.prototype.removeAnnotation = function(user, id) {
 window.IndexedDBInterop.prototype.removeSharedAnnotation = function(user, id) {
     var request = this.db.transaction(["generalAnnotations"], "readwrite").objectStore("generalAnnotations").delete(window.IDBKeyRange.only(id));
     request.onerror = function (e) {
-    //console.log(e);
+	//console.log(e);
     };
     request.onsuccess = function (e) {
-    //console.log(e);
+	//console.log(e);
     };
 };
 
@@ -23703,6 +23796,9 @@ window.IndexedDBInterop.prototype.saveAnnotation = function(user, containerPath,
     request.onerror = function (e) {
 	// console.log(e);
     };
+    request.onabort = function (e) {
+	console.log("Abort", query, e);
+    };
     request.onsuccess = function (e) {
 	// console.log(e);
     };
@@ -23742,6 +23838,9 @@ window.IndexedDBInterop.prototype.saveAsset = function(id, data) {
     request.onerror = function (e) {
 	// console.log(e);
     };
+    request.onabort = function (e) {
+	console.log("Abort", query, e);
+    };
     request.onsuccess = function (e) {
 	// console.log(e);
     };
@@ -23752,6 +23851,9 @@ window.IndexedDBInterop.prototype.saveGeneralAnnotation = function(user, contain
     var request = this.db.transaction(["generalAnnotations"], "readwrite").objectStore("generalAnnotations").put(cleanRecord(annotation));
     request.onerror = function (e) {
 	// console.log(e);
+    };
+    request.onabort = function (e) {
+	console.log("Abort", query, e);
     };
     request.onsuccess = function (e) {
 	// console.log(e);
@@ -34747,6 +34849,9 @@ StorageAdapter = stjs.extend(StorageAdapter, null, [], function(constructor, pro
     prototype.getAsset = function(id, callback) {};
     prototype.setAsset = function(id, data) {};
     prototype.removeMessage = function(user, id, thread) {};
+    prototype.saveQueuedReference = function(user, ref) {};
+    prototype.getQueuedReference = function(user, callback) {};
+    prototype.removeQueuedReference = function(user, id) {};
     prototype.removeNotification = function(user, id) {};
     prototype.getNotifications = function(user, callback) {};
     prototype.addNotification = function(user, notification) {};
@@ -35179,13 +35284,6 @@ LLUserAdapter = stjs.extend(LLUserAdapter, null, [UserAdapter], function(constru
                     var loginButton = window.document.getElementById("loginUserNameSubmit");
                     loginButton.onclick = function(event) {
                         var newUser = (window.document.getElementById(self.loginUserNameSelect)).value;
-                        var MCISToken = "M2E5ZDMzMjNlMDIyODQwNzRhNjI2ODQzNWNlNGM1MGFlNWYzNjZmODpkOWZhZDUwZmIyY2VmNTE1MjMzZmRiNzc1ODhkMzkzMjhhNTliYzQ5";
-                        var TBSToken = "MjM0ZTBhY2Y0OWVlZjNiYTBmY2VjOWM0N2FiNjc4ZDRiMDJmNjY0NzpjNTI2YTUwNDIwZDM5MTEyMDZkNGJhYTZhZjZhMTlkMzk4MGIwODFj";
-                        var CDETToken = "M2IyOGE0YzU3YWUxM2Y1NTNiNzUzNWM5OTM3NGRhNzVmNGNhNDAzNjpiODMxNTI1NmUzN2JjZTlhYjUwMmZhNmI4ZmE2YTExODkzYzZmMmUy";
-                        var SNCOAToken = "YjdjZDYyNGFkYzFiZjI4ZDE4MGZkZmExMjNjZTM2ZmI3MTNmYjVjMzo5ODMxNTQ3ZTkwZmFhMDRmMmIwNGZiOWJjZWY4MDZhZTZlNzRiNGM2";
-                        var MSTPToken = "MGFmYjM5ZWI2NTAzMWRjNzI5NzVkZmIyZWYzMDE1NzUwY2U1ZWNiZDpmYzM5OTllN2ZiMjM4OTQ4Zjc0MWNkZmUzZWU2MDQwNWJiNTFlZmU2";
-                        var EWSToken = "Yzk3M2I3N2I2MDQ5ZjAwMmFjYTRmNTcxZjQxMDhiMjc2YzY5ZTUxOTpkMzRhMjBjZDVkYTYwOGZkZDk3ODI3MjQxNDZjZjMwMTNjMGRmY2Qw";
-                        var MCSCTToken = "MTRiMTQ0NjRiMGEyYmNlZDY4NzQwN2JmMGZlZGIwZjViNjE0YzBlNzo1ZTRiMTFhNzBmZDkyMjE3ZDE1NDUxYzZlNjdlZjBiYjc0MGZiMzMy";
                         window.Lightbox.getLRSURL(function(lrsURL) {
                             var GlobalEndpoint = lrsURL;
                             window.Lightbox.getLRSToken(function(lrsToken) {
@@ -35208,24 +35306,7 @@ LLUserAdapter = stjs.extend(LLUserAdapter, null, [UserAdapter], function(constru
                                                     endpoint.username = GlobalUsername;
                                                  else 
                                                     endpoint.username = newUser;
-                                                var token;
-                                                if (newUser.substring(0, 4) == "MCIS") 
-                                                    token = MCISToken;
-                                                 else if (newUser.substring(0, 3) == "TBS") 
-                                                    token = TBSToken;
-                                                 else if (newUser.substring(0, 4) == "CDET") 
-                                                    token = CDETToken;
-                                                 else if (newUser.substring(0, 5) == "SNCOA") 
-                                                    token = SNCOAToken;
-                                                 else if (newUser.substring(0, 4) == "MSTP") 
-                                                    token = MSTPToken;
-                                                 else if (newUser.substring(0, 3) == "EWS") 
-                                                    token = EWSToken;
-                                                 else if (newUser.substring(0, 5) == "MCSCT") 
-                                                    token = MCSCTToken;
-                                                 else 
-                                                    token = GlobalToken;
-                                                endpoint.token = token;
+                                                endpoint.token = "ZmI0YmRkZmM5Yzc2NzM2Mjg5MmUzOWI2NjUyZmM3YzgwZDcxMGMzZDowNGNiNDJmNTgzODZkN2ZkMDgzNGJmMDcwMmRjMDFjY2I0YzVkNWRi";
                                                 endpoint.password = GlobalPassword;
                                                 endpoint.url = GlobalEndpoint;
                                                 self.profile.addLrsUrl(endpoint);
@@ -35608,6 +35689,15 @@ IndexedDBStorageAdapter = stjs.extend(IndexedDBStorageAdapter, null, [StorageAda
     prototype.setAsset = function(id, data) {
         this.interop.saveAsset(id, data);
     };
+    prototype.saveQueuedReference = function(user, ref) {
+        this.interop.saveQueuedReference(user, ref);
+    };
+    prototype.getQueuedReference = function(user, callback) {
+        this.interop.getQueuedReference(user, callback);
+    };
+    prototype.removeQueuedReference = function(user, id) {
+        this.interop.removeQueuedReference(user, id);
+    };
     prototype.removeNotification = function(user, id) {
         this.interop.removeNotification(user, id);
     };
@@ -35670,7 +35760,7 @@ OpenIDUserAdapter = stjs.extend(OpenIDUserAdapter, null, [UserAdapter], function
                 self.profile.setPreferredName(userId.substring(userId.lastIndexOf("/") + 1));
                 self.profile.setHomePage("https://people.extension.org");
                 var endpoint = new Endpoint();
-                endpoint.token = "NGEyMTFmNzY5MDkyMmVlZmYyM2VlZGEzNjk2YWFkZTcyZDM5NWE4NjozYjljZjY1ZDNkZjY1ZmY3ZGI1YjRjNjhiYzhlYTBiODY5MWZiZDc5";
+                endpoint.token = "ZmI0YmRkZmM5Yzc2NzM2Mjg5MmUzOWI2NjUyZmM3YzgwZDcxMGMzZDowNGNiNDJmNTgzODZkN2ZkMDgzNGJmMDcwMmRjMDFjY2I0YzVkNWRi";
                 endpoint.url = "https://lrs.peblproject.com/";
                 self.profile.addLrsUrl(endpoint);
                 self.storage.saveUserProfile(self.profile);
@@ -36001,6 +36091,10 @@ var LocalActivityAdapter = function(userManager, storage) {
     this.subscribedThreads = {};
     this.storage = storage;
     this.userManager = userManager;
+    var self = this;
+    storage.getCurrentBook(function(book) {
+        self.currentBook = book;
+    });
 };
 LocalActivityAdapter = stjs.extend(LocalActivityAdapter, null, [ActivityAdapter], function(constructor, prototype) {
     prototype.storage = null;
@@ -36681,6 +36775,9 @@ InMemoryStorageAdapter = stjs.extend(InMemoryStorageAdapter, null, [StorageAdapt
     prototype.getToc = function(user, containerPath, callback) {};
     prototype.removeToc = function(user, containerPath, section, id) {};
     prototype.addToc = function(user, containerPath, data) {};
+    prototype.saveQueuedReference = function(user, ref) {};
+    prototype.getQueuedReference = function(user, callback) {};
+    prototype.removeQueuedReference = function(user, id) {};
 }, {persistStorage: "Storage", storage: {name: "Map", arguments: [null, null]}}, {});
 var Navigation = function(o) {
     TimeSeriesData.call(this);
@@ -37144,6 +37241,9 @@ KeyValueStorageAdapter = stjs.extend(KeyValueStorageAdapter, null, [StorageAdapt
     prototype.getToc = function(user, containerPath, callback) {};
     prototype.removeToc = function(user, containerPath, section, id) {};
     prototype.addToc = function(user, containerPath, data) {};
+    prototype.saveQueuedReference = function(user, ref) {};
+    prototype.getQueuedReference = function(user, callback) {};
+    prototype.removeQueuedReference = function(user, id) {};
 }, {storage: "Storage"}, {});
 var Question = function(o) {
     TimeSeriesData.call(this);
@@ -37384,21 +37484,23 @@ Annotation = stjs.extend(Annotation, TimeSeriesData, [], function(constructor, p
     };
 }, {timestamp: "Date", stmt: {name: "Map", arguments: [null, "Object"]}}, {});
 var LocalAssetAdapter = function(userManager, storageManager, activityManager) {
-    this.queuedResources = new Array();
     this.userManager = userManager;
     this.storageManager = storageManager;
     this.activityManager = activityManager;
     var self = this;
     this.syncAssets = function() {
-        if (self.queuedResources.length > 0) 
-            self.pull(self.queuedResources.pop());
-         else if (self.running) 
-            self.pending = setTimeout(self.syncAssets, 500);
+        self.storageManager.getQueuedReference(self.userManager.getUser(), function(r) {
+            if (r != null) 
+                self.pull(r, function() {
+                    self.storageManager.removeQueuedReference(self.userManager.getUser(), r.id);
+                });
+             else if (self.running) 
+                self.pending = setTimeout(self.syncAssets, 1000);
+        });
     };
     this.startSync();
 };
 LocalAssetAdapter = stjs.extend(LocalAssetAdapter, null, [AssetAdapter], function(constructor, prototype) {
-    prototype.queuedResources = null;
     prototype.userManager = null;
     prototype.storageManager = null;
     prototype.activityManager = null;
@@ -37421,9 +37523,9 @@ LocalAssetAdapter = stjs.extend(LocalAssetAdapter, null, [AssetAdapter], functio
         this.notificationHook = callback;
     };
     prototype.queue = function(ref) {
-        this.queuedResources.push(ref);
+        this.storageManager.saveQueuedReference(this.userManager.getUser(), ref);
     };
-    prototype.pull = function(ref) {
+    prototype.pull = function(ref, finished) {
         var xmr = new XMLHttpRequest();
         var self = this;
         xmr.onreadystatechange = function() {
@@ -37443,6 +37545,8 @@ LocalAssetAdapter = stjs.extend(LocalAssetAdapter, null, [AssetAdapter], functio
                         self.notificationHook(ref);
                 } else 
                     self.storageManager.addNotification(self.userManager.getUser(), new Notification("Failed", ref));
+                if (finished != null) 
+                    finished();
                 if (self.running) 
                     self.pending = setTimeout(self.syncAssets, 500);
             }
@@ -37450,7 +37554,7 @@ LocalAssetAdapter = stjs.extend(LocalAssetAdapter, null, [AssetAdapter], functio
         xmr.open("GET", "https://peblproject.com/registry/api/downloadContent?guid=" + ref.url, true);
         xmr.send();
     };
-}, {queuedResources: {name: "Array", arguments: ["Reference"]}, userManager: "UserAdapter", storageManager: "StorageAdapter", activityManager: "ActivityAdapter", pending: "TimeoutHandler", notificationHook: {name: "Callback1", arguments: ["TimeSeriesData"]}, syncAssets: "Callback0"}, {});
+}, {userManager: "UserAdapter", storageManager: "StorageAdapter", activityManager: "ActivityAdapter", pending: "TimeoutHandler", notificationHook: {name: "Callback1", arguments: ["TimeSeriesData"]}, syncAssets: "Callback0"}, {});
 var SyncAction = function(endpoint, repeat, userManager, storage, activityManager, assetManager, teacher) {
     this.endpoint = endpoint;
     this.repeat = repeat;
@@ -37846,14 +37950,12 @@ LLSyncAction = stjs.extend(LLSyncAction, null, [SyncProcess], function(construct
             }
             for (var i = 0; i < deleteIds.length; i++) {
                 var v = deleteIds[i];
-                var thread = v.parentActivity;
-                if (thread.startsWith("peblThread://")) 
-                    thread = thread.substring("peblThread://".length);
+                var thread = v.thread;
                 var bucket = buckets[thread];
                 if (bucket != null) {
                     delete bucket[v.target];
                 }
-                sa.storage.removeMessage(sa.userManager.getUser(), v.target, v.parentActivity);
+                sa.storage.removeMessage(sa.userManager.getUser(), v.target, thread);
             }
             var up = sa.userManager.getUser();
             for (var thread in buckets) {
@@ -38072,6 +38174,7 @@ LocalNetworkAdapter = stjs.extend(LocalNetworkAdapter, null, [NetworkAdapter], f
             this.pushPolling = null;
         }
         this.repeat = true;
+        this.assetManager.startSync();
         var endpoints = this.userManager.getUser().getLrsUrls();
         for (var key in endpoints) 
             this.endpointHandlers.push(new LLSyncAction(endpoints[key], true, this.userManager, this.storage, this.activityManager, this.assetManager, teacher));
@@ -38173,7 +38276,7 @@ PEBL = stjs.extend(PEBL, null, [], function(constructor, prototype) {
             if (PEBL.TLAEnabled) 
                 pebl.userManager = new OpenIDConnectUserAdapter(pebl.storage);
              else 
-                pebl.userManager = new OpenIDUserAdapter(pebl.storage);
+                pebl.userManager = new LLUserAdapter(pebl.storage);
             pebl.activityManager = new LocalActivityAdapter(pebl.userManager, pebl.storage);
             pebl.xapiGenerator = new XApiGenerator(pebl.userManager, pebl.storage, pebl.activityManager, PEBL.TLAEnabled);
             if (PEBL.TLAEnabled) 
@@ -38540,9 +38643,9 @@ PEBL = stjs.extend(PEBL, null, [], function(constructor, prototype) {
 
 window.PEBL = PEBL;
 
-$(document).ready(function () {
+window.onload = function () {
     PEBL.start(window.PEBLTeacher,
 	       function (peblInstance) {
 		   window.pebl = peblInstance
 	       });
-})
+};

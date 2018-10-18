@@ -43,6 +43,7 @@ window.Lightbox = {
     	document.getElementById('lightBoxContent').style.display = 'none';
     	document.getElementById('lightBoxContentSecondary').style.display = 'block';
     	var settingsObject = window.Lightbox.getLRSSettings();
+	
     	$('#lrsURLInput').val(settingsObject.lrsURL);
     	$('#lrsPasswordInput').val(settingsObject.lrsPassword);
     	$('#lrsTokenInput').val(settingsObject.lrsToken);
@@ -70,9 +71,9 @@ window.Lightbox = {
     },
 
     initDefaultLRSSettings : function(reset) {
-    	var lrsURL = "https://lrs.peblproject.com/data/xAPI/";
+    	var lrsURL = "https://lrs.peblproject.com/";
     	var lrsPassword = null;
-    	var lrsToken = "NTYwNGUyMjk5NTU5NzQ2ZmE4NjMxN2RiMzAwYTU5NTIyNTBkZWM2OTo5YzI5ZjU0MTgyMDhiZmZiNmJkZjczZjcwNzNiNTdlNzA5OTQ2YTU1";
+    	var lrsToken = "ZmI0YmRkZmM5Yzc2NzM2Mjg5MmUzOWI2NjUyZmM3YzgwZDcxMGMzZDowNGNiNDJmNTgzODZkN2ZkMDgzNGJmMDcwMmRjMDFjY2I0YzVkNWRi";
 	var lrsUsername = null;
     	var currentSettings = window.Lightbox.getLRSSettings();
 
@@ -84,6 +85,7 @@ window.Lightbox = {
     	};
     	if (reset || currentSettings == null)
     	    localStorage.setItem("LRSAuth", JSON.stringify(settingsObject));
+	return settingsObject;
     },
 
     getLRSSettings : function() {
@@ -127,6 +129,7 @@ window.Lightbox = {
     },
 
     createLoginForm : function () {
+
 	window.Lightbox.create("login", false);
 
 	var lightBoxContent = document.getElementById('lightBoxContent');
@@ -417,3 +420,4 @@ function useOpenIDLoginButton(elementName) {
     Lightbox.createLoginButton(elementName);
 }
 
+Lightbox.initDefaultLRSSettings();
