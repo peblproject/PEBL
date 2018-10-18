@@ -27,11 +27,11 @@ function receiveMessage(event) {
     if (data === 'ready') {
         frameIsReady = true;
     } else if (obj && obj.message === "pullResource") {
-        globalPebl.storage.getCurrentBook(function(book) {
-            globalPebl.eventPulled(book, obj.target, obj.location, currentPrefix, obj.url, obj.docType, obj.name, obj.externalURL);
-        });
+        pullResource(obj.target, obj.location, obj.url, obj.docType, obj.name, obj.externalURL);
     } else if (obj && obj.message === "iframeUpdate") {
         $('.registryFrame').css('height', obj.height);
+    } else if (data === 'registryBackToTop') {
+        $('#registryContainer > div')[0].scroll(0,0);
     }
 }
 
@@ -248,7 +248,7 @@ $(document).ready(function() {
             if (destination != null) {
                 sendDocumentToDestination(url, docType, externalURL, title);
                 if ($('body')[0].baseURI.split('/').pop() === destination) {
-                    $('#notificationsContainer').remove();
+                    clearNotifications();
                     openDocumentAtDestination();
                 } else {
                     globalReadium.reader.openContentUrl(destination);
@@ -1317,7 +1317,7 @@ function clearUI() {
 }
 
 function clearNotifications() {
-    $('#notificationsContainer').remove();
+    $('.notificationsWrapper').remove();
 }
 
 function clearHelp() {
@@ -1382,6 +1382,16 @@ function createUITutorial() {
     tutorialMessage.textContent = 'Because you are a first time user, you will now receive a short tour of PeBL eBook features, starting with this Menu button. This button displays the PeBL toolbar. Most of the functionality is located here.';
     tutorialMessageContainer.appendChild(tutorialMessage);
 
+    var tutorialMessageCancelButon = document.createElement('label');
+    tutorialMessageCancelButon.id = 'tutorialMessageCancelButton';
+    tutorialMessageCancelButon.classList.add('tutorialMessageCancelButton');
+    tutorialMessageCancelButon.textContent = 'Cancel';
+    tutorialMessageCancelButon.addEventListener('click', function() {
+        endTutorial();
+        handleCloseButtonClick();
+    });
+    tutorialMessageContainer.appendChild(tutorialMessageCancelButon);
+
     var tutorialMessageNextButton = document.createElement('label');
     tutorialMessageNextButton.id = 'tutorialMessageNextButton';
     tutorialMessageNextButton.classList.add('tutorialMessageNextButton');
@@ -1401,6 +1411,7 @@ function createUITutorial() {
 function nextTutorialStage() {
     var currentStage = $('#tutorialMessageContainer').attr('Stage');
     if (currentStage === '1') {
+        localStorage.setItem('tutorialStatus', 'Complete');
         handleExpandButtonClick();
         setTimeout(function() {
             $('#tutorialMessageContainer').animate({
@@ -1435,13 +1446,24 @@ function nextTutorialStage() {
         }, 500);
 
         $('#tutorialMessage').text('The Ask an Expert feature allows you to get in contact with an Extension expert in one of many fields.');
+        $('#tutorialMessageContainer').attr('Stage', '4');
+    } else if (currentStage === '4') {
+        $('#tutorialMessageContainer').animate({
+            left: ($('#helpButtonContainer').offset().left - ($('#helpButtonContainer').width() / 2)) - 150
+        }, 500);
+
+        $('#tutorialMessageArrow').animate({
+            marginLeft: '175px'
+        }, 500);
+
+        $('#tutorialMessage').text('Click this Help button at any time you would like to review this eFieldbook feature tour.');
         //Skip the sidebar section if it doesn't exist
         if ($('.peblSidebar').length < 1) {
-            $('#tutorialMessageContainer').attr('Stage', '5');
+            $('#tutorialMessageContainer').attr('Stage', '6');
         } else {
-            $('#tutorialMessageContainer').attr('Stage', '4');
+            $('#tutorialMessageContainer').attr('Stage', '5');
         }
-    } else if (currentStage === '4') {
+    } else if (currentStage === '5') {
         $('.peblSidebarExpandButton').click();
         setTimeout(function() {
             $('#tutorialMessageContainer').animate({
@@ -1460,9 +1482,9 @@ function nextTutorialStage() {
             });
 
             $('#tutorialMessage').text('The Category Filters feature allows you to build and refine filtered lists of eFieldbook resources using descriptive tags.');
-            $('#tutorialMessageContainer').attr('Stage', '5');
+            $('#tutorialMessageContainer').attr('Stage', '6');
         }, 500)
-    } else if (currentStage === '5') {
+    } else if (currentStage === '6') {
         $('.peblSidebarExpandButton').click();
         var offset = ($('#findButton').width() - $('#tutorialMessageContainer').width()) / 2;
         if (offset < 0)
@@ -1475,7 +1497,7 @@ function nextTutorialStage() {
         $('#tutorialMessageArrow').css({
             right: '50%',
             left: 'unset',
-            buttom: 'unset',
+            bottom: '-10px',
             top: 'unset',
             "border-top": '10px solid rgb(7, 126, 188)',
             "border-left": '10px solid transparent',
@@ -1485,8 +1507,8 @@ function nextTutorialStage() {
         });
 
         $('#tutorialMessage').text('This option will launch a search of Knowledge Network resources that is in context to the current page.');
-        $('#tutorialMessageContainer').attr('Stage', '6');
-    } else if (currentStage === '6') {
+        $('#tutorialMessageContainer').attr('Stage', '7');
+    } else if (currentStage === '7') {
         var offset = ($('#discussButton').width() - $('#tutorialMessageContainer').width()) / 2;
         if (offset < 0)
             offset = 0;
@@ -1495,8 +1517,8 @@ function nextTutorialStage() {
         }, 500);
 
         $('#tutorialMessage').text('The Discuss feature provides a place for PeBL eBook users to share feedback and insights in context to the current page.');
-        $('#tutorialMessageContainer').attr('Stage', '7');
-    } else if (currentStage === '7') {
+        $('#tutorialMessageContainer').attr('Stage', '8');
+    } else if (currentStage === '8') {
         var offset = ($('#notesButton').width() - $('#tutorialMessageContainer').width());
         if (offset > 0 && $('#notesButton').width() < $('#tutorialMessageContainer').width())
             offset = 0;
@@ -1544,14 +1566,32 @@ function displayUITutorial() {
 //Overlay sections
 
 function createNotifications() {
-
     var notificationsContainer = document.createElement('div');
     notificationsContainer.id = 'notificationsContainer';
     notificationsContainer.classList.add('notificationsContainer');
 
+    var notificationsWrapper = document.createElement('div');
+    notificationsWrapper.classList.add('notificationsWrapper');
+
+    var notificationsClearButton = document.createElement('div');
+    notificationsClearButton.classList.add('notificationsClearButton');
+    notificationsClearButton.addEventListener('click', function() {
+        $('#notificationsContainer').children('div').each(function() {
+            globalPebl.removeNotification($(this).attr('notification-id'));
+        });
+        clearNotifications();
+    });
+
+    var notificationsClearText = document.createElement('span');
+    notificationsClearText.classList.add('notificationsClearText');
+    notificationsClearText.textContent = 'Clear Notifications';
+
+    notificationsClearButton.appendChild(notificationsClearText);
     
 
     globalPebl.getNotifications(function(obj) {
+        if (Object.keys(obj).length === 0)
+            return;
         var notificationsObj = obj;
 
         Object.keys(notificationsObj).forEach(function(key) {
@@ -1589,18 +1629,21 @@ function createNotifications() {
 
             var notificationElementLocationText = document.createElement('a');
             notificationElementLocationText.classList.add('notificationElementLocationText');
-            notificationElementLocationText.textContent = 'Section ' + notificationsObj[key].payload.card;
+            notificationElementLocationText.textContent = niceName(notificationsObj[key].payload.book.replace('.epub', ''));
 
             notificationElement.appendChild(notificationElementSenderText);
             notificationElement.appendChild(notificationElementContentText);
-            // notificationElement.appendChild(toSpan);
-            // notificationElement.appendChild(notificationElementLocationText);
+            notificationElement.appendChild(toSpan);
+            notificationElement.appendChild(notificationElementLocationText);
 
             notificationElementWrapper.appendChild(notificationElement);
             notificationsContainer.appendChild(notificationElementWrapper);
         });
 
-        document.getElementById('peblNotificationButtonContainer').appendChild(notificationsContainer);
+        notificationsWrapper.appendChild(notificationsContainer);
+        notificationsWrapper.appendChild(notificationsClearButton);
+
+        document.getElementById('peblNotificationButtonContainer').appendChild(notificationsWrapper);
     });
 }
 
@@ -2117,7 +2160,7 @@ function handleCloseButtonClick() {
 }
 
 function handleNotificationButtonClick() {
-    if ($('#notificationsContainer').length) {
+    if ($('.notificationsWrapper').length) {
         clearNotifications();
     } else {
         createNotifications();
@@ -2146,10 +2189,14 @@ function handleAskButtonClick() {
 
 function handleRegistryButtonClick() {
     frameIsReady = false;
-    expandOverlay();
-    createRegistrySearch();
-    document.getElementById('searchButton').classList.add('active');
-    document.getElementById('searchButtonLabel').classList.add('active');
+    if (currentSection) {
+        expandOverlay();
+        createRegistrySearch();
+        document.getElementById('searchButton').classList.add('active');
+        document.getElementById('searchButtonLabel').classList.add('active');
+    } else {
+        setTimeout(handleRegistryButtonClick, 1000);
+    }
 }
 
 function handleExpandButtonClick() {
@@ -2595,6 +2642,7 @@ function handleOrientationChange() {
 
 function niceName(str) {
     str = str.replace(/_/g, ' ');
+    str = str.replace(/-/g, ' ');
     str = str.replace(/\w\S*/g, function(txt) {
         return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
@@ -2607,7 +2655,19 @@ function preloadIframes() {
     setTimeout(function() {
         $(document.body).append('<iframe src="https://peblproject.com/registry/#welcome" style="display:none;"></iframe>');
         $(document.body).append('<iframe src="https://ask.extension.org/" style="display:none;"></iframe>');
-    }, 5000);
+    }, 1000);
+}
+
+function pullResource(target, location, url, docType, name, externalURL)  {
+    if (currentPrefix) {
+        globalPebl.storage.getCurrentBook(function(book) {
+            globalPebl.eventPulled(book, target, location, currentPrefix, url, docType, name, externalURL);
+        });
+    } else {
+        setTimeout(function() {
+            pullResource(target, location, url, docType, name, externalURL);
+        }, 1000);
+    }
 }
 
 //Weirdest bug ever

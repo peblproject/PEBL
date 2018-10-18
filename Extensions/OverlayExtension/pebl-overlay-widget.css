@@ -1148,19 +1148,35 @@ i.helpButton {
     background-color: rgba(0, 0, 0, 0.4);
 }
 
-.notificationsContainer {
+.notificationsWrapper {
     position: fixed;
     width: 50vmin;
-    max-height: 50vmin;
     right: 10px;
     top: 60px;
     border-radius: 10px;
     background: white;
     -webkit-box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
     box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
+    z-index: 12000;
+}
+
+.notificationsContainer {
+    max-height: 50vmin;
+    position: relative;
+    background: white;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
-    z-index: 12000;
+}
+
+.notificationsClearButton {
+    position: relative;
+    text-align: center;
+    background-color: rgb(7, 126, 188);
+    padding-bottom: 1em;
+    padding-top: 1em;
+    color: white;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
 }
 
 .notificationElementWrapper {
@@ -1294,10 +1310,26 @@ i.overlayCloseButton {
     font-family: Helvetica;
 }
 
+.tutorialMessageCancelButton {
+    padding: 10px;
+    position: relative;
+    bottom: 5px;
+    margin-left: 10px;
+    float: left;
+    color: white;
+    font-style: normal;
+    font-variant-caps: normal;
+    font-weight: normal;
+    font-size: 15px;
+    line-height: normal;
+    font-family: Helvetica;
+}
+
 .tutorialMessageNextButton {
     padding: 10px;
     position: relative;
-    left: 70%;
+    margin-right: 10px;
+    float: right;
     bottom: 5px;
     color: white;
     font-style: normal;
