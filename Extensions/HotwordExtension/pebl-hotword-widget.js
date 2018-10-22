@@ -1,9 +1,9 @@
 $(document).ready(function() {
     //Find inDesign shortcodes and replace with actual pebl shortcodes
     $("body").children().each(function () {
-        $(this).html( $(this).html().replace(/\[\[\[(type="hotword") (word=".*?") (description=".*?")]]]/g, function(x) {
-            var hotword = x.match(/word="(.*?)"/);
-            var description = x.match(/description="(.*?)"/);
+        $(this).html( $(this).html().replace(/\[\[\[(type=”hotword”) (word=”.*?”) (description=”.*?”)]]]/g, function(x) {
+            var hotword = x.match(/word=”(.*?)”/);
+            var description = x.match(/description=”(.*?)”/);
 
             var widgetCode = '<i class="hotword_hotwordExtension" id="someID" data-hotword="' + hotword[1] + '" data-hotwordText="' + description[1] + '"></i>';
             return widgetCode;

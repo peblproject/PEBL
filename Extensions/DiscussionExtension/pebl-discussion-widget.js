@@ -10,12 +10,12 @@ $(document).ready(function() {
         }
         console.log('globalpebl');
     }, 10);
-    
+
     //Find inDesign shortcodes and replace with actual pebl shortcodes
     $("body").children().each(function () {
-        $(this).html( $(this).html().replace(/\[\[\[(type="discussion") (prompt=".*?") (button=".*?") (visibility=".*?") (postLimit=".*?") (notify=".*?")]]]/g, function(x) {
-            var prompt = x.match(/prompt="(.*?)"/);
-            var button = x.match(/button="(.*?)"/);
+        $(this).html( $(this).html().replace(/\[\[\[(type=”discussion”) (prompt=”.*?”) (button=”.*?”) (visibility=”.*?”) (postLimit=”.*?”) (notify=”.*?”)]]]/g, function(x) {
+            var prompt = x.match(/prompt=”(.*?)”/);
+            var button = x.match(/button=”(.*?)”/);
 
             var widgetCode = '<i class="discussion_discussionExtension" id="someID2" data-id="someID2" data-prompt="' + prompt[1] + '" data-buttonText="' + button[1] + '"></i>';
             return widgetCode;
