@@ -131,7 +131,11 @@ function setLevel(n, sectionID, programInvoked) {
             var cfi = "";
             // if (window.top.ReadiumSDK != null)
             //  cfi = window.top.ReadiumSDK.reader.getCfiForElement($("#" + sectionID));
-            window.top.pebl.eventPreferred(cfi, "morphing");
+            window.top.PeBL.emitEvent(window.top.PeBL.events.eventContentMorphed,
+				      {
+					  target: cfi,
+					  type: "morphing"
+				      });
         }
     }   
     //    console.log("#" + sectionID + ", Content Level: " + n);

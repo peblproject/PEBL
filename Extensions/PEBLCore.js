@@ -23279,7 +23279,7 @@ function cleanRecord(r) {
 
 window.IndexedDBInterop = function (readyCallback) {
     var self = this;
-    var request = window.indexedDB.open("pebl", 10);
+    var request = window.indexedDB.open("pebl", 11);
 
     request.onupgradeneeded = function (event) {
 	var db = event.target.result;
@@ -23299,18 +23299,18 @@ window.IndexedDBInterop = function (readyCallback) {
 	var assetStore = db.createObjectStore("assets", {keyPath:"id"});	
 	var queuedReferences = db.createObjectStore("queuedReferences", {keyPath:["identity", "id"]});
 	var notificationStore = db.createObjectStore("notifications", {keyPath:["identity", "id"]});
-	var tocStore = db.createObjectStore("tocs", { keyPath:["identity", "containerPath", "section", "pageKey"] });
+	var tocStore = db.createObjectStore("tocs", { keyPath:["identity", "book", "section", "pageKey"] });
 	var lrsAuthStore = db.createObjectStore("lrsAuth", {keyPath:"id"});
 
-	eventStore.createIndex(MASTER_INDEX, ["identity", "containerPath"]);
-	annotationStore.createIndex(MASTER_INDEX, ["identity", "containerPath"]);
+	eventStore.createIndex(MASTER_INDEX, ["identity", "book"]);
+	annotationStore.createIndex(MASTER_INDEX, ["identity", "book"]);
 	competencyStore.createIndex(MASTER_INDEX, "identity");
-	generalAnnotationStore.createIndex(MASTER_INDEX, "containerPath");
+	generalAnnotationStore.createIndex(MASTER_INDEX, "book");
 	outgoingStore.createIndex(MASTER_INDEX, "identity");
 	messageStore.createIndex(MASTER_INDEX, ["identity", "thread"]);
 	queuedReferences.createIndex(MASTER_INDEX, "identity");
 	notificationStore.createIndex(MASTER_INDEX, "identity");
-	tocStore.createIndex(MASTER_INDEX, ["identity", "containerPath"]);
+	tocStore.createIndex(MASTER_INDEX, ["identity", "book"]);
 	
     };
 
@@ -23332,11 +23332,11 @@ window.IndexedDBInterop = function (readyCallback) {
 
 };
 
-window.IndexedDBInterop.prototype.getAnnotations = function (user, containerPath, callback) {
+window.IndexedDBInterop.prototype.getAnnotations = function (user, book, callback) {
     var os = this.db.transaction(["annotations"], "readonly").objectStore("annotations");
     var index = os.index(MASTER_INDEX);
     getAll(index,
-	   window.IDBKeyRange.only([user.identity, containerPath]),
+	   window.IDBKeyRange.only([user.identity, book]),
 	   callback);
 };
 
@@ -23403,7 +23403,7 @@ window.IndexedDBInterop.prototype.getCurrentBook = function(callback) {
     };
 };
 
-window.IndexedDBInterop.prototype.saveEvent = function(user, containerPath, event) {
+window.IndexedDBInterop.prototype.saveEvent = function(user, book, event) {
     var request = this.db.transaction(["events"], "readwrite").objectStore("events").add(cleanRecord(event));
     request.onerror = function (e) {
 	//console.log(e);
@@ -23417,13 +23417,13 @@ window.IndexedDBInterop.prototype.saveEvent = function(user, containerPath, even
     };    
 };
 
-window.IndexedDBInterop.prototype.saveEvents = function(user, containerPath, events) {
+window.IndexedDBInterop.prototype.saveEvents = function(user, book, events) {
     var objectStore = this.db.transaction(["events"], "readwrite").objectStore("events");
     var callback = function () {
 	if (events.length > 0) {
 	    var record = events.pop();
 	    record.identity = user.identity;
-	    record.containerPath = containerPath;
+	    record.book = book;
 	    var request = objectStore.put(cleanRecord(record));
 	    request.onerror = callback;
 	    request.onsuccess = callback;
@@ -23432,11 +23432,11 @@ window.IndexedDBInterop.prototype.saveEvents = function(user, containerPath, eve
     callback();
 };
 
-window.IndexedDBInterop.prototype.getEvents = function(user, containerPath, callback) {
+window.IndexedDBInterop.prototype.getEvents = function(user, book, callback) {
     var os = this.db.transaction(["events"], "readonly").objectStore("events");
     var index = os.index(MASTER_INDEX);
     getAll(index,
-	   window.IDBKeyRange.only([user.identity, containerPath]),
+	   window.IDBKeyRange.only([user.identity, book]),
 	   callback);
 };
 
@@ -23565,8 +23565,8 @@ window.IndexedDBInterop.prototype.removeNotification = function(user, id) {
     };
 };
 
-window.IndexedDBInterop.prototype.removeToc = function(user, containerPath, section, id) {
-    var request = this.db.transaction(["tocs"], "readwrite").objectStore("tocs").delete(window.IDBKeyRange.only([user.identity, containerPath, section, id]));
+window.IndexedDBInterop.prototype.removeToc = function(user, book, section, id) {
+    var request = this.db.transaction(["tocs"], "readwrite").objectStore("tocs").delete(window.IDBKeyRange.only([user.identity, book, section, id]));
     request.onerror = function (e) {
 	//console.log(e);
     };
@@ -23578,9 +23578,9 @@ window.IndexedDBInterop.prototype.removeToc = function(user, containerPath, sect
     };    
 };
 
-window.IndexedDBInterop.prototype.addToc = function(user, containerPath, data) {
+window.IndexedDBInterop.prototype.addToc = function(user, book, data) {
     data.identity = user.identity;
-    data.containerPath = containerPath;
+    data.book = book;
     var request = this.db.transaction(["tocs"], "readwrite").objectStore("tocs").put(cleanRecord(data));
     request.onerror = function (e) {
 	//console.log(e);
@@ -23593,30 +23593,16 @@ window.IndexedDBInterop.prototype.addToc = function(user, containerPath, data) {
     };    
 };
 
-window.IndexedDBInterop.prototype.addToc = function(user, containerPath, data) {
-    data.identity = user.identity;
-    data.containerPath = containerPath;
-    var request = this.db.transaction(["tocs"], "readwrite").objectStore("tocs").put(cleanRecord(data));
-    request.onerror = function (e) {
-	//console.log(e);
-    };
-    request.onabort = function (e) {
-	console.log("Abort", query, e);
-    };
-    request.onsuccess = function (e) {
-	//console.log(e);
-    };    
-};
-
-
-window.IndexedDBInterop.prototype.getToc = function(user, containerPath, callback) {
-    if (containerPath == null)
-	return [];
-    
+window.IndexedDBInterop.prototype.getToc = function(user, book, callback) {
+    if (book == null) {
+	callback([]);
+	return;
+    }
+	
     var os = this.db.transaction(["tocs"], "readonly").objectStore("tocs");
     var index = os.index(MASTER_INDEX);
     getAll(index,
-	   window.IDBKeyRange.only([user.identity, containerPath]),
+	   window.IDBKeyRange.only([user.identity, book]),
 	   callback);
 };
 
@@ -23689,14 +23675,6 @@ window.IndexedDBInterop.prototype.removeMessage = function(id) {
     };    
 };
 
-window.IndexedDBInterop.prototype.getMessages = function(user, thread, callback) {
-    var os = this.db.transaction(["messages"], "readonly").objectStore("messages");
-    var index = os.index(MASTER_INDEX);
-    getAll(index,
-	   window.IDBKeyRange.only([user.identity, thread]),
-	   callback);
-};
-
 window.IndexedDBInterop.prototype.saveUserProfile = function(user) {
     var request = this.db.transaction(["user"], "readwrite").objectStore("user").put(cleanRecord(user));
     request.onerror = function (e) {
@@ -23731,10 +23709,9 @@ window.IndexedDBInterop.prototype.removeSharedAnnotation = function(user, id) {
     };
 };
 
-window.IndexedDBInterop.prototype.getGeneralAnnotations = function(user, containerPath, callback) {
+window.IndexedDBInterop.prototype.getGeneralAnnotations = function(user, book, callback) {
     var index = this.db.transaction(["generalAnnotations"], "readonly").objectStore("generalAnnotations").index(MASTER_INDEX);
-    console.log("index: " + index);
-    var param = containerPath;
+    var param = book;
     getAll(index,
 	   window.IDBKeyRange.only(param),
 	   function (arr) {
@@ -23755,7 +23732,7 @@ window.IndexedDBInterop.prototype.getUserProfile = function(id, callback) {
     request.onsuccess = function (e) {
 	if (callback != null)
 	    callback(e.target.result);
-    };    
+    };
 };
 
 window.IndexedDBInterop.prototype.getOutgoing = function(user, callback) {
@@ -23789,9 +23766,9 @@ window.IndexedDBInterop.prototype.clearOutgoing = function(user, toClear) {
     callback();
 };
 
-window.IndexedDBInterop.prototype.saveAnnotation = function(user, containerPath, annotation) {
+window.IndexedDBInterop.prototype.saveAnnotation = function(user, book, annotation) {
     annotation.identity = user.identity;
-    annotation.containerPath = containerPath;
+    annotation.book = book;
     var request = this.db.transaction(["annotations"], "readwrite").objectStore("annotations").put(cleanRecord(annotation));
     request.onerror = function (e) {
 	// console.log(e);
@@ -23804,13 +23781,13 @@ window.IndexedDBInterop.prototype.saveAnnotation = function(user, containerPath,
     };
 };
 
-window.IndexedDBInterop.prototype.saveAnnotations = function(user, containerPath, annotations) {
+window.IndexedDBInterop.prototype.saveAnnotations = function(user, book, annotations) {
     var objectStore = this.db.transaction(["annotations"], "readwrite").objectStore("annotations");
     var callback = function () {
 	if (annotations.length > 0) {
 	    var record = annotations.pop();
 	    record.identity = user.identity;
-	    record.containerPath = containerPath;
+	    record.book = book;
 	    var request = objectStore.put(cleanRecord(record));
 	    request.onerror = callback;
 	    request.onsuccess = callback;
@@ -23846,8 +23823,8 @@ window.IndexedDBInterop.prototype.saveAsset = function(id, data) {
     };
 };
 
-window.IndexedDBInterop.prototype.saveGeneralAnnotation = function(user, containerPath, annotation) {
-    annotation.containerPath = containerPath;
+window.IndexedDBInterop.prototype.saveGeneralAnnotation = function(user, book, annotation) {
+    annotation.book = book;
     var request = this.db.transaction(["generalAnnotations"], "readwrite").objectStore("generalAnnotations").put(cleanRecord(annotation));
     request.onerror = function (e) {
 	// console.log(e);
@@ -23860,12 +23837,12 @@ window.IndexedDBInterop.prototype.saveGeneralAnnotation = function(user, contain
     };
 };
 
-window.IndexedDBInterop.prototype.saveGeneralAnnotations = function(user, containerPath, annotations) {
+window.IndexedDBInterop.prototype.saveGeneralAnnotations = function(user, book, annotations) {
     var objectStore = this.db.transaction(["generalAnnotations"], "readwrite").objectStore("generalAnnotations");
     var callback = function () {
 	if (annotations.length > 0) {
 	    var record = annotations.pop();
-	    record.containerPath = containerPath;
+	    record.book = book;
 	    var request = objectStore.put(cleanRecord(record));
 	    request.onerror = callback;
 	    request.onsuccess = callback;

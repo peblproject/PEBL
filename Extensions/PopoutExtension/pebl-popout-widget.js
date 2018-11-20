@@ -66,14 +66,15 @@ function handlePopoutClick(event) {
     e.toggleClass('active');
     if (window.top.ReadiumSDK != null && window.top.ReadiumSDK.reader.plugins.highlights != null)
             window.top.ReadiumSDK.reader.plugins.highlights.redrawAnnotations();
-    if (window.top.pebl != null) {
+    if (window.top.PeBL != null) {
         var cfi = "";
         // if (window.top.ReadiumSDK != null)
         //     cfi = window.top.ReadiumSDK.reader.getCfiForElement(e);
 
-        if (!e.hasClass('inactive'))
-            window.top.pebl.eventPreferred(cfi, "popoutShow");
-        else
-            window.top.pebl.eventPreferred(cfi, "popoutHide");
+        window.top.PeBL.emitEvent(window.top.PeBL.events.eventPreferred, {
+	    target: cfi,
+	    type: e.hasClass('inactive') ? "popoutHide" : "popoutShow";
+	});
+	
     }
 }

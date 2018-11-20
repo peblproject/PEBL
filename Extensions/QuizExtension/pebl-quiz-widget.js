@@ -145,12 +145,28 @@ function attachClickHandler(quizId) {
             var normalizedScore = ((Math.round((score / total) * 100) / 100) * 100) | 0;
             var quizFeedback = "%" + normalizedScore;
             if ((score / total) >= 0.8) {
-                if (window.top.pebl != null)
-                    window.top.pebl.eventPassed(normalizedScore, id, description);
+                if (window.top.PeBL != null)
+                    window.top.PeBL.emitEvent(window.top.PeBL.eventPassed, {
+			score: normalizedScore,
+			minScore: 0,
+			maxScore: 1,
+			complete: true,
+			success: normalizedScore == maxScore,			
+			name: id,
+			description: description
+		    });
                 quizFeedback += " - You passed!";
             } else {
-                if (window.top.pebl != null)
-                    window.top.pebl.eventFailed(normalizedScore, id, description);
+                if (window.top.PeBL != null)
+                    window.top.PeBL.emitEvent(window.top.PeBL.eventFailed, {
+			score: normalizedScore,
+			minScore: 0,
+			maxScore: 1,
+			complete: true,
+			success: normalizedScore == maxScore,
+			name: id,
+			description: description
+		    });
                 quizFeedback += " - You did not pass, you should review the material and try again.";
             }
             localStorage.removeItem(quizEntry);
