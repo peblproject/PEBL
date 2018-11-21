@@ -190,7 +190,6 @@ function attachClickHandler(quizId) {
         var questionNum = $('ol.quiz .choices').index($answers);
 
         if (quizAttempts[questionNum].length == 0) {
-	    debugger;
             // first attempt
             $answers.children('li').removeClass('wrong');
             quizAttempts[questionNum].push(correct);
