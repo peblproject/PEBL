@@ -168,10 +168,16 @@ function handleTooltipClick() {
 
         var tooltipTextSpan = document.createElement('span');
         tooltipTextSpan.classList.add('tooltiptext');
-        tooltipTextSpan.textContent = $(this).attr('definition');
+	var textBody = $(this).attr('definition');
+        tooltipTextSpan.textContent = textBody;
 
         $(this).append(tooltipTextSpan);
 
         hotword_offsetTop($(tooltipTextSpan));
+
+	window.top.PeBL.emitEvent(window.top.PeBL.events.eventPreferred, {
+	    target: $(this).text(),
+	    type: "hotword"
+	});
     }
 }
