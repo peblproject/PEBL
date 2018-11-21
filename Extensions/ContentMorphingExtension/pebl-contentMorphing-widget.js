@@ -134,7 +134,9 @@ function setLevel(n, sectionID, programInvoked) {
             window.top.PeBL.emitEvent(window.top.PeBL.events.eventContentMorphed,
 				      {
 					  target: cfi,
-					  type: "morphing"
+					  type: "morphing",
+					  description: $('#' + sectionID + '.adjustable-content .level' + n).text(),
+					  name: "Level - " + n
 				      });
         }
     }   

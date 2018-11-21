@@ -34,7 +34,7 @@ function toggleVisibility(event, programInvoked) {
             //  cfi = window.top.ReadiumSDK.reader.getCfiForElement($("#" + target));
             window.top.PeBL.emitEvent(window.top.PeBL.events.eventPreferred, {
 		target: target,
-		type: state 
+		type: state
 	    });
         }
     }   

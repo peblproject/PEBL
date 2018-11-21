@@ -176,8 +176,9 @@ function handleTooltipClick() {
         hotword_offsetTop($(tooltipTextSpan));
 
 	window.top.PeBL.emitEvent(window.top.PeBL.events.eventPreferred, {
-	    target: $(this).text(),
-	    type: "hotword"
+	    name: $(this).text(),
+	    type: "hotword",
+	    description: textBody
 	});
     }
 }
