@@ -111,64 +111,65 @@ function replySubmit(event) {
 
 function messageHandler(responseBox, thread, replyDisabled) {
     return function (newMessages) {
-	newMessages.sort(sortMessages);
-	globalPebl.user.getUser(function (userProfile) {
-	    if (userProfile) {
-		for (var i = 0; i < newMessages.length; i++) {
-		    var message = newMessages[i];
-		    if ($("#" + message.id).length == 0) {	    
-			var mine = userProfile.identity == message.name;;
-			var userIcon = document.createElement('i');
-			userIcon.classList.add('fa', 'fa-user');
-			var userIdBox = $('<span class="userId"></span>');
-			userIdBox.text(message.name);
-			var timestampBox = $('<span class="timestamp"></span>');
-			timestampBox.text(new Date(message.timestamp).toLocaleString());
-			var textBox = $('<p class="message"></p>');
-			textBox.text(message.text);
-			var messageContainer = $('<div id="' + message.id  + '" class="' + (mine?"your ":"") + 'response"></div>');
-			messageContainer.append($(userIcon));
-			messageContainer.append(userIdBox);
-			messageContainer.append(timestampBox);
-			messageContainer.append(textBox);
-			if (!replyDisabled) {
-			    var messageReplyButton = document.createElement('a');
-			    messageReplyButton.classList.add('messageReplyButton');
-			    messageReplyButton.textContent = 'Reply';
-			    messageReplyButton.href = '#!';
-			    messageReplyButton.addEventListener('click', function(event) {
-				replyDiscussion(event);
-			    });
-			    messageContainer.append($(messageReplyButton));
-			}
-			var chatReplies = document.createElement('div');
-			chatReplies.classList.add('chatReplies');
-			messageContainer.append($(chatReplies));
-			// if (mine) {
-			//     var messageDeleteButtonWrapper = document.createElement('div');
-			//     messageDeleteButtonWrapper.classList.add('messageDeleteButtonWrapper');
+        newMessages.sort(sortMessages);
+        globalPebl.user.getUser(function (userProfile) {
+            if (userProfile) {
+                for (var i = 0; i < newMessages.length; i++) {
+                    var message = newMessages[i];
+                    if ($("#" + message.id).length == 0) {          
+                        var mine = userProfile.identity == message.name;;
+                        var userIcon = document.createElement('i');
+                        userIcon.classList.add('fa', 'fa-user');
+                        var userIdBox = $('<span class="userId"></span>');
+                        userIdBox.text(message.name);
+                        var timestampBox = $('<span class="timestamp"></span>');
+                        timestampBox.text(new Date(message.timestamp).toLocaleString());
+                        var textBox = $('<p class="message"></p>');
+                        textBox.text(message.text);
+                        var messageContainer = $('<div id="' + message.id  + '" class="' + (mine?"your ":"") + 'response"></div>');
+                        messageContainer.append($(userIcon));
+                        messageContainer.append(userIdBox);
+                        messageContainer.append(timestampBox);
+                        messageContainer.append(textBox);
+                        if (!replyDisabled) {
+                            var messageReplyButton = document.createElement('a');
+                            messageReplyButton.classList.add('messageReplyButton');
+                            messageReplyButton.textContent = 'Reply';
+                            messageReplyButton.href = '#!';
+                            messageReplyButton.addEventListener('click', function(event) {
+                                replyDiscussion(event);
+				event.preventDefault();
+                            });
+                            messageContainer.append($(messageReplyButton));
+                        }
+                        var chatReplies = document.createElement('div');
+                        chatReplies.classList.add('chatReplies');
+                        messageContainer.append($(chatReplies));
+                        // if (mine) {
+                        //     var messageDeleteButtonWrapper = document.createElement('div');
+                        //     messageDeleteButtonWrapper.classList.add('messageDeleteButtonWrapper');
 
-			//     var messageDeleteButton = document.createElement('span');
-			//     messageDeleteButton.classList.add('messageDeleteButton');
-			//     messageDeleteButton.innerHTML = '&#215;';
-			//     messageDeleteButton.setAttribute('messageID', message.id);
-			//     messageDeleteButton.setAttribute('thread', thread);
-			//     messageDeleteButton.addEventListener('click', function() {
-			//         window.pebl.removeMessage(this.getAttribute('messageID'), this.getAttribute('thread'));
-			//         $('#' + this.getAttribute('messageID')).remove();
-			//     });
+                        //     var messageDeleteButton = document.createElement('span');
+                        //     messageDeleteButton.classList.add('messageDeleteButton');
+                        //     messageDeleteButton.innerHTML = '&#215;';
+                        //     messageDeleteButton.setAttribute('messageID', message.id);
+                        //     messageDeleteButton.setAttribute('thread', thread);
+                        //     messageDeleteButton.addEventListener('click', function() {
+                        //         window.pebl.removeMessage(this.getAttribute('messageID'), this.getAttribute('thread'));
+                        //         $('#' + this.getAttribute('messageID')).remove();
+                        //     });
 
-			//     messageDeleteButtonWrapper.appendChild(messageDeleteButton);
-			//     messageContainer.append($(messageDeleteButtonWrapper));
-			// }
-			responseBox.prepend(messageContainer);
-			var thread = 'peblThread://' + message.id;
-			var messageHandle = messageHandler($(chatReplies), thread);
-			globalPebl.subscribeThread(thread, false, messageHandle);
-		    }
-		}
-	    }
-	});
+                        //     messageDeleteButtonWrapper.appendChild(messageDeleteButton);
+                        //     messageContainer.append($(messageDeleteButtonWrapper));
+                        // }
+                        responseBox.prepend(messageContainer);
+                        var thread = 'peblThread://' + message.id;
+                        var messageHandle = messageHandler($(chatReplies), thread);
+                        globalPebl.subscribeThread(thread, false, messageHandle);
+                    }
+                }
+            }
+        });
     };
 }
 
@@ -178,25 +179,24 @@ function createThread(thread, element, moreInput) {
     var messageHandle = messageHandler(responseBox, thread);
     globalPebl.subscribeThread(thread, false, messageHandle);
     var input = $(element).parent().find("textarea").val();
-    var prompt = $(element).parent().parent().parent().children("p").text();
+    var prompt = $(element).parent().parent().parent().find("p").text();
     if (input.trim() != "") {
-	var message = {
+        var message = {
             "prompt" : prompt,
-            "timestamp" : new Date().toISOString(),
             "thread" : thread,
             "text" : input
-	};
-	globalPebl.emitEvent(globalPebl.events.newMessage,
-			     message);
-	if (!moreInput)
+        };
+        globalPebl.emitEvent(globalPebl.events.newMessage,
+                             message);
+        if (!moreInput)
             chatInputBox.slideUp(400,
-				 function () {
-				     chatInputBox.remove();
-				 });
-	else
+                                 function () {
+                                     chatInputBox.remove();
+                                 });
+        else
             $(element).parent().find("textarea").val("");
 
-	responseBox.slideDown();
+        responseBox.slideDown();
     }
 }
 
@@ -207,12 +207,11 @@ function createSubThread(thread, prompt, textarea, responseBox) {
     if (input.trim() != "") {
         var message = {
             "prompt": prompt,
-            "timestamp": new Date().toISOString(),
             "thread": thread,
             "text": input
         };
-	globalPebl.emitEvent(globalPebl.events.newMessage,
-			     message);
+        globalPebl.emitEvent(globalPebl.events.newMessage,
+                             message);
         textarea.val("");
     }
 }
@@ -315,18 +314,18 @@ function handleChatButtonClick() {
         question;
     element = $(this);
     question = element.parent().children('p:first').text();
-    if (window.top.pebl != null || pebl != null) {
-    if ((this.id != null) && (this.id != "")) {
-        if (element.parent().children(".chatBox").length == 0) {
-            // if (globalPebl.userManager.isLoggedIn) {
-            openDiscussionLightbox(question, this);
-            $('#discussionTextArea').focus();
-            // } else if (window.Lightbox) {
-            //     window.Lightbox.create('login', false);
-            //     window.Lightbox.createLoginButton('lightBoxContent');
-            // }
+    if (globalPebl) {
+        if ((this.id != null) && (this.id != "")) {
+            if (element.parent().children(".chatBox").length == 0) {
+                // if (globalPebl.userManager.isLoggedIn) {
+                openDiscussionLightbox(question, this);
+                $('#discussionTextArea').focus();
+                // } else if (window.Lightbox) {
+                //     window.Lightbox.create('login', false);
+                //     window.Lightbox.createLoginButton('lightBoxContent');
+                // }
+            }
         }
-    }
     }
 }
 
