@@ -155,6 +155,7 @@ button.discussionCloseButton {
     font-weight: normal;
     font-size: 14px;
     border-top: 1px solid #ddd;
+    clear: both;
 }
 
 .chatResponses .response {
