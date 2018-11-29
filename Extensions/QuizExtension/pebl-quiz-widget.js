@@ -141,18 +141,35 @@ function attachClickHandler(quizId) {
         }
         if (finished) {
             var id = $("ol.quiz")[0].id;
-            var description = $(".title").text().trim();
+	    var promptElems = $("i[data-id=" + id + "]");
+	    var prompts = [];
+	    promptElems.each(function(i, elem) {
+		prompts.push( " ][ " + $(elem).attr("data-prompt"));
+            });
+            var description = $(".title").text().trim() + prompts.join("");
             var normalizedScore = ((Math.round((score / total) * 100) / 100) * 100) | 0;
             var quizFeedback = "%" + normalizedScore;
+	    var event;
+	    var success;
             if ((score / total) >= 0.8) {
-                if (window.top.pebl != null)
-                    window.top.pebl.eventPassed(normalizedScore, id, description);
+		event = window.top.PeBL.events.eventPassed;
+		success = true;
                 quizFeedback += " - You passed!";
             } else {
-                if (window.top.pebl != null)
-                    window.top.pebl.eventFailed(normalizedScore, id, description);
+		event = window.top.PeBL.events.eventFailed;
+		success = false;
                 quizFeedback += " - You did not pass, you should review the material and try again.";
             }
+            if (window.top.PeBL != null)
+                window.top.PeBL.emitEvent(event, {
+		    score: score,
+		    minScore: 0,
+		    maxScore: total,
+		    complete: true,
+		    success: success,
+		    name: id,
+		    description: description
+		});	    
             localStorage.removeItem(quizEntry);
             $(".quizScore").text(quizFeedback);
         }
@@ -160,36 +177,46 @@ function attachClickHandler(quizId) {
 
     $('ol.quiz[id="' + quizId + '"] .choices').off();
     $('ol.quiz[id="' + quizId + '"] .choices').on('click', 'li', function() {
-        var prompt = $(this).text();
+        var answered = $(this).text();
+	var prompt = $(this).parent().parent().find(".questionPromptContainer").text();
         var $answers = $(this).parents('.choices');
         var $answersText = $answers.children();
         $answersText = $answersText.map(function(i) {
             return $($answersText[i]).text();
         });
+	var correctAnswer = $answers.find('.correct').text();	
         var $feedback = $answers.siblings('.feedback');
         var correct = $(this).hasClass('correct'); // T or F
         var questionNum = $('ol.quiz .choices').index($answers);
 
         if (quizAttempts[questionNum].length == 0) {
-
             // first attempt
             $answers.children('li').removeClass('wrong');
             quizAttempts[questionNum].push(correct);
             localStorage.setItem(quizEntry, JSON.stringify(quizAttempts));
-            if (correct == true) {
+            if (correct) {
                 $answers.addClass('reveal');
                 $feedback.text(correctFeedback(1));
-                if (window.top.pebl != null)
-                    window.top.pebl.eventAnswered(prompt, $answersText, $(this).text(), correct, true);
             } else {
-
                 $(this).addClass('wrong');
                 //$(this).delay(1000).slideUp();
                 $feedback.text(wrongFeedback(1));
-                if (window.top.pebl != null)
-                    window.top.pebl.eventAnswered(prompt, $answersText, $(this).text(), correct, false);
             }
 
+	    if (window.top.PeBL != null)
+                window.top.PeBL.emitEvent(window.top.PeBL.events.eventAnswered, {
+		    "prompt": prompt,		    
+		    "answers": $answersText,
+		    "correctAnswers": [[correctAnswer]],
+		    "answered": answered,
+		    "score": correct ? 1 : 0,
+		    "minScore": 0,
+		    "maxScore": 1,
+		    "complete": true,
+		    "success": correct
+		});
+
+	    
             gradeTest();
             $feedback.slideDown();
         } else if (quizAttempts[questionNum].length == 1 && quizAttempts[questionNum][0] == false) {
@@ -220,8 +247,18 @@ function attachClickHandler(quizId) {
                     $feedback.text(wrongFeedback(2));
             }
 
-            if (window.top.pebl != null)
-                window.top.pebl.eventAnswered(prompt, $answersText, $(this).text(), correct, true);
+	    if (window.top.PeBL != null)
+                window.top.PeBL.emitEvent(window.top.PeBL.events.eventAnswered, {
+		    "prompt": prompt,
+		    "answers": $answersText,
+		    "correctAnswers": [[correctAnswer]],
+		    "answered": answered,
+		    "score": correct ? 1 : 0,
+		    "minScore": 0,
+		    "maxScore": 1,
+		    "complete": true,
+		    "success": correct
+		});
             gradeTest();
             $feedback.slideDown();
         } else if (quizAttempts[questionNum].length > 1) {

@@ -25,14 +25,17 @@ function toggleVisibility(event, programInvoked) {
     });
 
     
-    if (window.top.pebl != null) {
+    if (window.top.PeBL != null) {
         if (!programInvoked) {
             var target = document.getElementById(id + 'Btn').dataset.cassTarget;
             var cfi = "";
         $('#' + id).addClass("userToggled");
             // if (window.top.ReadiumSDK != null)
             //  cfi = window.top.ReadiumSDK.reader.getCfiForElement($("#" + target));
-            window.top.pebl.eventPreferred(cfi, state);
+            window.top.PeBL.emitEvent(window.top.PeBL.events.eventPreferred, {
+		target: target,
+		type: state
+	    });
         }
     }   
 }

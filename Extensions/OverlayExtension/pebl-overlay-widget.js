@@ -36,31 +36,9 @@ function receiveMessage(event) {
 }
 
 $(document).ready(function() {
-    var setGlobalPebl = setInterval(function() {
-        if (window.top && window.top.pebl) {
-            globalPebl = window.top.pebl;
-            clearInterval(setGlobalPebl);
-            globalPebl.initializeToc(window.staticTOC);
-        }
-        else if (window.pebl) {
-            globalPebl = window.pebl
-            clearInterval(setGlobalPebl);
-            globalPebl.initializeToc(window.staticTOC);
-        }
-        console.log('globalpebl');
-    }, 10);
-
-    var setGlobalReadium = setInterval(function() {
-        if (window.top && window.top.ReadiumSDK) {
-            globalReadium = window.top.ReadiumSDK;
-            clearInterval(setGlobalReadium);
-        }
-        else if (window.ReadiumSDK) {
-            globalReadium = window.ReadiumSDK;
-            clearInterval(setGlobalReadium);
-        }
-        console.log('globalreadium');
-    }, 10);
+    globalPebl = window.top.PeBL;
+    globalReadium = window.top.ReadiumSDK;
+    
     preloadIframes();
     createTags();
     createOverlay();
