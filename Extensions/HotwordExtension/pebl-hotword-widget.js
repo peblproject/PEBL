@@ -9,6 +9,9 @@ $(document).ready(function() {
             return widgetCode;
         }) );
     });
+    $(document.body).on('click', '.tooltip', function(event) {
+        handleTooltipClick(event);
+    });
     $('.hotword_hotwordExtension').each(function() {
         var insertID = $(this)[0].getAttribute('id');
         var hotword = $(this)[0].getAttribute('data-hotword');
@@ -31,8 +34,6 @@ function createHotword(insertID, tooltip, tooltipText) {
 
     insertLocation.parentNode.insertBefore(tooltipSpan, insertLocation);
     insertLocation.remove();
-    $('.tooltip').off();
-    $('.tooltip').on('click', handleTooltipClick);
 }
 
 function hotword_offsetTop(elem) {
@@ -138,7 +139,8 @@ $(document).mouseup(function (e) {
     }
 });
 
-function handleTooltipClick() {
+function handleTooltipClick(event) {
+    var elem = event.currentTarget;
     var tip,
         originalMarginLeft,
         originalLeft,
@@ -159,18 +161,18 @@ function handleTooltipClick() {
         adjustRight = false,
         adjustTop = false;
 
-    if ($(this).hasClass('active')) {
-        $(this).removeClass('active');
-        $(this).children('.tooltiptext').remove();
+    if ($(elem).hasClass('active')) {
+        $(elem).removeClass('active');
+        $(elem).children('.tooltiptext').remove();
     } else {
-        $('.tooltip').removeClass('active');
-        $(this).addClass('active');
+        $(elem).removeClass('active');
+        $(elem).addClass('active');
 
         var tooltipTextSpan = document.createElement('span');
         tooltipTextSpan.classList.add('tooltiptext');
-        tooltipTextSpan.textContent = $(this).attr('definition');
+        tooltipTextSpan.textContent = $(elem).attr('definition');
 
-        $(this).append(tooltipTextSpan);
+        $(elem).append(tooltipTextSpan);
 
         hotword_offsetTop($(tooltipTextSpan));
     }
