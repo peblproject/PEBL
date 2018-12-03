@@ -1,0 +1,66 @@
+.tutorialMessageContainer {
+    clear: both;
+    position: fixed;
+    width: 250px;
+    height: auto;
+    min-height: 100px;
+    background-color: rgb(7, 126, 188);
+    left: 0;
+    top: 60px;
+    border-radius: 10px;
+    z-index: 3001;
+}
+
+.tutorialMessage {
+    color: white;
+    padding: 10px;
+    font-style: normal;
+    font-variant-caps: normal;
+    font-weight: normal;
+    font-size: 13px;
+    line-height: normal;
+    font-family: Helvetica;
+}
+
+.tutorialMessageCancelButton {
+    padding: 10px;
+    position: relative;
+    bottom: 5px;
+    margin-left: 10px;
+    float: left;
+    color: white;
+    font-style: normal;
+    font-variant-caps: normal;
+    font-weight: normal;
+    font-size: 15px;
+    line-height: normal;
+    font-family: Helvetica;
+}
+
+.tutorialMessageNextButton {
+    padding: 10px;
+    position: relative;
+    margin-right: 10px;
+    float: right;
+    bottom: 5px;
+    color: white;
+    font-style: normal;
+    font-variant-caps: normal;
+    font-weight: normal;
+    font-size: 15px;
+    line-height: normal;
+    font-family: Helvetica;
+}
+
+.tutorialMessageArrow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-left: 30px;
+    margin-top: -10px;
+    width: 0;
+    height: 0;
+    border-bottom: 10px solid rgb(7, 126, 188);
+    border-right: 10px solid transparent;
+    border-left: 10px solid transparent;
+}
