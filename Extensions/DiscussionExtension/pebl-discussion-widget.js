@@ -309,16 +309,21 @@ function createDiscussionBox(element, chatButton) {
     });
 }
 
-function handleChatButtonClick() {
+function handleChatButtonClick(elem) {
+    console.log('test');
+    event.preventDefault();
     var element,
         question;
-    element = $(this);
+    if (elem)
+        element = $(elem);
+    else
+        element = $(this);
     question = element.parent().children('p:first').text();
     if (globalPebl) {
-        if ((this.id != null) && (this.id != "")) {
+        if ((element[0].id != null) && (element[0].id != "")) {
             if (element.parent().children(".chatBox").length == 0) {
                 // if (globalPebl.userManager.isLoggedIn) {
-                openDiscussionLightbox(question, this);
+                openDiscussionLightbox(question, element[0]);
                 $('#discussionTextArea').focus();
                 // } else if (window.Lightbox) {
                 //     window.Lightbox.create('login', false);
@@ -327,6 +332,75 @@ function handleChatButtonClick() {
             }
         }
     }
+}
+
+function handleNoteButtonClick(elem) {
+    globalPebl.user.getUser(function(user) {
+        var discussionId = user.identity + '-' + elem.id;
+
+        //From discussion widget
+        createDiscussionLightBox();
+
+        var questionBox,
+            questionBoxText,
+            notesCloseButton,
+            element,
+            lightBoxTitle,
+            lightBoxContent;
+
+        questionBox = document.createElement('div');
+        questionBox.classList.add('discussionQuestionBox');
+        questionBoxText = document.createElement('p');
+        questionBoxText.classList.add('discussionQuestionBoxText');
+        questionBoxText.textContent = 'Test Notes';
+        questionBox.appendChild(questionBoxText);
+
+        notesCloseButton = document.createElement('i');
+        notesCloseButton.classList.add('fa', 'fa-times', 'discussionCloseButton');
+        notesCloseButton.addEventListener('click', function() {
+            closeLightBox();
+        });
+
+        lightBoxContent = document.getElementById('lightBoxContent');
+
+        lightBoxContent.appendChild(notesCloseButton);
+        lightBoxContent.appendChild(questionBox);
+
+        var notesResponses = $('<div class="notesResponses" style="display:none;"><div id="discussionSpanContainer" style="text-align: center; margin-top: 10px; margin-bottom: 10px; display: none;"><span class="discussionSpan">You haven\'t added any notes yet.</span></div></div>');
+        var notesInput = $('<div class="notesInput" style="display:none;"><textarea id="notesTextArea" placeholder="Add a note."></textarea><button class="notesSubmit">Add note</button></div>');
+        var notes = $('<div class="notesBox"></div>');
+        notes.append(notesInput);
+        notes.append(notesResponses);
+        lightBoxContent = $(lightBoxContent);
+        lightBoxContent.append(notes);
+        lightBoxContent.find(".notesInput").slideDown();
+
+        $('#notesTextArea').focus();
+
+        //Subscribe to thread without clicking submit
+        var notesInputBox = $('button.notesSubmit').parent();
+        var responseBox = notesInputBox.siblings('.notesResponses');
+        var messageHandle = messageHandler(responseBox);
+        globalPebl.subscribeThread(discussionId, false, messageHandle);
+        responseBox.slideDown();
+
+        notesInput.on('click', 'button.notesSubmit', function() {
+            createThread(discussionId, $(this), true);
+            globalPebl.subscribeThread(discussionId, false, messageHandle);
+            responseBox.slideDown();
+        });
+
+        setTimeout(function() {
+            $('#discussionSpanContainer').show();
+        }, 2000);
+
+        var checkDiscussionMessages = setInterval(function() {
+            if (document.getElementsByClassName('notesResponses')[0].childElementCount > 1) {
+                clearInterval(checkDiscussionMessages);
+                $('#discussionSpanContainer').remove();
+            }
+        }, 1000);
+    });
 }
 
 function sortMessages(a, b) {

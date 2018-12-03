@@ -1,7 +1,10 @@
 var globalPebl = window.top.PeBL;
 
-globalPebl.extension.askExpert = {
-	createAskExpert: function(element) {
+var askExpert = {};
+
+globalPebl.extension.askExpert = askExpert;
+
+askExpert.createAskExpert = function(element) {
 		//clearUI();
 	    //Create the askExpert page
 	    var askContainer = document.createElement('div');
@@ -27,6 +30,4 @@ globalPebl.extension.askExpert = {
 	    wrapper.appendChild(askFrame);
 	    askContainer.appendChild(wrapper);
 	    element.appendChild(askContainer);
-	    //document.body.appendChild(createOverlayCloseButton());
-	}
 }

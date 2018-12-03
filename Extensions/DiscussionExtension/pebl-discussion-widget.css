@@ -45,7 +45,7 @@ button.chat,
 button.discussionCloseButton,
 button.chatSubmit,
 button.replyCloseButton,
-button.replySubmitButton
+button.replySubmitButton,
 button.notesSubmit,
 a.button {
     cursor: pointer;
@@ -116,7 +116,8 @@ button.chat > i {
     color: red;
 }
 
-.chatSubmit {
+.chatSubmit,
+.notesSubmit {
     float: right;
     margin-bottom: 10px !important;
 }
@@ -230,6 +231,7 @@ button.discussionCloseButton {
     font-weight: normal;
     font-size: 14px;
     border-top: 1px solid #ddd;
+    clear: both;
 }
 
 .notesResponses .response {
