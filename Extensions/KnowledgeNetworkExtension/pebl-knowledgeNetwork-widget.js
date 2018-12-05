@@ -19,12 +19,53 @@ knowledgeNetwork.receiveMessage = function(event) {
     if (data === 'ready') {
         knowledgeNetwork.frameIsReady = true;
     } else if (obj && obj.message === "pullResource") {
-        //pullResource(obj.target, obj.location, obj.url, obj.docType, obj.name, obj.externalURL);
+        knowledgeNetwork.pullResource(obj.target, obj.location, obj.url, obj.docType, obj.name, obj.externalURL);
     } else if (obj && obj.message === "iframeUpdate") {
         $('.registryFrame').css('height', obj.height);
     } else if (data === 'registryBackToTop') {
         $('#registryContainer > div')[0].scroll(0,0);
     }
+}
+
+knowledgeNetwork.pullResource = function(target, location, url, docType, name, externalURL)  {
+    knowledgeNetwork.getCurrentPrefix(function(currentPrefix, currentSection) {
+        globalPebl.storage.getCurrentBook(function(book) {
+            var data = {
+                target: target,
+                location: location,
+                card: currentPrefix,
+                book: book,
+                externalURL: externalURL,
+                docType: docType,
+                name: name,
+                url: url
+            }
+            globalPebl.emitEvent(globalPebl.events.newReference, data);
+        });
+    });
+}
+
+knowledgeNetwork.getCurrentPrefix = function(callback) {
+    var page = $('body')[0].baseURI.split('/').pop();
+    globalPebl.utils.getToc(function(obj) {
+        Object.keys(obj).forEach(function(section) {
+            Object.keys(obj[section]).forEach(function(subsection) {
+                if (obj[section][subsection].location && !obj[section][subsection].fake && obj[section][subsection].location == page) {
+                    currentPrefix = obj[section][subsection].prefix;
+                    currentSection = "Section" + obj[section].Section.prefix;
+                    callback(currentPrefix, currentSection);
+                } else if (obj[section][subsection].pages) {
+                    Object.keys(obj[section][subsection].pages).forEach(function(key) {
+                        if (obj[section][subsection].pages[key].location && obj[section][subsection].pages[key].location == page) {
+                            currentPrefix = obj[section][subsection].pages[key].prefix;
+                            currentSection = "Section" + obj[section].Section.prefix;
+                            callback(currentPrefix, currentSection);
+                        }
+                   });
+                }
+            });
+        });
+    });
 }
 
 knowledgeNetwork.searchType = function(type) {
@@ -41,10 +82,6 @@ knowledgeNetwork.searchType = function(type) {
             iframe.contentWindow.postMessage(message, '*');
         }
     }, 500);
-}
-
-knowledgeNetwork.pullResource = function(target, location, url, docType, name, externalURL) {
-	//TODO
 }
 
 knowledgeNetwork.createRegistrySearch = function(element) {
