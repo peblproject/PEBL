@@ -1,4 +1,6 @@
+//TODO: Perform some checks to find where these variables are on different platforms.
 var globalPebl = window.top.PeBL;
+var globalReadium = window.top.READIUM;
 
 var dynamicTOC = {};
 
@@ -26,6 +28,28 @@ dynamicTOC.toc_sort = function(a, b) {
 
     return parseFloat(a_compare) - parseFloat(b_compare);
 };
+
+dynamicTOC.handleTocPageTextClick = function(event) {
+    event.preventDefault();
+    //If its a dynamic document
+    if ($(event.currentTarget).attr('url')) {
+        if ($(event.currentTarget).attr('tocLink')) {
+            sendDocumentToDestination($(event.currentTarget).attr('url'), $(event.currentTarget).attr('docType'), $(event.currentTarget).attr('externalURL'), $(event.currentTarget).text());
+            if ($('body')[0].baseURI.substr(1) === $(event.currentTarget).attr('href')) {
+                handleCloseButtonClick();
+                openDocumentAtDestination();
+            } else {
+                globalReadium.reader.openContentUrl($(event.currentTarget).attr('href'));
+            }
+        } else {
+            createDynamicPage($(event.currentTarget).attr('url'), $(event.currentTarget).attr('docType'), $(event.currentTarget).attr('externalURL'), $(event.currentTarget).text()); 
+            handleCloseButtonClick();
+            hideAddedResources();
+        } 
+    } else {
+        globalReadium.reader.openContentUrl($(event.currentTarget).attr('href'));
+    }
+}
 
 dynamicTOC.createTOCDeleteConfirmDialog = function(sectionId, documentId) {
 	var dimOverlay = document.createElement('div');
@@ -181,7 +205,7 @@ dynamicTOC.createTOC = function(element) {
                             tocPageText.href = tocObject[sectionKey][pageKey].location;
                             tocPageText.setAttribute('tocLink', 'true');
                             tocPageText.addEventListener('click', function() {
-                                //handleTocPageTextClick(event);
+                                dynamicTOC.handleTocPageTextClick(event);
                             });
 
                             tocPageTextWrapper.appendChild(tocPageText);
@@ -238,7 +262,7 @@ dynamicTOC.createTOC = function(element) {
                             tocPageText.textContent = tocObject[sectionKey][pageKey].pages[cardKey].title;
                             tocPageText.href = tocObject[sectionKey][pageKey].pages[cardKey].location;
                             tocPageText.addEventListener('click', function() {
-                                //handleTocPageTextClick(event);
+                                dynamicTOC.handleTocPageTextClick(event);
                             });
 
                             tocPageTextWrapper.appendChild(tocPageText);
@@ -276,7 +300,7 @@ dynamicTOC.createTOC = function(element) {
                                     tocPageText.href = tocObject[sectionKey][pageKey].pages[cardKey].location;
                                     tocPageText.setAttribute('tocLink', 'true');
                                     tocPageText.addEventListener('click', function() {
-                                        //handleTocPageTextClick(event);
+                                        dynamicTOC.handleTocPageTextClick(event);
                                     });
 
                                     tocPageTextWrapper.appendChild(tocPageText);
