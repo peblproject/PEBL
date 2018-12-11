@@ -54,12 +54,14 @@ knowledgeNetwork.getCurrentPrefix = function(callback) {
                     currentPrefix = obj[section][subsection].prefix;
                     currentSection = "Section" + obj[section].Section.prefix;
                     callback(currentPrefix, currentSection);
+                    return;
                 } else if (obj[section][subsection].pages) {
                     Object.keys(obj[section][subsection].pages).forEach(function(key) {
                         if (obj[section][subsection].pages[key].location && obj[section][subsection].pages[key].location == page) {
                             currentPrefix = obj[section][subsection].pages[key].prefix;
                             currentSection = "Section" + obj[section].Section.prefix;
                             callback(currentPrefix, currentSection);
+                            return;
                         }
                    });
                 }
