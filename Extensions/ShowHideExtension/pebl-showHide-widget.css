@@ -25,7 +25,6 @@ a.button:hover {
     font-size: 2em;
     padding: 0;
     clear: both;
-    background-image: url('../image/icon-show-less-white.png') !important;
     background-size: 28px !important;
     background-repeat: no-repeat !important;
     background-position: center center !important;
@@ -39,7 +38,6 @@ a.button:hover {
 }
 
 .showHideButton.hiding {
-    background-image: url('../image/icon-show-more-white.png') !important;
     background-size: 28px !important;
     background-repeat: no-repeat !important;
     background-position: center center !important;

@@ -1,9 +1,8 @@
 function toggleVisibility(event, programInvoked) {
     console.log(event);
-    var id = event.target.otherId,
-        buttonText1 = event.target.buttonText1,
-        buttonText2 = event.target.buttonText2,
-        str = document.getElementById(id + 'Btn').innerHTML,
+    var id = event.currentTarget.otherId,
+        buttonText1 = event.currentTarget.buttonText1,
+        buttonText2 = event.currentTarget.buttonText2,
         state;
 
 
@@ -12,11 +11,15 @@ function toggleVisibility(event, programInvoked) {
         // var res = str.replace(buttonText1, buttonText2);
         // $('#' + id + 'Btn').html(res);
         $('#' + id + 'Btn')[0].classList.remove('hiding');
+        $('#' + id + 'Btn').children('i').first()[0].classList.remove('fa-plus');
+        $('#' + id + 'Btn').children('i').first()[0].classList.add('fa-minus');
     state = "showing";
     } else {
         // var res = str.replace(buttonText2, buttonText1);
         // $('#' + id + 'Btn').html(res);
         $('#' + id + 'Btn')[0].classList.add('hiding');
+        $('#' + id + 'Btn').children('i').first()[0].classList.add('fa-plus');
+        $('#' + id + 'Btn').children('i').first()[0].classList.remove('fa-minus');
     state = "hiding";
     }
     $('#' + id).slideToggle(400, function () {
@@ -59,6 +62,7 @@ $(document).ready(function() {
 
 function createShowHide(insertID, buttonText1, buttonText2, id, isInline, cassMapping, cassTarget, cassLevel) {
     var button,
+        buttonIcon,
         insertLocation,
         handleButtonClick;
 
@@ -73,6 +77,10 @@ function createShowHide(insertID, buttonText1, buttonText2, id, isInline, cassMa
     button.buttonText1 = buttonText1;
     button.buttonText2 = buttonText2;
     button.addEventListener('click', toggleVisibility);
+
+    buttonIcon = document.createElement('i');
+    buttonIcon.classList.add('fa', 'fa-plus');
+    button.appendChild(buttonIcon);
     //button.innerHTML = buttonText1;
 
     if (cassMapping) {
