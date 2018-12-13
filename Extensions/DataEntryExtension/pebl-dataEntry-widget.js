@@ -11,7 +11,8 @@ $(document).ready(function() {
         var id = $(this)[0].getAttribute('data-id');
         var insertID = $(this)[0].getAttribute('id');
         var forms = JSON.parse($(this)[0].getAttribute('data-forms'));
-        dataEntry.createDataEntry(insertID, prompt, id, forms);
+        var sharing = $(this)[0].getAttribute('data-sharing');
+        dataEntry.createDataEntry(insertID, prompt, id, forms, sharing);
     });
 });
 
@@ -22,231 +23,246 @@ dataEntry.invalidForm = function() {
     window.alert('Fill out the entire form');
 }
 
-dataEntry.createDataEntry = function(insertID, question, id, forms) {
-    var newDataEntry = {};
-    dataEntry.activeEntries[id] = newDataEntry;
+dataEntry.createDataEntry = function(insertID, question, id, forms, sharing) {
+    globalPebl.user.getUser(function(userProfile) {
+        globalPebl.utils.getGroupMemberships(function(groups) {
+            var dataEntryID;
 
-    var calloutDiv = document.createElement('div');
-    calloutDiv.classList.add('dataEntryCallout');
-
-    var header = document.createElement('div');
-    header.classList.add('dataEntryHeader');
-
-    calloutDiv.appendChild(header);
-
-    var formElement = document.createElement('form');
-    //Prevent default form submit
-    formElement.onsubmit = function() {
-        return false;
-    }
-
-
-    var questionParagraph = document.createElement('p');
-    questionParagraph.innerHTML = question;
-
-    formElement.appendChild(questionParagraph);
-
-    //Keep track of textareas and radio buttons that get added
-    var textareas = new Set();
-    var radios = new Set();
-
-    for (var i = 0; i < forms.length; i++) {
-        var subID = id + '_' + i;
-        //Create textarea fields
-        if (forms[i].type === 'text') {
-            var textResponses = $('<div class="textResponses" style="display:none;"><div><!--<a class="showMore">Show more...</a>--></div></div>');
-            var textInput = $('<div class="textInput" style="display:none;"><label id="textDetailText">' + forms[i].prompt + '</label><textarea data-prompt="' + forms[i].prompt + '" required="required" oninvalid="globalPebl.extension.dataEntry.invalidForm();" id="' + subID + '"></textarea></div>');
-            var text = $('<div class="textBox"></div>');
-            text.append(textInput);
-            text.append(textResponses);
-            
-            $(formElement).append(text);
-            textInput.slideDown();
-
-            var messageHandle = dataEntry.messageHandler(textResponses, subID);
-            globalPebl.subscribeThread(subID, false, messageHandle);
-            textareas.add(subID);
-        } else if (forms[i].type === 'table') {
-            //Create table fields
-            var tableContainer = document.createElement('div');
-            tableContainer.classList.add('dataEntryTableContainer');
-
-            if (forms[i].prompt) {
-                var tablePrompt = document.createElement('span');
-                tablePrompt.classList.add('dataEntryTablePrompt');
-                tablePrompt.textContent = forms[i].prompt;
-
-                tableContainer.appendChild(tablePrompt);
+            //Thread is either group + id, user + id, or id
+            if (sharing === 'team' && groups.length > 0) {
+                dataEntryID = groups[0].groupName + '-' + id;
+            } else if (sharing === 'private') {
+                dataEntryID = userProfile.identity + '-' + id;
+            } else {
+                dataEntryID = id;
             }
             
+            var newDataEntry = {};
+            dataEntry.activeEntries[id] = newDataEntry;
 
-            var table = document.createElement('table');
-            //Add a class to the table of specified
-            if (forms[i].tableClass)
-                table.classList.add(forms[i].tableClass);
+            var calloutDiv = document.createElement('div');
+            calloutDiv.classList.add('dataEntryCallout');
 
-            //Add a header row to the table if specified
-            if (forms[i].tableHeader) {
-                var tableHeader = document.createElement('thead');
-                for (var j = 0; j < forms[i].tableHeader.length; j++) {
-                    var th = document.createElement('th');
-                    th.textContent = forms[i].tableHeader[j];
-                    tableHeader.appendChild(th);
-                }
-                table.appendChild(tableHeader);
+            var header = document.createElement('div');
+            header.classList.add('dataEntryHeader');
+
+            calloutDiv.appendChild(header);
+
+            var formElement = document.createElement('form');
+            //Prevent default form submit
+            formElement.onsubmit = function() {
+                return false;
             }
 
-            for (var k = 0; k < forms[i].tableRows.length; k++) {
-                var tr = document.createElement('tr');
-                var th = document.createElement('th');
-                th.textContent = forms[i].tableRows[k].rowHeader;
-                tr.appendChild(th);
-                for (var l = 0; l < forms[i].tableRows[k].inputs.length; l++) {
-                    var td = document.createElement('td');
-                    if (forms[i].tableRows[k].inputs[l].type === "radio") {
-                        var input = document.createElement('input');
-                        input.type = 'radio';
-                        input.name = subID + '_table_radio_' + k;
-                        input.value = forms[i].tableRows[k].inputs[l].value;
-                        input.id = subID + '_table_radio_' + k + '_' + l;
-                        input.setAttribute("required", "required");
-                        input.oninvalid = dataEntry.invalidForm;
-                        radios.add(input.name);
 
-                        var responseBox = document.createElement('div');
-                        responseBox.classList.add('radioResponses');
-                        responseBox.setAttribute('style', 'display: none');
+            var questionParagraph = document.createElement('p');
+            questionParagraph.innerHTML = question;
 
-                        var messageHandle = dataEntry.radioMessageHandler(responseBox, input.name, input.value);
-                        globalPebl.subscribeThread(input.name, false, messageHandle);
-                        td.appendChild(input);
-                        td.appendChild(responseBox);
+            formElement.appendChild(questionParagraph);
+
+            //Keep track of textareas and radio buttons that get added
+            var textareas = new Set();
+            var radios = new Set();
+
+            for (var i = 0; i < forms.length; i++) {
+                var subID = dataEntryID + '_' + i;
+                //Create textarea fields
+                if (forms[i].type === 'text') {
+                    var textResponses = $('<div class="textResponses" style="display:none;"><div><!--<a class="showMore">Show more...</a>--></div></div>');
+                    var textInput = $('<div class="textInput" style="display:none;"><label id="textDetailText">' + forms[i].prompt + '</label><textarea data-prompt="' + forms[i].prompt + '" required="required" oninvalid="globalPebl.extension.dataEntry.invalidForm();" id="' + subID + '"></textarea></div>');
+                    var text = $('<div class="textBox"></div>');
+                    text.append(textInput);
+                    text.append(textResponses);
+                    
+                    $(formElement).append(text);
+                    textInput.slideDown();
+
+                    var messageHandle = dataEntry.messageHandler(textResponses, subID);
+                    globalPebl.subscribeThread(subID, false, messageHandle);
+                    textareas.add(subID);
+                } else if (forms[i].type === 'table') {
+                    //Create table fields
+                    var tableContainer = document.createElement('div');
+                    tableContainer.classList.add('dataEntryTableContainer');
+
+                    if (forms[i].prompt) {
+                        var tablePrompt = document.createElement('span');
+                        tablePrompt.classList.add('dataEntryTablePrompt');
+                        tablePrompt.textContent = forms[i].prompt;
+
+                        tableContainer.appendChild(tablePrompt);
                     }
-                    tr.appendChild(td)
+                    
+
+                    var table = document.createElement('table');
+                    //Add a class to the table of specified
+                    if (forms[i].tableClass)
+                        table.classList.add(forms[i].tableClass);
+
+                    //Add a header row to the table if specified
+                    if (forms[i].tableHeader) {
+                        var tableHeader = document.createElement('thead');
+                        for (var j = 0; j < forms[i].tableHeader.length; j++) {
+                            var th = document.createElement('th');
+                            th.textContent = forms[i].tableHeader[j];
+                            tableHeader.appendChild(th);
+                        }
+                        table.appendChild(tableHeader);
+                    }
+
+                    for (var k = 0; k < forms[i].tableRows.length; k++) {
+                        var tr = document.createElement('tr');
+                        var th = document.createElement('th');
+                        th.textContent = forms[i].tableRows[k].rowHeader;
+                        tr.appendChild(th);
+                        for (var l = 0; l < forms[i].tableRows[k].inputs.length; l++) {
+                            var td = document.createElement('td');
+                            if (forms[i].tableRows[k].inputs[l].type === "radio") {
+                                var input = document.createElement('input');
+                                input.type = 'radio';
+                                input.name = subID + '_table_radio_' + k;
+                                input.value = forms[i].tableRows[k].inputs[l].value;
+                                input.id = subID + '_table_radio_' + k + '_' + l;
+                                input.setAttribute("required", "required");
+                                input.oninvalid = dataEntry.invalidForm;
+                                radios.add(input.name);
+
+                                var responseBox = document.createElement('div');
+                                responseBox.classList.add('radioResponses');
+                                responseBox.setAttribute('style', 'display: none');
+
+                                var messageHandle = dataEntry.radioMessageHandler(responseBox, input.name, input.value);
+                                globalPebl.subscribeThread(input.name, false, messageHandle);
+                                td.appendChild(input);
+                                td.appendChild(responseBox);
+                            }
+                            tr.appendChild(td)
+                        }
+                        table.appendChild(tr);
+                    }
+
+                    tableContainer.appendChild(table);
+                    formElement.appendChild(tableContainer);
                 }
-                table.appendChild(tr);
             }
 
-            tableContainer.appendChild(table);
-            formElement.appendChild(tableContainer);
-        }
-    }
+            var formSubmit = $('<button class="dataEntryFormSubmit">Submit</button>');
+            formSubmit.on('click', function() {
+                var validForm = formElement.reportValidity();
+                if (validForm) {
+                    //Submit the form
+                    if (textareas.size > 0) {
+                        var textareaArray = Array.from(textareas);
+                        for (var i = 0; i < textareaArray.length; i++) {
+                            var elem = document.getElementById(textareaArray[i]);
+                            var prompt = elem.getAttribute('data-prompt');
+                            dataEntry.createThread(textareaArray[i], prompt, elem, true);
+                        }
+                    }
 
-    var formSubmit = $('<button class="dataEntryFormSubmit">Submit</button>');
-    formSubmit.on('click', function() {
-        var validForm = formElement.reportValidity();
-        if (validForm) {
-            //Submit the form
-            if (textareas.size > 0) {
-                var textareaArray = Array.from(textareas);
-                for (var i = 0; i < textareaArray.length; i++) {
-                    var elem = document.getElementById(textareaArray[i]);
-                    var prompt = elem.getAttribute('data-prompt');
-                    dataEntry.createThread(textareaArray[i], prompt, elem, true);
+                    if (radios.size > 0) {
+                        var radioArray = Array.from(radios);
+                        for (var j = 0; j < radioArray.length; j++) {
+                            var val = $('input[name=' + radioArray[j] + ']:checked').val();
+                            //Content of the message is the value of the radio button
+                            var message = {
+                                "prompt" : "test",
+                                "thread" : radioArray[j],
+                                "text" : val
+                            };
+                            globalPebl.emitEvent(globalPebl.events.newMessage,
+                                    message);
+                        }
+                    }
+                    newDataEntry.viewMode();
                 }
+            });
+
+            //toggle viewMode for this dataEntry
+            newDataEntry.viewMode = function() {
+                dataEntry.handleResize(function() {
+                    $(calloutDiv).find('textarea').each(function() {
+                        $(this).hide();
+                    });
+
+                    $(calloutDiv).find('.textResponses').each(function() {
+                        $(this).show();
+                    });
+
+                    $(calloutDiv).find('input').each(function() {
+                        $(this).hide();
+                    });
+
+                    $(calloutDiv).find('.radioResponses').each(function() {
+                        $(this).show();
+                    });
+
+                    $(calloutDiv).find('.dataEntryFormSubmit').each(function() {
+                        $(this).hide();
+                    });
+                });
             }
 
-            if (radios.size > 0) {
-                var radioArray = Array.from(radios);
-                for (var j = 0; j < radioArray.length; j++) {
-                    var val = $('input[name=' + radioArray[j] + ']:checked').val();
-                    //Content of the message is the value of the radio button
-                    var message = {
-                        "prompt" : "test",
-                        "thread" : radioArray[j],
-                        "text" : val
-                    };
-                    globalPebl.emitEvent(globalPebl.events.newMessage,
-                            message);
-                }
+            //toggle editMode for this dataEntry
+            newDataEntry.editMode = function() {
+                dataEntry.handleResize(function() {
+                    $(calloutDiv).find('textarea').each(function() {
+                        $(this).show();
+                    });
+
+                    $(calloutDiv).find('.textResponses').each(function() {
+                        $(this).hide();
+                    });
+
+                    $(calloutDiv).find('input').each(function() {
+                        $(this).show();
+                    });
+
+                    $(calloutDiv).find('.radioResponses').each(function() {
+                        $(this).hide();
+                    });
+
+                    $(calloutDiv).find('.dataEntryFormSubmit').each(function() {
+                        $(this).show();
+                    });
+                });
             }
-            newDataEntry.viewMode();
-        }
-    });
 
-    //toggle viewMode for this dataEntry
-    newDataEntry.viewMode = function() {
-        dataEntry.handleResize(function() {
-            $(calloutDiv).find('textarea').each(function() {
-                $(this).hide();
+            var viewModeButton = document.createElement('div');
+            viewModeButton.classList.add('dataEntryViewModeButton');
+            viewModeButton.addEventListener('click', function() {
+                newDataEntry.viewMode();
             });
 
-            $(calloutDiv).find('.textResponses').each(function() {
-                $(this).show();
+            var viewModeButtonIcon = document.createElement('i');
+            viewModeButtonIcon.classList.add('fa', 'fa-eye');
+
+            viewModeButton.appendChild(viewModeButtonIcon);
+
+            var editModeButton = document.createElement('div');
+            editModeButton.classList.add('dataEntryEditModeButton');
+            editModeButton.addEventListener('click', function() {
+                newDataEntry.editMode();
             });
 
-            $(calloutDiv).find('input').each(function() {
-                $(this).hide();
-            });
+            var editModeButtonIcon = document.createElement('i');
+            editModeButtonIcon.classList.add('fa', 'fa-edit');
 
-            $(calloutDiv).find('.radioResponses').each(function() {
-                $(this).show();
-            });
+            editModeButton.appendChild(editModeButtonIcon);
 
-            $(calloutDiv).find('.dataEntryFormSubmit').each(function() {
-                $(this).hide();
-            });
+
+            header.appendChild(viewModeButton);
+            header.appendChild(editModeButton);
+
+            $(formElement).append(formSubmit);
+            calloutDiv.appendChild(formElement);
+
+            var insertLocation = document.getElementById(insertID);
+
+            insertLocation.parentNode.insertBefore(calloutDiv, insertLocation);
+            insertLocation.remove();
         });
-    }
-
-    //toggle editMode for this dataEntry
-    newDataEntry.editMode = function() {
-        dataEntry.handleResize(function() {
-            $(calloutDiv).find('textarea').each(function() {
-                $(this).show();
-            });
-
-            $(calloutDiv).find('.textResponses').each(function() {
-                $(this).hide();
-            });
-
-            $(calloutDiv).find('input').each(function() {
-                $(this).show();
-            });
-
-            $(calloutDiv).find('.radioResponses').each(function() {
-                $(this).hide();
-            });
-
-            $(calloutDiv).find('.dataEntryFormSubmit').each(function() {
-                $(this).show();
-            });
-        });
-    }
-
-    var viewModeButton = document.createElement('div');
-    viewModeButton.classList.add('dataEntryViewModeButton');
-    viewModeButton.addEventListener('click', function() {
-        newDataEntry.viewMode();
     });
-
-    var viewModeButtonIcon = document.createElement('i');
-    viewModeButtonIcon.classList.add('fa', 'fa-eye');
-
-    viewModeButton.appendChild(viewModeButtonIcon);
-
-    var editModeButton = document.createElement('div');
-    editModeButton.classList.add('dataEntryEditModeButton');
-    editModeButton.addEventListener('click', function() {
-        newDataEntry.editMode();
-    });
-
-    var editModeButtonIcon = document.createElement('i');
-    editModeButtonIcon.classList.add('fa', 'fa-edit');
-
-    editModeButton.appendChild(editModeButtonIcon);
-
-
-    header.appendChild(viewModeButton);
-    header.appendChild(editModeButton);
-
-    $(formElement).append(formSubmit);
-    calloutDiv.appendChild(formElement);
-
-    var insertLocation = document.getElementById(insertID);
-
-    insertLocation.parentNode.insertBefore(calloutDiv, insertLocation);
-    insertLocation.remove();
 }
 
 //Message handler for standard textarea messages
