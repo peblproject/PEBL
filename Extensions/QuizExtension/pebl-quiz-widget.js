@@ -1,4 +1,11 @@
-function createLowStakesMultiChoiceQuestion(id, questionNumber, choices, prompt, answer, image, required, attempts, feedbackLink, linkText) {
+var globalPebl = window.top.PeBL;
+var globalReadium = window.top.READIUM;
+
+var lowStakesQuiz = {};
+
+globalPebl.extension.lowStakesQuiz = lowStakesQuiz;
+
+lowStakesQuiz.createLowStakesMultiChoiceQuestion = function(id, questionNumber, choices, prompt, answer, image, required, attempts, feedbackLink, linkText) {
     var quizToAppendTo = document.getElementById(id);
     var insertPoint = quizToAppendTo.lastElementChild;
     var questionElement = document.createElement('li');
@@ -24,11 +31,14 @@ function createLowStakesMultiChoiceQuestion(id, questionNumber, choices, prompt,
     }
     responseList.classList.add('choices');
 
-    for (var choice in choices) {
+    for (var i = 0; i < choices.length; i++) {
         var listElement = document.createElement('li');
-        listElement.textContent = choices[choice];
-        if (choices[choice] === answer) {
+        listElement.textContent = choices[i];
+        if (choices[i] === answer) {
             listElement.classList.add('correct');
+        }
+        if (linkText) {
+            listElement.setAttribute('data-feedbackText', linkText[i]);
         }
         responseList.appendChild(listElement);
     }
@@ -46,7 +56,7 @@ function createLowStakesMultiChoiceQuestion(id, questionNumber, choices, prompt,
 
 $(document).on('click', '.feedbackLink', function(evt) {
     evt.preventDefault();
-    window.top.ReadiumSDK.reader.openContentUrl($(this).attr('href'));
+    globalReadium.reader.openContentUrl($(this).attr('href'));
 });
 
 $().ready(function() {
@@ -60,14 +70,14 @@ $().ready(function() {
         var required = $(this)[0].hasAttribute('data-required') ? $(this)[0].getAttribute('data-required') : true;
         var attempts = $(this)[0].hasAttribute('data-attempts') ? parseInt($(this)[0].getAttribute('data-attempts')) : 2;
         var feedbackLink = $(this)[0].getAttribute('data-feedbackLink');
-        var linkText = $(this)[0].getAttribute('data-linkText');
-        createLowStakesMultiChoiceQuestion(id, questionNumber, choices, prompt, answer, image, required, attempts, feedbackLink, linkText);
+        var linkText = JSON.parse($(this)[0].getAttribute('data-linkText'));
+        lowStakesQuiz.createLowStakesMultiChoiceQuestion(id, questionNumber, choices, prompt, answer, image, required, attempts, feedbackLink, linkText);
     });
 
     $('ol.quiz').each(function() {
         var quizEntry = this.id + '-quizAttempts';
 
-        attachClickHandler(this.id)
+        lowStakesQuiz.attachClickHandler(this.id);
 
         var quizAttempts = localStorage.getItem(quizEntry);
 
@@ -79,22 +89,14 @@ $().ready(function() {
                 $('ol.quiz > li').each(function() {
                     if (quizAttempts[counter][0] == false && quizAttempts[counter][1] == false) {
                         $(this).children('.choices').addClass('reveal secondary');
-                        var feedBackLink = $(this).children('.feedback').attr('feedbackLink');
-                        var linkText = $(this).children('.feedback').attr('linkText');
-                        if (feedBackLink != 'default') {
-                            var feedbackLinkElem = document.createElement('a');
-		                	feedbackLinkElem.classList.add('feedbackLink');
-		                	feedbackLinkElem.href = $feedback.attr('feedbackLink');
-		                	feedbackLinkElem.textContent = $feedback.attr('linkText');
-		                	$feedback.text('Please study the correct answer in ');
-		                	$feedback.append($(feedbackLinkElem));
-                        } else
-                            $(this).children('.feedback').text('Please study the correct answer.');
+                        var linkText = $(this).attr('data-feedbackText');
+		                $(this).children('.feedback').text(linkText);
                         $(this).children('.feedback').slideDown();
                     }
                     if (quizAttempts[counter][0] == true || quizAttempts[counter][1] == true) {
                         $(this).children('.choices').addClass('reveal');
-                        $(this).children('.feedback').text("That's correct.");
+                        var linkText = $(this).attr('data-feedbackText');
+                        $(this).children('.feedback').text(linkText);
                         $(this).children('.feedback').slideDown();
                     }
                     counter++;
@@ -106,8 +108,7 @@ $().ready(function() {
     });
 });
 
-function attachClickHandler(quizId) {
-
+lowStakesQuiz.attachClickHandler = function(quizId) {
     // tries and results
     // [0,1],[1] ...
     var quizEntry = quizId + '-quizAttempts'
@@ -188,6 +189,7 @@ function attachClickHandler(quizId) {
         var $feedback = $answers.siblings('.feedback');
         var correct = $(this).hasClass('correct'); // T or F
         var questionNum = $('ol.quiz .choices').index($answers);
+        var linkText = $(this).attr('data-feedbackText');
 
         if (quizAttempts[questionNum].length == 0) {
             // first attempt
@@ -196,11 +198,11 @@ function attachClickHandler(quizId) {
             localStorage.setItem(quizEntry, JSON.stringify(quizAttempts));
             if (correct) {
                 $answers.addClass('reveal');
-                $feedback.text(correctFeedback(1));
+                $feedback.text(linkText);
             } else {
                 $(this).addClass('wrong');
                 //$(this).delay(1000).slideUp();
-                $feedback.text(wrongFeedback(1));
+                $feedback.text(linkText);
             }
 
 	    if (window.top.PeBL != null)
@@ -227,7 +229,7 @@ function attachClickHandler(quizId) {
             localStorage.setItem(quizEntry, JSON.stringify(quizAttempts));
             if (correct == true) {
                 $answers.addClass('reveal');
-                $feedback.text(correctFeedback(2));
+                $feedback.text(linkText);
             } else {
                 setTimeout(function() {
                     $answers.addClass('reveal secondary');
@@ -235,30 +237,21 @@ function attachClickHandler(quizId) {
 
                 $(this).addClass('wrong');
                 //$(this).delay(1000).slideUp();
-                if ($feedback.attr('feedbackLink') != 'default') {
-                	var feedbackLinkElem = document.createElement('a');
-                	feedbackLinkElem.classList.add('feedbackLink');
-                	feedbackLinkElem.href = $feedback.attr('feedbackLink');
-                	feedbackLinkElem.textContent = $feedback.attr('linkText');
-                	$feedback.text('Please study the correct answer in ');
-                	$feedback.append($(feedbackLinkElem));
-                }
-                else
-                    $feedback.text(wrongFeedback(2));
+                $feedback.text(linkText);
             }
 
-	    if (window.top.PeBL != null)
+	        if (window.top.PeBL != null)
                 window.top.PeBL.emitEvent(window.top.PeBL.events.eventAnswered, {
-		    "prompt": prompt,
-		    "answers": $answersText,
-		    "correctAnswers": [[correctAnswer]],
-		    "answered": answered,
-		    "score": correct ? 1 : 0,
-		    "minScore": 0,
-		    "maxScore": 1,
-		    "complete": true,
-		    "success": correct
-		});
+        		    "prompt": prompt,
+        		    "answers": $answersText,
+        		    "correctAnswers": [[correctAnswer]],
+        		    "answered": answered,
+        		    "score": correct ? 1 : 0,
+        		    "minScore": 0,
+        		    "maxScore": 1,
+        		    "complete": true,
+        		    "success": correct
+        		});
             gradeTest();
             $feedback.slideDown();
         } else if (quizAttempts[questionNum].length > 1) {
@@ -267,7 +260,7 @@ function attachClickHandler(quizId) {
     });
 }
 
-function wrongFeedback(attempt) {
+lowStakesQuiz.wrongFeedback = function(attempt) {
     var feedback = "";
     if (attempt == 1) {
         // First try
@@ -281,7 +274,7 @@ function wrongFeedback(attempt) {
     return feedback;
 }
 
-function correctFeedback(attempt) {
+lowStakesQuiz.correctFeedback = function(attempt) {
     var feedback = "";
     feedback = "That's correct.";
     return feedback;
