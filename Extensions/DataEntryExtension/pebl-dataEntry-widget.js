@@ -12,7 +12,8 @@ $(document).ready(function() {
         var insertID = $(this)[0].getAttribute('id');
         var forms = JSON.parse($(this)[0].getAttribute('data-forms'));
         var sharing = $(this)[0].getAttribute('data-sharing');
-        dataEntry.createDataEntry(insertID, prompt, id, forms, sharing);
+        var displayMode = $(this)[0].getAttribute('data-displayMode');
+        dataEntry.createDataEntry(insertID, prompt, id, forms, sharing, displayMode);
     });
 });
 
@@ -23,7 +24,7 @@ dataEntry.invalidForm = function() {
     window.alert('Fill out the entire form');
 }
 
-dataEntry.createDataEntry = function(insertID, question, id, forms, sharing) {
+dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, displayMode) {
     globalPebl.user.getUser(function(userProfile) {
         globalPebl.utils.getGroupMemberships(function(groups) {
             var dataEntryID;
@@ -36,7 +37,7 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing) {
             } else {
                 dataEntryID = id;
             }
-            
+
             var newDataEntry = {};
             dataEntry.activeEntries[id] = newDataEntry;
 
@@ -63,6 +64,7 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing) {
             //Keep track of textareas and radio buttons that get added
             var textareas = new Set();
             var radios = new Set();
+            var checkboxes = new Set();
 
             for (var i = 0; i < forms.length; i++) {
                 var subID = dataEntryID + '_' + i;
@@ -143,6 +145,40 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing) {
 
                     tableContainer.appendChild(table);
                     formElement.appendChild(tableContainer);
+                } else if (forms[i].type === 'checkbox') {
+                    var checkboxContainer = document.createElement('div');
+                    checkboxContainer.classList.add('dataEntryCheckboxContainer');
+
+                    var checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.value = forms[i].prompt;
+                    checkbox.id = subID;
+
+
+                    checkboxes.add(subID);
+
+                    var textSpan = document.createElement('span');
+                    textSpan.textContent = forms[i].prompt;
+
+                    if (forms[i].input) {
+                        if (forms[i].input.type === 'text') {
+                            var input = document.createElement('input');
+                            input.type = 'text';
+                            input.id = subID + '_checkboxInput';
+                            input.placeholder = forms[i].input.placeholder;
+                            
+                            textSpan.appendChild(input);
+                            checkbox.setAttribute('data-moreInput', subID + '_checkboxInput');
+                        }
+                    }
+
+                    var messageHandle = dataEntry.checkboxMessageHandler(checkbox, subID, checkbox.value);
+                    globalPebl.subscribeThread(subID, false, messageHandle);
+
+                    checkboxContainer.appendChild(checkbox);
+                    checkboxContainer.appendChild(textSpan);
+
+                    formElement.appendChild(checkboxContainer);
                 }
             }
 
@@ -174,6 +210,32 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing) {
                                     message);
                         }
                     }
+
+                    if (checkboxes.size > 0) {
+                        var checkboxArray = Array.from(checkboxes);
+                        for (var k = 0; k < checkboxArray.length; k++) {
+                            var checkbox = document.getElementById(checkboxArray[k]);
+                            var prompt = checkbox.value;
+                            var thread = checkboxArray[k];
+                            var text;
+                            if (checkbox.checked === true) {
+                                if (checkbox.hasAttribute('data-moreInput'))
+                                    text = prompt + document.getElementById(checkbox.getAttribute('data-moreInput')).value;
+                                else
+                                    text = prompt;
+                            } else {
+                                text = 'N/A';
+                            }
+                            var message = {
+                                "prompt": prompt,
+                                "thread": thread,
+                                "text": text
+                            };
+                            globalPebl.emitEvent(globalPebl.events.newMessage,
+                                    message);
+                        }
+                    }
+
                     newDataEntry.viewMode();
                 }
             });
@@ -189,7 +251,7 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing) {
                         $(this).show();
                     });
 
-                    $(calloutDiv).find('input').each(function() {
+                    $(calloutDiv).find('input[type=radio]').each(function() {
                         $(this).hide();
                     });
 
@@ -214,7 +276,7 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing) {
                         $(this).hide();
                     });
 
-                    $(calloutDiv).find('input').each(function() {
+                    $(calloutDiv).find('input[type=radio]').each(function() {
                         $(this).show();
                     });
 
@@ -252,7 +314,8 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing) {
 
 
             header.appendChild(viewModeButton);
-            header.appendChild(editModeButton);
+            if (!displayMode || displayMode !== 'viewOnly')
+                header.appendChild(editModeButton);
 
             $(formElement).append(formSubmit);
             calloutDiv.appendChild(formElement);
@@ -261,6 +324,9 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing) {
 
             insertLocation.parentNode.insertBefore(calloutDiv, insertLocation);
             insertLocation.remove();
+
+            if (displayMode && displayMode === 'viewOnly')
+                newDataEntry.viewMode();
         });
     });
 }
@@ -295,6 +361,49 @@ dataEntry.messageHandler = function(responseBox, thread) {
             }
         });
     };
+}
+
+dataEntry.checkboxMessageHandler = function(checkbox, thread, prompt) {
+    return function (newMessages) {
+        newMessages.sort(dataEntry.sortMessages);
+        globalPebl.user.getUser(function(userProfile) {
+            if (userProfile) {
+                for (var i = 0; i < newMessages.length; i++) {
+                    var message = newMessages[i];
+                    var text = message.text;
+                    
+                    if (!checkbox.hasAttribute('data-timestamp')) {
+                        //Not checked
+                        if (text === 'N/A') {
+                            checkbox.checked = false;
+                        } else {
+                            checkbox.checked = true;
+                            var temp = text.replace(prompt, '');
+                            if (temp.length > 0)
+                                $('#' + checkbox.getAttribute('data-moreInput')).val(temp);
+                        }
+                        checkbox.setAttribute('data-timestamp', message.timestamp);
+                    } else {
+                        var oldTimestamp = checkbox.getAttribute('data-timestamp');
+                        var newTimestamp = message.timestamp;
+                        if (new Date(newTimestamp) > new Date(oldTimestamp)) {
+                            if (text === 'N/A') {
+                                checkbox.checked = false;
+                            } else {
+                                checkbox.checked = true;
+                                var temp = text.replace(prompt, '');
+                                if (temp.length > 0)
+                                    document.getElementById(checkbox.getAttribute('data-moreInput')).value = temp;
+                            }
+                            checkbox.setAttribute('data-timestamp', message.timestamp);
+                        } else {
+                            //don't update the checkbox
+                        }
+                    }
+                }
+            }
+        });
+    }
 }
 
 //Message handler for radio button messages
