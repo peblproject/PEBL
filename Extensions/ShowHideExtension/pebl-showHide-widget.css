@@ -1,5 +1,4 @@
-button,
-a.button {
+.showHideButton {
     cursor: pointer;
     -webkit-border-radius: 5;
     -moz-border-radius: 5;
@@ -11,15 +10,6 @@ a.button {
     text-decoration: none;
     margin-bottom: 1em;
     border: none;
-}
-
-button:hover,
-a.button:hover {
-    background: #3cb0fd;
-    text-decoration: none;
-}
-
-.showHideButton {
     float: right;
     position: relative;
     font-size: 2em;
@@ -30,6 +20,11 @@ a.button:hover {
     background-position: center center !important;
     width: 40px;
     height: 40px;
+}
+
+.showHideButton:hover {
+    background: #3cb0fd;
+    text-decoration: none;
 }
 
 .showHideButton.inline {
