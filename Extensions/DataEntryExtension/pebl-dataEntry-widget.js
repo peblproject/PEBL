@@ -70,8 +70,8 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                 var subID = dataEntryID + '_' + i;
                 //Create textarea fields
                 if (forms[i].type === 'text') {
-                    var textResponses = $('<div class="textResponses" style="display:none;"><div><!--<a class="showMore">Show more...</a>--></div></div>');
-                    var textInput = $('<div class="textInput" style="display:none;"><label id="textDetailText">' + forms[i].prompt + '</label><textarea data-prompt="' + forms[i].prompt + '" required="required" oninvalid="globalPebl.extension.dataEntry.invalidForm();" id="' + subID + '"></textarea></div>');
+                    var textResponses = $('<div id="' + subID + '_responseBox" class="textResponses" style="display:none;"><div><!--<a class="showMore">Show more...</a>--></div></div>');
+                    var textInput = $('<div class="textInput" style="display:none;"><label id="textDetailText">' + forms[i].prompt + '</label><textarea data-responseBox="' + subID + '_responseBox" data-prompt="' + forms[i].prompt + '" required="required" oninvalid="globalPebl.extension.dataEntry.invalidForm();" id="' + subID + '"></textarea></div>');
                     var text = $('<div class="textBox"></div>');
                     text.append(textInput);
                     text.append(textResponses);
@@ -79,8 +79,8 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                     $(formElement).append(text);
                     textInput.slideDown();
 
-                    var messageHandle = dataEntry.messageHandler(textResponses, subID);
-                    globalPebl.subscribeThread(subID, false, messageHandle);
+                    // var messageHandle = dataEntry.messageHandler(textResponses, subID);
+                    // globalPebl.subscribeThread(subID, false, messageHandle);
                     textareas.add(subID);
                 } else if (forms[i].type === 'table') {
                     //Create table fields
@@ -122,19 +122,22 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                             if (forms[i].tableRows[k].inputs[l].type === "radio") {
                                 var input = document.createElement('input');
                                 input.type = 'radio';
+                                input.setAttribute('prompt', forms[i].tableRows[k].rowHeader);
+                                input.setAttribute('responseBox', dataEntry.comboID(subID, 'table_radio', k, l, 'responseBox'));
                                 input.name = subID + '_table_radio_' + k;
                                 input.value = forms[i].tableRows[k].inputs[l].value;
-                                input.id = subID + '_table_radio_' + k + '_' + l;
+                                input.id = dataEntry.comboID(subID, 'table_radio', k, l);
                                 input.setAttribute("required", "required");
                                 input.oninvalid = dataEntry.invalidForm;
                                 radios.add(input.name);
 
                                 var responseBox = document.createElement('div');
                                 responseBox.classList.add('radioResponses');
+                                responseBox.id = dataEntry.comboID(subID, 'table_radio', k, l, 'responseBox');
                                 responseBox.setAttribute('style', 'display: none');
 
-                                var messageHandle = dataEntry.radioMessageHandler(responseBox, input.name, input.value);
-                                globalPebl.subscribeThread(input.name, false, messageHandle);
+                                // var messageHandle = dataEntry.radioMessageHandler(responseBox, input.name, input.value);
+                                // globalPebl.subscribeThread(input.name, false, messageHandle);
                                 td.appendChild(input);
                                 td.appendChild(responseBox);
                             }
@@ -164,16 +167,16 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                         if (forms[i].input.type === 'text') {
                             var input = document.createElement('input');
                             input.type = 'text';
-                            input.id = subID + '_checkboxInput';
+                            input.id = dataEntry.comboID(subID, 'checkboxInput');
                             input.placeholder = forms[i].input.placeholder;
                             
                             textSpan.appendChild(input);
-                            checkbox.setAttribute('data-moreInput', subID + '_checkboxInput');
+                            checkbox.setAttribute('data-moreInput', dataEntry.comboID(subID, 'checkboxInput'));
                         }
                     }
 
-                    var messageHandle = dataEntry.checkboxMessageHandler(checkbox, subID, checkbox.value);
-                    globalPebl.subscribeThread(subID, false, messageHandle);
+                    // var messageHandle = dataEntry.checkboxMessageHandler(checkbox, subID, checkbox.value);
+                    // globalPebl.subscribeThread(subID, false, messageHandle);
 
                     checkboxContainer.appendChild(checkbox);
                     checkboxContainer.appendChild(textSpan);
@@ -182,32 +185,51 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                 }
             }
 
+            var messageHandle = dataEntry.dataMessageHandler(dataEntryID);
+            globalPebl.subscribeThread(dataEntryID, false, messageHandle);
+
             var formSubmit = $('<button class="dataEntryFormSubmit">Submit</button>');
             formSubmit.on('click', function() {
                 var validForm = formElement.reportValidity();
                 if (validForm) {
+                    var messages = [];
                     //Submit the form
                     if (textareas.size > 0) {
                         var textareaArray = Array.from(textareas);
                         for (var i = 0; i < textareaArray.length; i++) {
                             var elem = document.getElementById(textareaArray[i]);
+                            var val = elem.value;
                             var prompt = elem.getAttribute('data-prompt');
-                            dataEntry.createThread(textareaArray[i], prompt, elem, true);
+                            var responseBox = elem.getAttribute('data-responseBox');
+                            var message = {
+                                "prompt": prompt,
+                                "thread": textareaArray[i],
+                                "text": val,
+                                "responseBox": responseBox,
+                                "type": "text"
+                            }
+                            messages.push(message);
+                            //dataEntry.createThread(textareaArray[i], prompt, elem, true);
                         }
                     }
 
                     if (radios.size > 0) {
                         var radioArray = Array.from(radios);
                         for (var j = 0; j < radioArray.length; j++) {
-                            var val = $('input[name=' + radioArray[j] + ']:checked').val();
+                            var val = $('input[name="' + radioArray[j] + '"]:checked').val();
+                            var prompt = $('input[name="' + radioArray[j] + '"]:checked').attr('prompt');
+                            var responseBox = $('input[name="' + radioArray[j] + '"]:checked').attr('responseBox');
                             //Content of the message is the value of the radio button
                             var message = {
-                                "prompt" : "test",
+                                "prompt" : prompt,
                                 "thread" : radioArray[j],
-                                "text" : val
+                                "text" : val,
+                                "responseBox": responseBox,
+                                "type": "radio"
                             };
-                            globalPebl.emitEvent(globalPebl.events.newMessage,
-                                    message);
+                            messages.push(message);
+                            // globalPebl.emitEvent(globalPebl.events.newMessage,
+                            //         message);
                         }
                     }
 
@@ -229,12 +251,23 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                             var message = {
                                 "prompt": prompt,
                                 "thread": thread,
-                                "text": text
+                                "text": text,
+                                "type": "checkbox"
                             };
-                            globalPebl.emitEvent(globalPebl.events.newMessage,
-                                    message);
+                            messages.push(message);
+                            // globalPebl.emitEvent(globalPebl.events.newMessage,
+                            //         message);
                         }
                     }
+
+                    var finalMessage = {
+                        "prompt": "DataEntry",
+                        "thread": dataEntryID,
+                        "text": JSON.stringify(messages)
+                    }
+
+                    globalPebl.emitEvent(globalPebl.events.newMessage,
+                        finalMessage);
 
                     newDataEntry.viewMode();
                 }
@@ -332,109 +365,113 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
 }
 
 //Message handler for standard textarea messages
-dataEntry.messageHandler = function(responseBox, thread) {
-    return function (newMessages) {
-        newMessages.sort(dataEntry.sortMessages);
-        globalPebl.user.getUser(function (userProfile) {
-            if (userProfile) {
-                for (var i = 0; i < newMessages.length; i++) {
-                    var message = newMessages[i];
-                    if ($("#" + message.id).length == 0) {          
-                        var mine = userProfile.identity == message.name;;
-                        var userIcon = document.createElement('i');
-                        userIcon.classList.add('fa', 'fa-user');
-                        var userIdBox = $('<span class="userId"></span>');
-                        userIdBox.text(message.name);
-                        var timestampBox = $('<span class="timestamp"></span>');
-                        timestampBox.text(new Date(message.timestamp).toLocaleString());
-                        var textBox = $('<p class="message"></p>');
-                        textBox.text(message.text);
-                        var messageContainer = $('<div id="' + message.id  + '" class="' + (mine?"your ":"") + 'response"></div>');
-                        messageContainer.append($(userIcon));
-                        messageContainer.append(userIdBox);
-                        messageContainer.append(timestampBox);
-                        messageContainer.append(textBox);
-                        
-                        responseBox.prepend(messageContainer);
-                    }
-                }
-            }
-        });
-    };
+dataEntry.messageHandler = function(message, userProfile) {
+    if (!document.getElementById(message.id)) {          
+        var mine = userProfile.identity == message.name;
+        var userIcon = document.createElement('i');
+        userIcon.classList.add('fa', 'fa-user');
+        var userIdBox = $('<span class="userId"></span>');
+        userIdBox.text(message.name);
+        var timestampBox = $('<span class="timestamp"></span>');
+        timestampBox.text(new Date(message.timestamp).toLocaleString());
+        var textBox = $('<p class="message"></p>');
+        textBox.text(message.text);
+        var messageContainer = $('<div id="' + message.id  + '" class="' + (mine?"your ":"") + 'response"></div>');
+        messageContainer.append($(userIcon));
+        messageContainer.append(userIdBox);
+        messageContainer.append(timestampBox);
+        messageContainer.append(textBox);
+
+        var responseBox = document.getElementById(message.responseBox);
+        
+        $(responseBox).prepend(messageContainer);
+    }
 }
 
-dataEntry.checkboxMessageHandler = function(checkbox, thread, prompt) {
-    return function (newMessages) {
-        newMessages.sort(dataEntry.sortMessages);
-        globalPebl.user.getUser(function(userProfile) {
-            if (userProfile) {
-                for (var i = 0; i < newMessages.length; i++) {
-                    var message = newMessages[i];
-                    var text = message.text;
-                    
-                    if (!checkbox.hasAttribute('data-timestamp')) {
-                        //Not checked
-                        if (text === 'N/A') {
-                            checkbox.checked = false;
-                        } else {
-                            checkbox.checked = true;
-                            var temp = text.replace(prompt, '');
-                            if (temp.length > 0)
-                                $('#' + checkbox.getAttribute('data-moreInput')).val(temp);
-                        }
-                        checkbox.setAttribute('data-timestamp', message.timestamp);
-                    } else {
-                        var oldTimestamp = checkbox.getAttribute('data-timestamp');
-                        var newTimestamp = message.timestamp;
-                        if (new Date(newTimestamp) > new Date(oldTimestamp)) {
-                            if (text === 'N/A') {
-                                checkbox.checked = false;
-                            } else {
-                                checkbox.checked = true;
-                                var temp = text.replace(prompt, '');
-                                if (temp.length > 0)
-                                    document.getElementById(checkbox.getAttribute('data-moreInput')).value = temp;
-                            }
-                            checkbox.setAttribute('data-timestamp', message.timestamp);
-                        } else {
-                            //don't update the checkbox
-                        }
-                    }
-                }
+dataEntry.checkboxMessageHandler = function(message, userProfile) {
+    var checkbox = document.getElementById(message.thread);
+    var text = message.text;
+    
+    if (!checkbox.hasAttribute('data-timestamp')) {
+        //Not checked
+        if (text === 'N/A') {
+            checkbox.checked = false;
+        } else {
+            checkbox.checked = true;
+            var temp = text.replace(message.prompt, '');
+            if (temp.length > 0)
+                document.getElementById(checkbox.getAttribute('data-moreInput')).value = temp;
+        }
+        checkbox.setAttribute('data-timestamp', message.timestamp);
+    } else {
+        var oldTimestamp = checkbox.getAttribute('data-timestamp');
+        var newTimestamp = message.timestamp;
+        if (new Date(newTimestamp) > new Date(oldTimestamp)) {
+            if (text === 'N/A') {
+                checkbox.checked = false;
+            } else {
+                checkbox.checked = true;
+                var temp = text.replace(message.prompt, '');
+                if (temp.length > 0)
+                    document.getElementById(checkbox.getAttribute('data-moreInput')).value = temp;
             }
-        });
+            checkbox.setAttribute('data-timestamp', message.timestamp);
+        } else {
+            //don't update the checkbox
+        }
     }
 }
 
 //Message handler for radio button messages
-dataEntry.radioMessageHandler = function(responseBox, thread, value) {
+dataEntry.radioMessageHandler = function(message, userProfile) {
+    if (message.text) {
+        var elem = document.getElementById(dataEntry.comboID(message.thread, message.name));
+
+        var messageContainer = document.createElement('div');
+        messageContainer.id = dataEntry.comboID(message.thread, message.name);
+        messageContainer.setAttribute('data-timestamp', message.timestamp);
+        var messageSpan = document.createElement('span');
+        messageSpan.textContent = message.name;
+
+        var responseBox = document.getElementById(message.responseBox);
+
+        messageContainer.appendChild(messageSpan);
+        if (elem) {
+            var oldTimestamp = elem.getAttribute('data-timestamp');
+            var newTimestamp = message.timestamp;
+            if (new Date(newTimestamp) > new Date(oldTimestamp)) {
+                $(elem).remove();
+                $(responseBox).append(messageContainer);
+            } else {
+                //don't add it
+            }
+        } else {
+            $(responseBox).append(messageContainer);
+        }
+    }
+}
+
+//Get the Combined Messages and hand them off to specific handlers
+dataEntry.dataMessageHandler = function(thread) {
     return function (newMessages) {
         newMessages.sort(dataEntry.sortMessages);
+        console.log(newMessages);
         globalPebl.user.getUser(function(userProfile) {
             if (userProfile) {
                 for (var i = 0; i < newMessages.length; i++) {
                     var message = newMessages[i];
-                    if (message.text === value) {
-                        var elem = $('#' + message.thread + '_' + message.name);
-
-                        var messageContainer = document.createElement('div');
-                        messageContainer.id = message.thread + '_' + message.name;
-                        messageContainer.setAttribute('data-timestamp', message.timestamp);
-                        var messageSpan = document.createElement('span');
-                        messageSpan.textContent = message.name;
-
-                        messageContainer.appendChild(messageSpan);
-                        if (elem.length) {
-                            var oldTimestamp = elem.attr('data-timestamp');
-                            var newTimestamp = message.timestamp;
-                            if (new Date(newTimestamp) > new Date(oldTimestamp)) {
-                                $('#' + message.thread + '_' + message.name).remove();
-                                responseBox.append(messageContainer);
-                            } else {
-                                //don't add it
-                            }
-                        } else {
-                            responseBox.append(messageContainer);
+                    var messageArray = JSON.parse(message.text);
+                    for (var j = 0; j < messageArray.length; j++) {
+                        var embeddedMessage = messageArray[j];
+                        embeddedMessage.timestamp = message.timestamp;
+                        embeddedMessage.id = dataEntry.comboID(message.id, embeddedMessage.thread);
+                        embeddedMessage.name = message.name;
+                        if (embeddedMessage.type === 'text') {
+                            dataEntry.messageHandler(embeddedMessage, userProfile);
+                        } else if (embeddedMessage.type === 'radio') {
+                            dataEntry.radioMessageHandler(embeddedMessage, userProfile);
+                        } else if (embeddedMessage.type === 'checkbox') {
+                            dataEntry.checkboxMessageHandler(embeddedMessage, userProfile);
                         }
                     }
                 }
@@ -473,4 +510,16 @@ dataEntry.sortMessages = function(a, b) {
     var bTimestamp = bDate.getTime();
 
     return aTimestamp - bTimestamp;
+}
+
+dataEntry.comboID = function(...strings) {
+    var newID = null;
+    for (var string of strings) {
+        if (newID === null)
+            newID = string;
+        else
+            newID = newID + '_' + string;
+    }
+
+    return newID;
 }
