@@ -17,11 +17,16 @@ $(document).ready(function() {
     });
 });
 
+dataEntry.invalidFormActive = false;
+
 dataEntry.activeEntries = {};
 
 dataEntry.invalidForm = function() {
     //TODO
-    window.alert('Fill out the entire form');
+    if (!dataEntry.invalidFormActive) {
+        dataEntry.invalidFormActive = true;
+        window.alert('Fill out the entire form');
+    }
 }
 
 dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, displayMode) {
@@ -189,6 +194,7 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
 
             var formSubmit = $('<button class="dataEntryFormSubmit">Submit</button>');
             formSubmit.on('click', function() {
+                dataEntry.invalidFormActive = false;
                 var validForm = formElement.reportValidity();
                 if (validForm) {
                     var messages = [];
