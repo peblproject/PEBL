@@ -75,7 +75,6 @@ $().ready(function() {
     });
 
     $('ol.quiz').each(function() {
-        debugger;
         var quizEntry = this.id + '-quizAttempts';
 
         lowStakesQuiz.attachClickHandler(this.id);
@@ -110,7 +109,6 @@ $().ready(function() {
 });
 
 lowStakesQuiz.attachClickHandler = function(quizId) {
-    debugger;
     // tries and results
     // [0,1],[1] ...
     var quizEntry = quizId + '-quizAttempts'
