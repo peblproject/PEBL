@@ -70,8 +70,8 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                 var subID = dataEntryID + '_' + i;
                 //Create textarea fields
                 if (forms[i].type === 'text') {
-                    var textResponses = $('<div id="' + subID + '_responseBox" class="textResponses" style="display:none;"><div><!--<a class="showMore">Show more...</a>--></div></div>');
-                    var textInput = $('<div class="textInput" style="display:none;"><label id="textDetailText">' + forms[i].prompt + '</label><textarea data-responseBox="' + subID + '_responseBox" data-prompt="' + forms[i].prompt + '" required="required" oninvalid="globalPebl.extension.dataEntry.invalidForm();" id="' + subID + '"></textarea></div>');
+                    var textResponses = $('<div id="' + dataEntry.comboID(subID, "responseBox") + '" class="textResponses" style="display:none;"><div><!--<a class="showMore">Show more...</a>--></div></div>');
+                    var textInput = $('<div class="textInput" style="display:none;"><label id="textDetailText">' + forms[i].prompt + '</label><textarea data-responseBox="' + dataEntry.comboID(subID, "responseBox") + '" data-prompt="' + forms[i].prompt + '" required="required" oninvalid="globalPebl.extension.dataEntry.invalidForm();" id="' + subID + '"></textarea></div>');
                     var text = $('<div class="textBox"></div>');
                     text.append(textInput);
                     text.append(textResponses);
@@ -79,8 +79,6 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                     $(formElement).append(text);
                     textInput.slideDown();
 
-                    // var messageHandle = dataEntry.messageHandler(textResponses, subID);
-                    // globalPebl.subscribeThread(subID, false, messageHandle);
                     textareas.add(subID);
                 } else if (forms[i].type === 'table') {
                     //Create table fields
@@ -136,8 +134,6 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                                 responseBox.id = dataEntry.comboID(subID, 'table_radio', k, l, 'responseBox');
                                 responseBox.setAttribute('style', 'display: none');
 
-                                // var messageHandle = dataEntry.radioMessageHandler(responseBox, input.name, input.value);
-                                // globalPebl.subscribeThread(input.name, false, messageHandle);
                                 td.appendChild(input);
                                 td.appendChild(responseBox);
                             }
@@ -156,6 +152,11 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                     checkbox.type = 'checkbox';
                     checkbox.value = forms[i].prompt;
                     checkbox.id = subID;
+                    checkbox.setAttribute('data-responseBox', dataEntry.comboID(subID, 'responseBox'));
+
+                    var checkboxResponseContainer = document.createElement('div');
+                    checkboxResponseContainer.classList.add('dataEntryCheckboxResponseContainer');
+                    checkboxResponseContainer.id = dataEntry.comboID(subID, 'responseBox');
 
 
                     checkboxes.add(subID);
@@ -175,10 +176,8 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                         }
                     }
 
-                    // var messageHandle = dataEntry.checkboxMessageHandler(checkbox, subID, checkbox.value);
-                    // globalPebl.subscribeThread(subID, false, messageHandle);
-
                     checkboxContainer.appendChild(checkbox);
+                    checkboxContainer.appendChild(checkboxResponseContainer);
                     checkboxContainer.appendChild(textSpan);
 
                     formElement.appendChild(checkboxContainer);
@@ -239,6 +238,7 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                             var checkbox = document.getElementById(checkboxArray[k]);
                             var prompt = checkbox.value;
                             var thread = checkboxArray[k];
+                            var responseBox = checkbox.getAttribute('data-responseBox');
                             var text;
                             if (checkbox.checked === true) {
                                 if (checkbox.hasAttribute('data-moreInput'))
@@ -246,12 +246,13 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                                 else
                                     text = prompt;
                             } else {
-                                text = 'N/A';
+                                text = '';
                             }
                             var message = {
                                 "prompt": prompt,
                                 "thread": thread,
                                 "text": text,
+                                "responseBox": responseBox,
                                 "type": "checkbox"
                             };
                             messages.push(message);
@@ -292,6 +293,14 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                         $(this).show();
                     });
 
+                    $(calloutDiv).find('input[type=checkbox]').each(function() {
+                        $(this).hide();
+                    });
+
+                    $(calloutDiv).find('.dataEntryCheckboxResponseContainer').each(function() {
+                        $(this).show();
+                    });
+
                     $(calloutDiv).find('.dataEntryFormSubmit').each(function() {
                         $(this).hide();
                     });
@@ -314,6 +323,14 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                     });
 
                     $(calloutDiv).find('.radioResponses').each(function() {
+                        $(this).hide();
+                    });
+
+                    $(calloutDiv).find('input[type=checkbox]').each(function() {
+                        $(this).show();
+                    });
+
+                    $(calloutDiv).find('.dataEntryCheckboxResponseContainer').each(function() {
                         $(this).hide();
                     });
 
@@ -389,65 +406,95 @@ dataEntry.messageHandler = function(message, userProfile) {
 }
 
 dataEntry.checkboxMessageHandler = function(message, userProfile) {
+    var mine = userProfile.identity == message.name;
     var checkbox = document.getElementById(message.thread);
+    var responseBox = document.getElementById(message.responseBox);
     var text = message.text;
-    
-    if (!checkbox.hasAttribute('data-timestamp')) {
-        //Not checked
-        if (text === 'N/A') {
-            checkbox.checked = false;
-        } else {
-            checkbox.checked = true;
-            var temp = text.replace(message.prompt, '');
-            if (temp.length > 0)
-                document.getElementById(checkbox.getAttribute('data-moreInput')).value = temp;
-        }
-        checkbox.setAttribute('data-timestamp', message.timestamp);
-    } else {
-        var oldTimestamp = checkbox.getAttribute('data-timestamp');
-        var newTimestamp = message.timestamp;
-        if (new Date(newTimestamp) > new Date(oldTimestamp)) {
-            if (text === 'N/A') {
+    //Additional input after the checkbox
+    var temp = text.replace(message.prompt, '');
+    //Fill the checkboxes for the user with current data
+    if (mine) {
+        if (!checkbox.hasAttribute('data-timestamp')) {
+            //Not checked
+            if (text === '') {
                 checkbox.checked = false;
             } else {
                 checkbox.checked = true;
-                var temp = text.replace(message.prompt, '');
                 if (temp.length > 0)
                     document.getElementById(checkbox.getAttribute('data-moreInput')).value = temp;
             }
             checkbox.setAttribute('data-timestamp', message.timestamp);
         } else {
-            //don't update the checkbox
+            var oldTimestamp = checkbox.getAttribute('data-timestamp');
+            var newTimestamp = message.timestamp;
+            if (new Date(newTimestamp) > new Date(oldTimestamp)) {
+                if (text === '') {
+                    checkbox.checked = false;
+                } else {
+                    checkbox.checked = true;
+                    if (temp.length > 0)
+                        document.getElementById(checkbox.getAttribute('data-moreInput')).value = temp;
+                }
+                checkbox.setAttribute('data-timestamp', message.timestamp);
+            } else {
+                //don't update the checkbox
+            }
         }
+    }
+
+    //Populate the viewmode list
+
+    var checkboxViewElem = document.createElement('span');
+    checkboxViewElem.id = dataEntry.comboID(message.thread, message.name);
+    checkboxViewElem.setAttribute('data-timestamp', message.timestamp);
+    checkboxViewElem.textContent = message.name;
+    if (temp.length > 0)
+        checkboxViewElem.textContent += ' - "' + temp + '"';
+
+    var elem = document.getElementById(dataEntry.comboID(message.thread, message.name));
+    //If it already exists
+    if (elem) {
+        var oldTimestamp = elem.getAttribute('data-timestamp');
+        var newTimestamp = message.timestamp;
+        if (new Date(newTimestamp) > new Date(oldTimestamp)) {
+            //This is more recent, remove the old one
+            $(elem).remove();
+            if (text === '')
+                checkboxViewElem.style.display = 'none';
+            $(responseBox).append(checkboxViewElem);
+        } else {
+            //This is an old message, do nothing
+        } 
+    } else {
+        $(responseBox).append(checkboxViewElem);
     }
 }
 
 //Message handler for radio button messages
 dataEntry.radioMessageHandler = function(message, userProfile) {
-    if (message.text) {
-        var elem = document.getElementById(dataEntry.comboID(message.thread, message.name));
+    var mine = userProfile.identity == message.name;
+    var elem = document.getElementById(dataEntry.comboID(message.thread, message.name));
 
-        var messageContainer = document.createElement('div');
-        messageContainer.id = dataEntry.comboID(message.thread, message.name);
-        messageContainer.setAttribute('data-timestamp', message.timestamp);
-        var messageSpan = document.createElement('span');
-        messageSpan.textContent = message.name;
+    var messageContainer = document.createElement('div');
+    messageContainer.id = dataEntry.comboID(message.thread, message.name);
+    messageContainer.setAttribute('data-timestamp', message.timestamp);
+    var messageSpan = document.createElement('span');
+    messageSpan.textContent = message.name;
 
-        var responseBox = document.getElementById(message.responseBox);
+    var responseBox = document.getElementById(message.responseBox);
 
-        messageContainer.appendChild(messageSpan);
-        if (elem) {
-            var oldTimestamp = elem.getAttribute('data-timestamp');
-            var newTimestamp = message.timestamp;
-            if (new Date(newTimestamp) > new Date(oldTimestamp)) {
-                $(elem).remove();
-                $(responseBox).append(messageContainer);
-            } else {
-                //don't add it
-            }
-        } else {
+    messageContainer.appendChild(messageSpan);
+    if (elem) {
+        var oldTimestamp = elem.getAttribute('data-timestamp');
+        var newTimestamp = message.timestamp;
+        if (new Date(newTimestamp) > new Date(oldTimestamp)) {
+            $(elem).remove();
             $(responseBox).append(messageContainer);
+        } else {
+            //don't add it
         }
+    } else {
+        $(responseBox).append(messageContainer);
     }
 }
 

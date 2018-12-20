@@ -117,3 +117,24 @@
     font-weight: normal;
     margin: .5em 0;
 }
+
+.dataEntryCheckboxContainer {
+    display: flex;
+    align-items: center;
+    background: rgba(0, 168, 142, 0.2);
+    margin-bottom: 5px;
+}
+
+.dataEntryCheckboxContainer > span {
+    padding: 0.5em;
+}
+
+.dataEntryCheckboxResponseContainer {
+    display: none;
+    padding: 0.5em;
+    min-width: 25%;
+}
+
+.dataEntryCheckboxResponseContainer > span {
+    display: block;
+}
