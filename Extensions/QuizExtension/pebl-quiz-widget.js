@@ -157,11 +157,17 @@ lowStakesQuiz.attachClickHandler = function(quizId) {
             if ((score / total) >= 0.8) {
                 event = window.top.PeBL.events.eventPassed;
                 success = true;
-                quizFeedback += " - You passed!";
+                if (globalPebl.extension.config && globalPebl.extension.config.lowStakesQuiz && globalPebl.extension.config.lowStakesQuiz.passMessage)
+                    quizFeedback = globalPebl.extension.config.lowStakesQuiz.passMessage;
+                else
+                    quizFeedback += " - You passed!";
             } else {
                 event = window.top.PeBL.events.eventFailed;
                 success = false;
-                quizFeedback += " - You did not pass, you should review the material and try again.";
+                if (globalPebl.extension.config && globalPebl.extension.config.lowStakesQuiz && globalPebl.extension.config.lowStakesQuiz.failMessage)
+                    quizFeedback = globalPebl.extension.config.lowStakesQuiz.failMessage;
+                else
+                    quizFeedback += " - You did not pass, you should review the material and try again.";
             }
             if (window.top.PeBL != null)
                 window.top.PeBL.emitEvent(event, {
