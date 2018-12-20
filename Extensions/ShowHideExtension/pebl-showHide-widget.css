@@ -15,11 +15,11 @@
     font-size: 2em;
     padding: 0;
     clear: both;
-    background-size: 28px !important;
-    background-repeat: no-repeat !important;
-    background-position: center center !important;
     width: 40px;
     height: 40px;
+    overflow: hidden; /* fix for Firefox */
+    break-inside: avoid-column;
+    -webkit-column-break-inside: avoid;
 }
 
 .showHideButton:hover {
@@ -30,10 +30,4 @@
 .showHideButton.inline {
     float: none !important;
     margin-bottom: 0 !important;
-}
-
-.showHideButton.hiding {
-    background-size: 28px !important;
-    background-repeat: no-repeat !important;
-    background-position: center center !important;
 }
