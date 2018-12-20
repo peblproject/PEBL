@@ -91,13 +91,17 @@ $().ready(function() {
                         $(this).children('.choices').addClass('reveal secondary');
                         var linkText = $(this).attr('data-feedbackText');
                         $(this).children('.feedback').text(linkText);
-                        $(this).children('.feedback').slideDown();
+                        lowStakesQuiz.handleResize(function() {
+                            $(this).children('.feedback').slideDown();
+                        });
                     }
                     if (quizAttempts[counter][0] == true || quizAttempts[counter][1] == true) {
                         $(this).children('.choices').addClass('reveal');
                         var linkText = $(this).attr('data-feedbackText');
                         $(this).children('.feedback').text(linkText);
-                        $(this).children('.feedback').slideDown();
+                        lowStakesQuiz.handleResize(function() {
+                            $(this).children('.feedback').slideDown();
+                        });
                     }
                     counter++;
                 });
@@ -228,7 +232,9 @@ lowStakesQuiz.attachClickHandler = function(quizId) {
 
 
             gradeTest();
-            $feedback.slideDown();
+            lowStakesQuiz.handleResize(function() {
+                $feedback.slideDown();
+            });
         } else if (quizAttempts[questionNum].length == 1 && quizAttempts[questionNum][0] == false) {
 
             // 2nd attempt
@@ -263,11 +269,21 @@ lowStakesQuiz.attachClickHandler = function(quizId) {
                     "success": correct
                 });
             gradeTest();
-            $feedback.slideDown();
+            lowStakesQuiz.handleResize(function() {
+                $feedback.slideDown();
+            });
         } else if (quizAttempts[questionNum].length > 1) {
             // Ignore repeated attempts
         }
     });
+}
+
+lowStakesQuiz.handleResize = function(callback) {
+    var currentPage = JSON.parse(globalReadium.reader.bookmarkCurrentPage());
+    callback();
+    setTimeout(function() {
+        globalReadium.reader.openSpineItemElementCfi(currentPage.idref, currentPage.contentCFI);
+    }, 500);
 }
 
 lowStakesQuiz.wrongFeedback = function(attempt) {

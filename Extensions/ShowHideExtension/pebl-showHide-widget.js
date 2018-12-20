@@ -1,4 +1,11 @@
-function toggleVisibility(event, programInvoked) {
+var globalPebl = window.top.PeBL;
+var globalReadium = window.top.READIUM;
+
+var showHide = {};
+
+globalPebl.extension.showHide = showHide;
+
+showHide.toggleVisibility = function(event, programInvoked) {
     console.log(event);
     var id = event.currentTarget.otherId,
         buttonText1 = event.currentTarget.buttonText1,
@@ -22,23 +29,27 @@ function toggleVisibility(event, programInvoked) {
         $('#' + id + 'Btn').children('i').first()[0].classList.remove('fa-minus');
     state = "hiding";
     }
+
+    var currentPage = JSON.parse(globalReadium.reader.bookmarkCurrentPage());
     $('#' + id).slideToggle(400, function () {
-        if (window.top.ReadiumSDK != null && window.top.ReadiumSDK.reader.plugins.highlights != null)
-            window.top.ReadiumSDK.reader.plugins.highlights.redrawAnnotations();
+        //globalReadium.reader.plugins.highlights.redrawAnnotations();
+        setTimeout(function() {
+            globalReadium.reader.openSpineItemElementCfi(currentPage.idref, currentPage.contentCFI);
+        }, 500);
     });
 
     
-    if (window.top.PeBL != null) {
+    if (globalPebl != null) {
         if (!programInvoked) {
             var target = document.getElementById(id + 'Btn').dataset.cassTarget;
             var cfi = "";
-        $('#' + id).addClass("userToggled");
+            $('#' + id).addClass("userToggled");
             // if (window.top.ReadiumSDK != null)
             //  cfi = window.top.ReadiumSDK.reader.getCfiForElement($("#" + target));
-            window.top.PeBL.emitEvent(window.top.PeBL.events.eventPreferred, {
-		target: target,
-		type: state
-	    });
+            globalPebl.emitEvent(globalPebl.events.eventPreferred, {
+        		target: target,
+        		type: state
+	        });
         }
     }   
 }
@@ -56,11 +67,11 @@ $(document).ready(function() {
         if ($(this)[0].hasAttribute('data-displayBtnInline') && $(this)[0].getAttribute('data-displayBtnInline') == 'true') {
             isInline = true;
         }
-        createShowHide(insertID, buttonText1, buttonText2, id, isInline,cassMapping, cassTarget, cassLevel);
+        showHide.createShowHide(insertID, buttonText1, buttonText2, id, isInline,cassMapping, cassTarget, cassLevel);
     });
 });
 
-function createShowHide(insertID, buttonText1, buttonText2, id, isInline, cassMapping, cassTarget, cassLevel) {
+showHide.createShowHide = function(insertID, buttonText1, buttonText2, id, isInline, cassMapping, cassTarget, cassLevel) {
     var button,
         buttonIcon,
         insertLocation,
@@ -76,7 +87,7 @@ function createShowHide(insertID, buttonText1, buttonText2, id, isInline, cassMa
     }
     button.buttonText1 = buttonText1;
     button.buttonText2 = buttonText2;
-    button.addEventListener('click', toggleVisibility);
+    button.addEventListener('click', showHide.toggleVisibility);
 
     buttonIcon = document.createElement('i');
     buttonIcon.classList.add('fa', 'fa-plus');
