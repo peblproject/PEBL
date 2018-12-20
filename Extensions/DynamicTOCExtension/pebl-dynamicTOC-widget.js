@@ -135,6 +135,9 @@ dynamicTOC.createTOC = function(element) {
             tocSectionTitleText.classList.add('tocSectionTitleText');
             tocSectionTitleText.textContent = tocObject[sectionKey].Section.title;
             tocSectionTitleText.href = tocObject[sectionKey].Section.location;
+            tocSectionTitleText.addEventListener('click', function() {
+                dynamicTOC.handleTocPageTextClick(event);
+            });
             tocSectionTitleTextWrapper.appendChild(tocSectionTitleText);
             tocSectionTitle.appendChild(tocSectionPrefix);
             tocSectionTitle.appendChild(tocSectionTitleTextWrapper);
@@ -157,17 +160,14 @@ dynamicTOC.createTOC = function(element) {
                     tocSubsectionTitle.classList.add('tocSubsectionTitle');
                     var tocSubsectionTitleTextWrapper = document.createElement('div');
                     tocSubsectionTitleTextWrapper.classList.add('tocSubsectionTitleTextWrapper');
-                    if (tocObject[sectionKey][pageKey].skip !== undefined) {
-                        var tocSubsectionTitleText = document.createElement('a');
-                        tocSubsectionTitleText.classList.add('tocSubsectionTitleText');
-                        tocSubsectionTitleText.textContent = tocObject[sectionKey][pageKey].title;
-                        tocSubsectionTitleText.href = tocObject[sectionKey][pageKey].location;
-                    } else {
-                        var tocSubsectionTitleText = document.createElement('a');
-                        tocSubsectionTitleText.classList.add('tocSubsectionTitleText');
-                        tocSubsectionTitleText.textContent = tocObject[sectionKey][pageKey].title;
-                        tocSubsectionTitleText.href = tocObject[sectionKey][pageKey].location;
-                    }
+
+                    var tocSubsectionTitleText = document.createElement('a');
+                    tocSubsectionTitleText.classList.add('tocSubsectionTitleText');
+                    tocSubsectionTitleText.textContent = tocObject[sectionKey][pageKey].title;
+                    tocSubsectionTitleText.href = tocObject[sectionKey][pageKey].location;
+                    tocSubsectionTitleText.addEventListener('click', function() {
+                        dynamicTOC.handleTocPageTextClick(event);
+                    });
                     
 
                     tocSubsectionTitleTextWrapper.appendChild(tocSubsectionTitleText);
