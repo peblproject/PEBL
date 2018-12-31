@@ -331,7 +331,7 @@ function createDiscussionBox(element, chatButton) {
 }
 
 function handleChatButtonClick(elem) {
-    console.log('test');
+    $('.lightBox').remove();
     event.preventDefault();
     var element,
         question;
@@ -356,6 +356,7 @@ function handleChatButtonClick(elem) {
 }
 
 function handleNoteButtonClick(elem) {
+    $('.lightBox').remove();
     globalPebl.user.getUser(function(user) {
         var discussionId = user.identity + '-' + elem.id;
 
