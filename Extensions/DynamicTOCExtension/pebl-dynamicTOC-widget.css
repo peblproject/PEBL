@@ -16,7 +16,7 @@
 .tocCloseButton {
     position: fixed;
     top: 0;
-    right: 0;
+    right: 1em;
     z-index: 5001;
     font-size: 2em;
     cursor: pointer;
