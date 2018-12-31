@@ -6,7 +6,9 @@
     font-weight: bold;
     padding: .5em 0;
     border-bottom: 1px solid #aaa;
-    display: inline-block;
+    display: list-item;
+    break-inside: avoid-column;
+    -webkit-column-break-inside: avoid;
     vertical-align: top;
     width: 100%;
 }

@@ -19,7 +19,7 @@ lowStakesQuiz.createLowStakesMultiChoiceQuestion = function(id, questionNumber, 
 
     questionNumberSpan.textContent = questionNumber + ".";
     questionPrompt.textContent = prompt;
-    questionPromptContainer.appendChild(questionNumberSpan);
+    //questionPromptContainer.appendChild(questionNumberSpan);
     questionPromptContainer.appendChild(questionPrompt);
     questionElement.appendChild(questionPromptContainer);
     if (image) {
