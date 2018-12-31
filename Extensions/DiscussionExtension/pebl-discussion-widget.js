@@ -20,11 +20,16 @@ $(document).ready(function() {
         var id = $(this)[0].getAttribute('data-id');
         var detailText = $(this)[0].hasAttribute('data-detailText') ? $(this)[0].getAttribute('data-detailText') : null;
         var insertID = $(this)[0].getAttribute('id');
-        createDiscussion(insertID, buttonText, prompt, id, detailText);
+        var sharing = $(this)[0].getAttribute('data-sharing') ? $(this)[0].getAttribute('data-sharing') : null;
+        createDiscussion(insertID, buttonText, prompt, id, detailText, sharing);
+    });
+
+    $(document.body).on('click', '.chat', function(evt) {
+        handleChatButtonClick(evt.currentTarget);
     });
 });
 
-function createDiscussion(insertID, buttonText, question, id, detailText) {
+function createDiscussion(insertID, buttonText, question, id, detailText, sharing) {
     var calloutDiv,
         chatButton,
         chatIcon,
@@ -43,7 +48,8 @@ function createDiscussion(insertID, buttonText, question, id, detailText) {
     chatButton.appendChild(chatIcon);
     if (detailText)
         chatButton.setAttribute('detailText', detailText);
-    chatButton.addEventListener('click', handleChatButtonClick);
+    if (sharing)
+        chatButton.setAttribute('data-sharing', sharing);
 
     questionParagraph = document.createElement('p');
     questionParagraph.innerHTML = question;
@@ -283,29 +289,44 @@ function closeLightBox() {
 
 
 function createDiscussionBox(element, chatButton) {
-    var chatResponses = $('<div class="chatResponses" style="display:none;"><div><!--<a class="showMore">Show more...</a>--></div></div>');
-    var chatInput = $('<div class="chatInput" style="display:none;"><label id="discussionDetailText"></label><textarea id="discussionTextArea"></textarea><button class="chatSubmit">Submit</button></div>');
-    var chat = $('<div class="chatBox"></div>');
-    chat.append(chatInput);
-    chat.append(chatResponses);
-    
-    element.append(chat);
-    if (chatButton.hasAttribute('detailText'))
-        document.getElementById('discussionDetailText').textContent = chatButton.getAttribute('detailText');
-    element.find(".chatInput").slideDown();
+    globalPebl.utils.getGroupMemberships(function(groups) {
+        globalPebl.user.getUser(function(userProfile) {
+            var chatResponses = $('<div class="chatResponses" style="display:none;"><div><!--<a class="showMore">Show more...</a>--></div></div>');
+            var chatInput = $('<div class="chatInput" style="display:none;"><label id="discussionDetailText"></label><textarea id="discussionTextArea"></textarea><button class="chatSubmit">Submit</button></div>');
+            var chat = $('<div class="chatBox"></div>');
+            chat.append(chatInput);
+            chat.append(chatResponses);
+            
+            element.append(chat);
+            if (chatButton.hasAttribute('detailText'))
+                document.getElementById('discussionDetailText').textContent = chatButton.getAttribute('detailText');
+            element.find(".chatInput").slideDown();
 
-    var responseBox = $('.chatResponses');
-    var messageHandle = messageHandler(responseBox, chatButton.id);
-    globalPebl.subscribeThread(chatButton.id, false, messageHandle);
-    
-    responseBox.slideDown();
+            var thread = chatButton.id;
+            if (chatButton.hasAttribute('data-sharing')) {
+                var sharing = chatButton.getAttribute('data-sharing');
+                //Assuming one group for now
+                if (sharing === 'team' && groups.length > 0) {
+                    thread = groups[0].groupName + thread;
+                } else if (sharing === 'private') {
+                    thread = userProfile.identity + thread;
+                }
+            }
 
-    chatInput.on('click', 'button.chatSubmit', function () {
-        createThread(chatButton.id, $(this), true);
-    });
+            var responseBox = $('.chatResponses');
+            var messageHandle = messageHandler(responseBox, thread);
+            globalPebl.subscribeThread(thread, false, messageHandle);
+            
+            responseBox.slideDown();
 
-    element.on('click', 'i.discussionCloseButton', function() {
-        closeLightBox();
+            chatInput.on('click', 'button.chatSubmit', function () {
+                createThread(thread, $(this), true);
+            });
+
+            element.on('click', 'i.discussionCloseButton', function() {
+                closeLightBox();
+            });
+        });
     });
 }
 
@@ -338,7 +359,6 @@ function handleNoteButtonClick(elem) {
     globalPebl.user.getUser(function(user) {
         var discussionId = user.identity + '-' + elem.id;
 
-        //From discussion widget
         createDiscussionLightBox();
 
         var questionBox,

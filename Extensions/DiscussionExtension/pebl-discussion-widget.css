@@ -23,6 +23,7 @@
     border-left: 10px solid rgb(0, 168, 142);
     margin: 1.5em 10px;
     clear: both;
+    width: calc(100% - 3.5em);
 }
 
 .callout::after {
