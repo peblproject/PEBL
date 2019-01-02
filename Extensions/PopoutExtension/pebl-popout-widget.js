@@ -73,7 +73,7 @@ function handlePopoutClick(event) {
 
         window.top.PeBL.emitEvent(window.top.PeBL.events.eventPreferred, {
 	    target: cfi,
-	    type: e.hasClass('inactive') ? "popoutHide" : "popoutShow";
+	    type: e.hasClass('inactive') ? "popoutHide" : "popoutShow"
 	});
 	
     }
