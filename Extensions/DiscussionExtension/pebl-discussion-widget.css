@@ -1,7 +1,7 @@
 .replyContainer {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    display: block;
+    /*flex-wrap: wrap;
+    justify-content: space-between;*/
 }
 
 .replyTextArea {
@@ -73,6 +73,7 @@ button.replySubmitButton {
     border: none;
     color: #ffffff;
     background: #077ebc;
+    float: right;
 }
 
 button.chatSubmit,
