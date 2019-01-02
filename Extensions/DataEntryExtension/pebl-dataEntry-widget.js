@@ -25,11 +25,13 @@ dataEntry.activeEntries = {};
 
 //Creates a textarea
 dataEntry.createTextEntry = function(id, form, activeEntry) {
-    var textResponses = $('<div id="' + dataEntry.comboID(id, "responseBox") + '" class="textResponses" style="display:none;"><div><!--<a class="showMore">Show more...</a>--></div></div>');
-    var textInput = $('<div class="textInput"><label id="textDetailText">' + form.prompt + '</label><textarea data-responseBox="' + dataEntry.comboID(id, "responseBox") + '" data-prompt="' + form.prompt + '" required="required" oninvalid="globalPebl.extension.dataEntry.invalidForm();" id="' + id + '"></textarea></div>');
+    var textResponses = $('<div id="' + dataEntry.comboID(id, "responseBox") + '" class="textResponses unofficialView" style="display:none;"><div><!--<a class="showMore">Show more...</a>--></div></div>');
+    var textOfficialResponses = $('<div id="' + dataEntry.comboID(id, "responseBoxOfficial") + '" class="textResponses officialView" style="display:none;"><div><!--<a class="showMore">Show more...</a>--></div></div>')
+    var textInput = $('<div class="textInput"><label id="textDetailText">' + form.prompt + '</label><textarea class="edit" data-responseBoxOfficial="' + dataEntry.comboID(id, "responseBoxOfficial") + '" data-responseBox="' + dataEntry.comboID(id, "responseBox") + '" data-prompt="' + form.prompt + '" required="required" oninvalid="globalPebl.extension.dataEntry.invalidForm();" id="' + id + '"></textarea></div>');
     var text = $('<div class="textBox"></div>');
     text.append(textInput);
     text.append(textResponses);
+    text.append(textOfficialResponses);
 
     //Add the id to the set, used when submitting
     activeEntry.textareas.add(id);
@@ -81,8 +83,10 @@ dataEntry.createRadioEntry = function(id, form, activeEntry) {
             if (form.tableRows[k].inputs[l].type === "radio") {
                 var input = document.createElement('input');
                 input.type = 'radio';
+                input.classList.add('edit');
                 input.setAttribute('prompt', form.tableRows[k].rowHeader);
-                input.setAttribute('responseBox', dataEntry.comboID(id, 'table_radio', k, l, 'responseBox'));
+                input.setAttribute('data-responseBox', dataEntry.comboID(id, 'table_radio', k, l, 'responseBox'));
+                input.setAttribute('data-responseBoxOfficial', dataEntry.comboID(id, 'table_radio', k, l, 'responseBoxOfficial'))
                 input.name = id + '_table_radio_' + k;
                 input.value = form.tableRows[k].inputs[l].value;
                 input.id = dataEntry.comboID(id, 'table_radio', k, l);
@@ -93,12 +97,19 @@ dataEntry.createRadioEntry = function(id, form, activeEntry) {
 
                 //This is the viewmode container
                 var responseBox = document.createElement('div');
-                responseBox.classList.add('radioResponses');
+                responseBox.classList.add('radioResponses', 'unofficialView');
                 responseBox.id = dataEntry.comboID(id, 'table_radio', k, l, 'responseBox');
                 responseBox.setAttribute('style', 'display: none');
 
+                //This is the official viewmode container
+                var responseBoxOfficial = document.createElement('div');
+                responseBoxOfficial.classList.add('radioResponses', 'officialView');
+                responseBoxOfficial.id = dataEntry.comboID(id, 'table_radio', k, l, 'responseBoxOfficial');
+                responseBoxOfficial.setAttribute('stlye', 'display: none');
+
                 td.appendChild(input);
                 td.appendChild(responseBox);
+                td.appendChild(responseBoxOfficial);
             }
             tr.appendChild(td)
         }
@@ -119,12 +130,19 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
     checkbox.type = 'checkbox';
     checkbox.value = form.prompt;
     checkbox.id = id;
+    checkbox.classList.add('edit');
     checkbox.setAttribute('data-responseBox', dataEntry.comboID(id, 'responseBox'));
+    checkbox.setAttribute('data-responseBoxOfficial', dataEntry.comboID(id, 'responseBoxOfficial'));
 
     //This is the viewmode container
     var checkboxResponseContainer = document.createElement('div');
-    checkboxResponseContainer.classList.add('dataEntryCheckboxResponseContainer');
+    checkboxResponseContainer.classList.add('dataEntryCheckboxResponseContainer', 'unofficialView');
     checkboxResponseContainer.id = dataEntry.comboID(id, 'responseBox');
+
+    //This is the official viewmode container
+    var checkboxResponseContainerOfficial = document.createElement('div');
+    checkboxResponseContainerOfficial.classList.add('dataEntryCheckboxResponseContainer', 'officialView');
+    checkboxResponseContainerOfficial.id = dataEntry.comboID(id, 'responseBoxOfficial');
 
     //Add the id to the set, used when submitting.
     activeEntry.checkboxes.add(id);
@@ -138,6 +156,7 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
         if (form.input.type === 'text') {
             var input = document.createElement('input');
             input.type = 'text';
+            input.classList.add('edit');
             input.id = dataEntry.comboID(id, 'checkboxInput');
             input.placeholder = form.input.placeholder;
             
@@ -177,8 +196,8 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
 
             for (var j = 0; j < form.subForms.length; j++) {
                 if (form.subForms[j].type === 'text') {
-                    var textResponses = $('<div id="' + dataEntry.comboID(id, 'subForm', j, "responseBox") + '" class="textResponses" style="display:none;"><div><!--<a class="showMore">Show more...</a>--></div></div>');
-                    var textInput = $('<div class="textInput" style="display:none;"><label id="textDetailText">' + form.subForms[j].prompt + '</label><textarea data-responseBox="' + dataEntry.comboID(id, 'subForm', j, "responseBox") + '" data-prompt="' + form.subForms[j].prompt + '" required="required" oninvalid="globalPebl.extension.dataEntry.invalidForm();" id="' + dataEntry.comboID(id, 'subForm', j) + '"></textarea></div>');
+                    var textResponses = $('<div id="' + dataEntry.comboID(id, 'subForm', j, "responseBox") + '" class="textResponses unofficialView" style="display:none;"><div><!--<a class="showMore">Show more...</a>--></div></div>');
+                    var textInput = $('<div class="textInput" style="display:none;"><label id="textDetailText">' + form.subForms[j].prompt + '</label><textarea class="edit" data-responseBox="' + dataEntry.comboID(id, 'subForm', j, "responseBox") + '" data-prompt="' + form.subForms[j].prompt + '" required="required" oninvalid="globalPebl.extension.dataEntry.invalidForm();" id="' + dataEntry.comboID(id, 'subForm', j) + '"></textarea></div>');
                     var text = $('<div class="textBox"></div>');
                     text.append(textInput);
                     text.append(textResponses);
@@ -192,31 +211,15 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
             //toggle viewMode for this dataEntry
             newSubFormDataEntry.viewMode = function() {
                 dataEntry.handleResize(function() {
-                    $(subFormContainer).find('textarea').each(function() {
+                    $(subFormContainer).find('.edit').each(function() {
                         $(this).hide();
                     });
 
-                    $(subFormContainer).find('.textResponses').each(function() {
+                    $(subFormContainer).find('.unofficialView').each(function() {
                         $(this).show();
                     });
 
-                    $(subFormContainer).find('input[type=radio]').each(function() {
-                        $(this).hide();
-                    });
-
-                    $(subFormContainer).find('.radioResponses').each(function() {
-                        $(this).show();
-                    });
-
-                    $(subFormContainer).find('input[type=checkbox]').each(function() {
-                        $(this).hide();
-                    });
-
-                    $(subFormContainer).find('.dataEntryCheckboxResponseContainer').each(function() {
-                        $(this).show();
-                    });
-
-                    $(subFormContainer).find('.dataEntryFormSubmit').each(function() {
+                    $(subFormContainer).find('.officialView').each(function() {
                         $(this).hide();
                     });
                 });
@@ -225,32 +228,16 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
             //toggle editMode for this dataEntry
             newSubFormDataEntry.editMode = function() {
                 dataEntry.handleResize(function() {
-                    $(subFormContainer).find('textarea').each(function() {
+                    $(subFormContainer).find('.edit').each(function() {
                         $(this).show();
                     });
 
-                    $(subFormContainer).find('.textResponses').each(function() {
+                    $(subFormContainer).find('.unofficialView').each(function() {
                         $(this).hide();
                     });
 
-                    $(subFormContainer).find('input[type=radio]').each(function() {
-                        $(this).show();
-                    });
-
-                    $(subFormContainer).find('.radioResponses').each(function() {
+                    $(subFormContainer).find('.officialView').each(function() {
                         $(this).hide();
-                    });
-
-                    $(subFormContainer).find('input[type=checkbox]').each(function() {
-                        $(this).show();
-                    });
-
-                    $(subFormContainer).find('.dataEntryCheckboxResponseContainer').each(function() {
-                        $(this).hide();
-                    });
-
-                    $(subFormContainer).find('.dataEntryFormSubmit').each(function() {
-                        $(this).show();
                     });
                 });
             }
@@ -352,6 +339,7 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
 
     checkboxContainer.appendChild(checkbox);
     checkboxContainer.appendChild(checkboxResponseContainer);
+    checkboxContainer.appendChild(checkboxResponseContainerOfficial);
     checkboxContainer.appendChild(textSpan);
 
     return checkboxContainer;
@@ -423,119 +411,76 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
             var messageHandle = dataEntry.dataMessageHandler(dataEntryID);
             globalPebl.subscribeThread(dataEntryID, false, messageHandle);
 
-            var formSubmit = $('<button class="dataEntryFormSubmit">Submit</button>');
-            formSubmit.on('click', function() {
-                dataEntry.invalidFormActive = false;
-                //Check if all required inputs have been completed
-                var validForm = formElement.reportValidity();
-                if (validForm) {
-                    var messages = [];
-                    //Submit the form
-                    if (newDataEntry.textareas.size > 0) {
-                        var textareaArray = Array.from(newDataEntry.textareas);
-                        for (var i = 0; i < textareaArray.length; i++) {
-                            var elem = document.getElementById(textareaArray[i]);
-                            var val = elem.value;
-                            var prompt = elem.getAttribute('data-prompt');
-                            var responseBox = elem.getAttribute('data-responseBox');
-                            var message = {
-                                "prompt": prompt,
-                                "thread": textareaArray[i],
-                                "text": val,
-                                "responseBox": responseBox,
-                                "type": "text"
-                            }
-                            messages.push(message);
-                        }
-                    }
 
-                    if (newDataEntry.radios.size > 0) {
-                        var radioArray = Array.from(newDataEntry.radios);
-                        for (var j = 0; j < radioArray.length; j++) {
-                            var val = $('input[name="' + radioArray[j] + '"]:checked').val();
-                            var prompt = $('input[name="' + radioArray[j] + '"]:checked').attr('prompt');
-                            var responseBox = $('input[name="' + radioArray[j] + '"]:checked').attr('responseBox');
-                            //Content of the message is the value of the radio button
-                            var message = {
-                                "prompt" : prompt,
-                                "thread" : radioArray[j],
-                                "text" : val,
-                                "responseBox": responseBox,
-                                "type": "radio"
-                            };
-                            messages.push(message);
-                        }
-                    }
+            //Assuming we use the discussion mechanism for official submissions, will probably change later.
+            var officialMessageHandle = dataEntry.dataMessageHandler(dataEntry.comboID(dataEntryID, 'Official'));
+            globalPebl.subscribeThread(dataEntry.comboID(dataEntryID, 'Official'), false, officialMessageHandle);
 
-                    if (newDataEntry.checkboxes.size > 0) {
-                        var checkboxArray = Array.from(newDataEntry.checkboxes);
-                        for (var k = 0; k < checkboxArray.length; k++) {
-                            var checkbox = document.getElementById(checkboxArray[k]);
-                            var prompt = checkbox.value;
-                            var thread = checkboxArray[k];
-                            var responseBox = checkbox.getAttribute('data-responseBox');
-                            var text;
-                            //Content of the message is the value of the checkbox + any additional input if specified.
-                            if (checkbox.checked === true) {
-                                if (checkbox.hasAttribute('data-moreInput'))
-                                    text = prompt + document.getElementById(checkbox.getAttribute('data-moreInput')).value;
-                                else
-                                    text = prompt;
-                            } else {
-                                text = '';
-                            }
-                            var message = {
-                                "prompt": prompt,
-                                "thread": thread,
-                                "text": text,
-                                "responseBox": responseBox,
-                                "type": "checkbox"
-                            };
-                            messages.push(message);
-                        }
-                    }
+            var formSubmitOfficial = $('<button class="dataEntryFormSubmitOfficial edit">Make it Official</button>');
+            formSubmitOfficial.on('click', function() {
+                var message = dataEntry.getFormData(formElement, newDataEntry, true);
 
+                if (message != null) {
+                    //Submit the official version
                     var finalMessage = {
-                        "prompt": "DataEntry",
-                        "thread": dataEntryID,
-                        "text": JSON.stringify(messages)
+                        "prompt": "DataEntryOfficial",
+                        "thread": dataEntry.comboID(dataEntryID, 'Official'),
+                        "text": JSON.stringify(message)
                     }
 
                     globalPebl.emitEvent(globalPebl.events.newMessage,
-                        finalMessage);
+                    finalMessage);
+
+                    newDataEntry.officialMode();
+                }
+            });
+
+            var formSubmit = $('<button class="dataEntryFormSubmit edit">Submit</button>');
+            formSubmit.on('click', function() {
+                var message = dataEntry.getFormData(formElement, newDataEntry, false);
+
+                if (message != null) {
+                    var finalMessage = {
+                        "prompt": "DataEntry",
+                        "thread": dataEntryID,
+                        "text": JSON.stringify(message)
+                    }
+
+                    globalPebl.emitEvent(globalPebl.events.newMessage,
+                    finalMessage);
 
                     newDataEntry.viewMode();
                 }
             });
 
+            newDataEntry.officialMode = function() {
+                dataEntry.handleResize(function() {
+                    $(calloutDiv).find('.edit').each(function() {
+                        $(this).hide();
+                    });
+
+                    $(calloutDiv).find('.unofficialView').each(function() {
+                        $(this).hide();
+                    });
+
+                    $(calloutDiv).find('.officialView').each(function() {
+                        $(this).show();
+                    });
+                });
+            }
+
             //toggle viewMode for this dataEntry
             newDataEntry.viewMode = function() {
                 dataEntry.handleResize(function() {
-                    $(calloutDiv).find('textarea').each(function() {
+                    $(calloutDiv).find('.edit').each(function() {
                         $(this).hide();
                     });
 
-                    $(calloutDiv).find('.textResponses').each(function() {
+                    $(calloutDiv).find('.unofficialView').each(function() {
                         $(this).show();
                     });
 
-                    $(calloutDiv).find('input[type=radio]').each(function() {
-                        $(this).hide();
-                    });
-
-                    $(calloutDiv).find('.radioResponses').each(function() {
-                        $(this).show();
-                    });
-
-                    $(calloutDiv).find('input[type=checkbox]').each(function() {
-                        $(this).hide();
-                    });
-
-                    $(calloutDiv).find('.dataEntryCheckboxResponseContainer').each(function() {
-                        $(this).show();
-                    });
-
-                    $(calloutDiv).find('.dataEntryFormSubmit').each(function() {
+                    $(calloutDiv).find('.officialView').each(function() {
                         $(this).hide();
                     });
                 });
@@ -544,32 +489,16 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
             //toggle editMode for this dataEntry
             newDataEntry.editMode = function() {
                 dataEntry.handleResize(function() {
-                    $(calloutDiv).find('textarea').each(function() {
+                    $(calloutDiv).find('.edit').each(function() {
                         $(this).show();
                     });
 
-                    $(calloutDiv).find('.textResponses').each(function() {
+                    $(calloutDiv).find('.unofficialView').each(function() {
                         $(this).hide();
                     });
 
-                    $(calloutDiv).find('input[type=radio]').each(function() {
-                        $(this).show();
-                    });
-
-                    $(calloutDiv).find('.radioResponses').each(function() {
+                    $(calloutDiv).find('.officialView').each(function() {
                         $(this).hide();
-                    });
-
-                    $(calloutDiv).find('input[type=checkbox]').each(function() {
-                        $(this).show();
-                    });
-
-                    $(calloutDiv).find('.dataEntryCheckboxResponseContainer').each(function() {
-                        $(this).hide();
-                    });
-
-                    $(calloutDiv).find('.dataEntryFormSubmit').each(function() {
-                        $(this).show();
                     });
                 });
             }
@@ -596,13 +525,28 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
 
             editModeButton.appendChild(editModeButtonIcon);
 
+            var officialModeButton = document.createElement('div');
+            officialModeButton.classList.add('dataEntryOfficialModeButton');
+            officialModeButton.addEventListener('click', function() {
+                newDataEntry.officialMode();
+            });
+
+            var officialModeButtonIcon = document.createElement('i');
+            officialModeButtonIcon.classList.add('fa', 'fa-star');
+
+            officialModeButton.appendChild(officialModeButtonIcon);
+
 
             header.appendChild(viewModeButton);
             //If viewmode is set to viewOnly, don;t show the edit mode button
             if (!displayMode || displayMode !== 'viewOnly')
                 header.appendChild(editModeButton);
 
+            header.appendChild(officialModeButton);
+
             $(formElement).append(formSubmit);
+            //TODO: Add conditional to only append the the official button if user is team leader
+            $(formElement).append(formSubmitOfficial);
             calloutDiv.appendChild(formElement);
 
             var insertLocation = document.getElementById(insertID);
@@ -764,6 +708,84 @@ dataEntry.dataMessageHandler = function(thread) {
     }
 }
 
+dataEntry.getFormData = function(formElement, newDataEntry, isOfficial) {
+    dataEntry.invalidFormActive = false;
+    //Check if all required inputs have been completed
+    var validForm = formElement.reportValidity();
+    if (validForm) {
+        var messages = [];
+        //Submit the form
+        if (newDataEntry.textareas.size > 0) {
+            var textareaArray = Array.from(newDataEntry.textareas);
+            for (var i = 0; i < textareaArray.length; i++) {
+                var elem = document.getElementById(textareaArray[i]);
+                var val = elem.value;
+                var prompt = elem.getAttribute('data-prompt');
+                var responseBox = isOfficial ? elem.getAttribute('data-responseBoxOfficial') : elem.getAttribute('data-responseBox');
+                var message = {
+                    "prompt": prompt,
+                    "thread": textareaArray[i],
+                    "text": val,
+                    "responseBox": responseBox,
+                    "type": "text"
+                }
+                messages.push(message);
+            }
+        }
+
+        if (newDataEntry.radios.size > 0) {
+            var radioArray = Array.from(newDataEntry.radios);
+            for (var j = 0; j < radioArray.length; j++) {
+                var val = $('input[name="' + radioArray[j] + '"]:checked').val();
+                var prompt = $('input[name="' + radioArray[j] + '"]:checked').attr('prompt');
+                var responseBox = isOfficial ? $('input[name="' + radioArray[j] + '"]:checked').attr('data-responseBoxOfficial') : $('input[name="' + radioArray[j] + '"]:checked').attr('responseBox');
+                //Content of the message is the value of the radio button
+                var message = {
+                    "prompt" : prompt,
+                    "thread" : radioArray[j],
+                    "text" : val,
+                    "responseBox": responseBox,
+                    "type": "radio"
+                };
+                messages.push(message);
+            }
+        }
+
+        if (newDataEntry.checkboxes.size > 0) {
+            var checkboxArray = Array.from(newDataEntry.checkboxes);
+            for (var k = 0; k < checkboxArray.length; k++) {
+                var checkbox = document.getElementById(checkboxArray[k]);
+                var prompt = checkbox.value;
+                var thread = checkboxArray[k];
+                var responseBox = checkbox.getAttribute('data-responseBox');
+                var text;
+                //Content of the message is the value of the checkbox + any additional input if specified.
+                if (checkbox.checked === true) {
+                    if (checkbox.hasAttribute('data-moreInput'))
+                        text = prompt + document.getElementById(checkbox.getAttribute('data-moreInput')).value;
+                    else
+                        text = prompt;
+                } else {
+                    text = '';
+                }
+                var message = {
+                    "prompt": prompt,
+                    "thread": thread,
+                    "text": text,
+                    "responseBox": responseBox,
+                    "type": "checkbox"
+                };
+                messages.push(message);
+            }
+        }
+
+        return messages;
+    } else {
+        return null;
+    }
+}
+
+//Call readium library function to keep user on the same page after content resizes.
 dataEntry.handleResize = function(callback) {
     var currentPage = JSON.parse(globalReadium.reader.bookmarkCurrentPage());
     callback();
