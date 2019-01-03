@@ -29,7 +29,7 @@
 
 .registryCloseButton {
 	position: fixed;
-    top: 0;
+    top: 0.25em;
     right: 1em;
     z-index: 5001;
     font-size: 2em;
