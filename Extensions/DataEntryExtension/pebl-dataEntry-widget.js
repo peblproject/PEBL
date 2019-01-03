@@ -222,6 +222,14 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
                     $(subFormContainer).find('.officialView').each(function() {
                         $(this).hide();
                     });
+
+                    $(subFormContainer).find('.dataEntryViewModeButton').each(function() {
+                        $(this).addClass('active');
+                    });
+
+                    $(subFormContainer).find('.dataEntryEditModeButton').each(function() {
+                        $(this).removeClass('active');
+                    });
                 });
             }
 
@@ -239,6 +247,14 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
                     $(subFormContainer).find('.officialView').each(function() {
                         $(this).hide();
                     });
+
+                    $(subFormContainer).find('.dataEntryViewModeButton').each(function() {
+                        $(this).removeClass('active');
+                    });
+
+                    $(subFormContainer).find('.dataEntryEditModeButton').each(function() {
+                        $(this).addClass('active');
+                    });
                 });
             }
 
@@ -254,7 +270,7 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
             viewModeButton.appendChild(viewModeButtonIcon);
 
             var editModeButton = document.createElement('div');
-            editModeButton.classList.add('dataEntryEditModeButton');
+            editModeButton.classList.add('dataEntryEditModeButton', 'active');
             editModeButton.addEventListener('click', function() {
                 newSubFormDataEntry.editMode();
             });
@@ -282,6 +298,9 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
 
             var messageHandle = dataEntry.dataMessageHandler(dataEntry.comboID(id, 'subForm'));
             globalPebl.subscribeThread(dataEntry.comboID(id, 'subForm'), false, messageHandle);
+
+            var formFooter = document.createElement('div');
+            formFooter.classList.add('dataEntryFooter');
 
             var subFormSubmit = $('<button class="dataEntryFormSubmit">Submit</button>');
             subFormSubmit.on('click', function() {
@@ -321,7 +340,9 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
                 }
             });
 
-            $(subFormElement).append(subFormSubmit);
+            $(formFooter).append(subFormSubmit);
+
+            subFormElement.appendChild(formFooter);
 
             checkbox.addEventListener('click', function(evt) {
                 if (evt.currentTarget.checked === true) {
@@ -360,9 +381,9 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
 
             //Thread is either group + id, user + id, or id
             if (sharing === 'team' && groups.length > 0) {
-                dataEntryID = groups[0].groupName + '-' + id;
+                dataEntryID = dataEntry.comboID(groups[0].groupName, id);
             } else if (sharing === 'private') {
-                dataEntryID = userProfile.identity + '-' + id;
+                dataEntryID = dataEntry.comboID(userProfile.identity, id);
             } else {
                 dataEntryID = id;
             }
@@ -416,6 +437,9 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
             var officialMessageHandle = dataEntry.dataMessageHandler(dataEntry.comboID(dataEntryID, 'Official'));
             globalPebl.subscribeThread(dataEntry.comboID(dataEntryID, 'Official'), false, officialMessageHandle);
 
+            var formFooter = document.createElement('div');
+            formFooter.classList.add('dataEntryFooter');
+
             var formSubmitOfficial = $('<button class="dataEntryFormSubmitOfficial edit">Make it Official</button>');
             formSubmitOfficial.on('click', function() {
                 var message = dataEntry.getFormData(formElement, newDataEntry, true);
@@ -466,6 +490,18 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                     $(calloutDiv).find('.officialView').each(function() {
                         $(this).show();
                     });
+
+                    $(calloutDiv).find('.dataEntryViewModeButton').each(function() {
+                        $(this).removeClass('active');
+                    });
+
+                    $(calloutDiv).find('.dataEntryEditModeButton').each(function() {
+                        $(this).removeClass('active');
+                    });
+
+                    $(calloutDiv).find('.dataEntryOfficialModeButton').each(function() {
+                        $(this).addClass('active');
+                    });
                 });
             }
 
@@ -482,6 +518,18 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
 
                     $(calloutDiv).find('.officialView').each(function() {
                         $(this).hide();
+                    });
+
+                    $(calloutDiv).find('.dataEntryViewModeButton').each(function() {
+                        $(this).addClass('active');
+                    });
+
+                    $(calloutDiv).find('.dataEntryEditModeButton').each(function() {
+                        $(this).removeClass('active');
+                    });
+
+                    $(calloutDiv).find('.dataEntryOfficialModeButton').each(function() {
+                        $(this).removeClass('active');
                     });
                 });
             }
@@ -500,6 +548,18 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                     $(calloutDiv).find('.officialView').each(function() {
                         $(this).hide();
                     });
+
+                    $(calloutDiv).find('.dataEntryViewModeButton').each(function() {
+                        $(this).removeClass('active');
+                    });
+
+                    $(calloutDiv).find('.dataEntryEditModeButton').each(function() {
+                        $(this).addClass('active');
+                    });
+
+                    $(calloutDiv).find('.dataEntryOfficialModeButton').each(function() {
+                        $(this).removeClass('active');
+                    });
                 });
             }
 
@@ -515,7 +575,7 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
             viewModeButton.appendChild(viewModeButtonIcon);
 
             var editModeButton = document.createElement('div');
-            editModeButton.classList.add('dataEntryEditModeButton');
+            editModeButton.classList.add('dataEntryEditModeButton', 'active');
             editModeButton.addEventListener('click', function() {
                 newDataEntry.editMode();
             });
@@ -544,9 +604,11 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
 
             header.appendChild(officialModeButton);
 
-            $(formElement).append(formSubmit);
+            $(formFooter).append(formSubmit);
             //TODO: Add conditional to only append the the official button if user is team leader
-            $(formElement).append(formSubmitOfficial);
+            $(formFooter).append(formSubmitOfficial);
+            formElement.appendChild(formFooter);
+            
             calloutDiv.appendChild(formElement);
 
             var insertLocation = document.getElementById(insertID);
