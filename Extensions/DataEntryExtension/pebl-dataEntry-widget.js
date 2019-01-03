@@ -607,9 +607,10 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
             $(formFooter).append(formSubmit);
             //TODO: Add conditional to only append the the official button if user is team leader
             $(formFooter).append(formSubmitOfficial);
-            formElement.appendChild(formFooter);
+            //formElement.appendChild(formFooter);
             
             calloutDiv.appendChild(formElement);
+            calloutDiv.appendChild(formFooter);
 
             var insertLocation = document.getElementById(insertID);
 

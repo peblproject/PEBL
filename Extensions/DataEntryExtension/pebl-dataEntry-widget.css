@@ -6,6 +6,10 @@
     width: calc(100% - 20px);
     margin: 0;
     clear: both;
+    max-height: calc(100vh - 105px);
+    overflow: hidden; /* fix for Firefox */
+    break-inside: avoid-column;
+    -webkit-column-break-inside: avoid;
 }
 
 .dataEntryCallout::after {
@@ -40,6 +44,22 @@
 .dataEntryHeader > div.active,
 .dataEntryFooter > button:hover {
 	background: #5ac1b0;
+}
+
+.dataEntryCallout form {
+    max-height: calc(100vh - 192px);
+    overflow: auto;
+}
+
+.dataEntryCallout form *,
+.dataEntrySubFormCallout form *,
+.dataEntryFooter,
+.dataEntryHeader {
+    will-change: transform;
+}
+
+.dataEntryCallout textarea {
+    overflow: auto;
 }
 
 .dataEntryCallout form > .textBox,
