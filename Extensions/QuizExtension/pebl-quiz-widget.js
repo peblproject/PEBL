@@ -1,5 +1,5 @@
-var globalPebl = window.top.PeBL;
-var globalReadium = window.top.READIUM;
+var globalPebl = window.parent.PeBL;
+var globalReadium = window.parent.READIUM;
 
 var lowStakesQuiz = {};
 
@@ -157,22 +157,22 @@ lowStakesQuiz.attachClickHandler = function(quizId) {
             var event;
             var success;
             if ((score / total) >= 0.8) {
-                event = window.top.PeBL.events.eventPassed;
+                event = globalPebl.events.eventPassed;
                 success = true;
                 if (globalPebl.extension.config && globalPebl.extension.config.lowStakesQuiz && globalPebl.extension.config.lowStakesQuiz.passMessage)
                     quizFeedback = globalPebl.extension.config.lowStakesQuiz.passMessage;
                 else
                     quizFeedback += " - You passed!";
             } else {
-                event = window.top.PeBL.events.eventFailed;
+                event = globalPebl.events.eventFailed;
                 success = false;
                 if (globalPebl.extension.config && globalPebl.extension.config.lowStakesQuiz && globalPebl.extension.config.lowStakesQuiz.failMessage)
                     quizFeedback = globalPebl.extension.config.lowStakesQuiz.failMessage;
                 else
                     quizFeedback += " - You did not pass, you should review the material and try again.";
             }
-            if (window.top.PeBL != null)
-                window.top.PeBL.emitEvent(event, {
+            if (globalPebl != null)
+                globalPebl.emitEvent(event, {
                     score: score,
                     minScore: 0,
                     maxScore: total,
@@ -215,8 +215,8 @@ lowStakesQuiz.attachClickHandler = function(quizId) {
                 $feedback.text(linkText);
             }
 
-            if (window.top.PeBL != null)
-                window.top.PeBL.emitEvent(window.top.PeBL.events.eventAnswered, {
+            if (globalPebl != null)
+                globalPebl.emitEvent(globalPebl.events.eventAnswered, {
                     "prompt": prompt,
                     "answers": $answersText,
                     "correctAnswers": [
@@ -254,8 +254,8 @@ lowStakesQuiz.attachClickHandler = function(quizId) {
                 $feedback.text(linkText);
             }
 
-            if (window.top.PeBL != null)
-                window.top.PeBL.emitEvent(window.top.PeBL.events.eventAnswered, {
+            if (globalPebl != null)
+                globalPebl.emitEvent(globalPebl.events.eventAnswered, {
                     "prompt": prompt,
                     "answers": $answersText,
                     "correctAnswers": [

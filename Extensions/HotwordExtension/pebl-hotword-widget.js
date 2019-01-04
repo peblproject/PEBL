@@ -1,3 +1,6 @@
+var globalPebl = window.parent.PeBL;
+var globalReadium = window.parent.READIUM;
+
 $(document).ready(function() {
     //Find inDesign shortcodes and replace with actual pebl shortcodes
     $("body").children().each(function () {
@@ -122,8 +125,8 @@ function hotword_offsetArrow(elem, adjustTop, topStyleString, adjustRight, right
     }
     elem.append(arrowElement);
 
-    if (window.top.ReadiumSDK != null && window.top.ReadiumSDK.reader.plugins.highlights != null)
-        window.top.ReadiumSDK.reader.plugins.highlights.redrawAnnotations();
+    if (globalReadium != null && globalReadium.reader.plugins.highlights != null)
+        globalReadium.reader.plugins.highlights.redrawAnnotations();
 }
 
 
@@ -177,7 +180,7 @@ function handleTooltipClick(event) {
 
         hotword_offsetTop($(tooltipTextSpan));
 
-	window.top.PeBL.emitEvent(window.top.PeBL.events.eventPreferred, {
+	globalPebl.emitEvent(globalPebl.events.eventPreferred, {
 	    name: $(this).text(),
 	    type: "hotword",
 	    description: textBody

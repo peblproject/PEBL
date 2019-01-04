@@ -1,3 +1,5 @@
+var globalPebl = window.parent.PeBL;
+
 $(document).ready(function() {
 	$('.contentMorphing_contentMorphingExtension').each(function() {
 		var insertID = $(this)[0].getAttribute('id');
@@ -125,13 +127,13 @@ function setLevel(n, sectionID, programInvoked) {
     });
     //contentLevel = n;
 
-    if (window.top.pebl != null) {
+    if (globalPebl != null) {
         if (!programInvoked) {
         $('#' + sectionID).addClass("userToggled");
             var cfi = "";
             // if (window.top.ReadiumSDK != null)
             //  cfi = window.top.ReadiumSDK.reader.getCfiForElement($("#" + sectionID));
-            window.top.PeBL.emitEvent(window.top.PeBL.events.eventContentMorphed,
+            globalPebl.emitEvent(globalPebl.events.eventContentMorphed,
 				      {
 					  target: cfi,
 					  type: "morphing",

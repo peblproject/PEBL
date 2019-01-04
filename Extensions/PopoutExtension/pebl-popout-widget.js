@@ -1,3 +1,5 @@
+var globalPebl = window.parent.PeBL;
+
 $(document).ready(function() {
 	$('.popout_popoutExtension').each(function() {
 		var insertID = $(this)[0].getAttribute('id');
@@ -66,12 +68,12 @@ function handlePopoutClick(event) {
     e.toggleClass('active');
     if (window.top.ReadiumSDK != null && window.top.ReadiumSDK.reader.plugins.highlights != null)
             window.top.ReadiumSDK.reader.plugins.highlights.redrawAnnotations();
-    if (window.top.PeBL != null) {
+    if (globalPebl != null) {
         var cfi = "";
         // if (window.top.ReadiumSDK != null)
         //     cfi = window.top.ReadiumSDK.reader.getCfiForElement(e);
 
-        window.top.PeBL.emitEvent(window.top.PeBL.events.eventPreferred, {
+        globalPebl.emitEvent(globalPebl.events.eventPreferred, {
 	    target: cfi,
 	    type: e.hasClass('inactive') ? "popoutHide" : "popoutShow"
 	});

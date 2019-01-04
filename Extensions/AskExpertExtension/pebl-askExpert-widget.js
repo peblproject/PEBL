@@ -1,4 +1,4 @@
-var globalPebl = window.top.PeBL;
+var globalPebl = window.parent.PeBL;
 
 var askExpert = {};
 

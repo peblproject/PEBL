@@ -1,5 +1,5 @@
-var globalPebl = window.top.PeBL;
-var globalReadium = window.top.READIUM;
+var globalPebl = window.parent.PeBL;
+var globalReadium = window.parent.READIUM;
 
 var dataEntry = {};
 

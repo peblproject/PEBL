@@ -1,6 +1,6 @@
 //TODO: Perform some checks to find where these variables are on different platforms.
-var globalPebl = window.top.PeBL;
-var globalReadium = window.top.READIUM;
+var globalPebl = window.parent.PeBL;
+var globalReadium = window.parent.READIUM;
 
 var dynamicTOC = {};
 

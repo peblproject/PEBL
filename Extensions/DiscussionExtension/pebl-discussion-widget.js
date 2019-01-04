@@ -1,7 +1,6 @@
-var globalPebl;
+var globalPebl = window.parent.PeBL;
 
 $(document).ready(function() {
-    globalPebl = window.top.PeBL;
     
     //Find inDesign shortcodes and replace with actual pebl shortcodes
     $("body").children().each(function () {
@@ -307,9 +306,9 @@ function createDiscussionBox(element, chatButton) {
                 var sharing = chatButton.getAttribute('data-sharing');
                 //Assuming one group for now
                 if (sharing === 'team' && groups.length > 0) {
-                    thread = groups[0].groupName + thread;
-                } else if (sharing === 'private') {
-                    thread = userProfile.identity + thread;
+                    thread = comboID(groups[0].groupName, thread);
+                } else if ((sharing === 'team' && groups.length == 0) || sharing === 'private') {
+                    thread = comboID(userProfile.identity, thread);
                 }
             }
 
@@ -431,4 +430,17 @@ function sortMessages(a, b) {
     var bTimestamp = bDate.getTime();
 
     return aTimestamp - bTimestamp;
+}
+
+//Combines any number of strings with _ between them
+comboID = function(...strings) {
+    var newID = null;
+    for (var string of strings) {
+        if (newID === null)
+            newID = string;
+        else
+            newID = newID + '_' + string;
+    }
+
+    return newID;
 }
