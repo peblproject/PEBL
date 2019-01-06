@@ -378,6 +378,9 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
     globalPebl.user.getUser(function(userProfile) {
         globalPebl.utils.getGroupMemberships(function(groups) {
             var dataEntryID;
+            var learnletLevel = dataEntry.getLearnletLevel(document.body.id);
+            var learnlet = dataEntry.getLearnlet(document.body.id);
+            var learnletTitle = dataEntry.getLearnletTitle();
 
             //Thread is either group + id, user + id, or id
             if (sharing === 'team' && groups.length > 0) {
@@ -451,9 +454,26 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                         "thread": dataEntry.comboID(dataEntryID, 'Official'),
                         "text": JSON.stringify(message)
                     }
-
+                    
                     globalPebl.emitEvent(globalPebl.events.newMessage,
                     finalMessage);
+
+                    //TODO: Use a different xapi statement for this
+                    if (window.parent.extensionDashboard && window.parent.extensionDashboard.programID) {
+                        var artifactPrompt = {
+                            "prompt": question,
+                            "learnlet": learnlet,
+                            "learnletTitle": learnletTitle
+                        }
+                        var artifactMessage = {
+                            "prompt": JSON.stringify(artifactPrompt),
+                            "thread" : dataEntry.comboID(window.parent.extensionDashboard.programID, learnletLevel),
+                            "text": JSON.stringify(message)
+                        }
+
+                        globalPebl.emitEvent(globalPebl.events.newMessage,
+                        artifactMessage);
+                    }
 
                     newDataEntry.officialMode();
                 }
@@ -601,12 +621,13 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
             //If viewmode is set to viewOnly, don;t show the edit mode button
             if (!displayMode || displayMode !== 'viewOnly')
                 header.appendChild(editModeButton);
-
-            header.appendChild(officialModeButton);
+            if (sharing !== 'private')
+                header.appendChild(officialModeButton);
 
             $(formFooter).append(formSubmit);
             //TODO: Add conditional to only append the the official button if user is team leader
-            $(formFooter).append(formSubmitOfficial);
+            if (sharing !== 'private')
+                $(formFooter).append(formSubmitOfficial);
             //formElement.appendChild(formFooter);
             
             calloutDiv.appendChild(formElement);
@@ -710,6 +731,8 @@ dataEntry.checkboxMessageHandler = function(message, userProfile) {
             //This is an old message, do nothing
         } 
     } else {
+        if (text === '')
+                checkboxViewElem.style.display = 'none';
         $(responseBox).append(checkboxViewElem);
     }
 }
@@ -801,7 +824,7 @@ dataEntry.getFormData = function(formElement, newDataEntry, isOfficial) {
             for (var j = 0; j < radioArray.length; j++) {
                 var val = $('input[name="' + radioArray[j] + '"]:checked').val();
                 var prompt = $('input[name="' + radioArray[j] + '"]:checked').attr('prompt');
-                var responseBox = isOfficial ? $('input[name="' + radioArray[j] + '"]:checked').attr('data-responseBoxOfficial') : $('input[name="' + radioArray[j] + '"]:checked').attr('responseBox');
+                var responseBox = isOfficial ? $('input[name="' + radioArray[j] + '"]:checked').attr('data-responseBoxOfficial') : $('input[name="' + radioArray[j] + '"]:checked').attr('data-responseBox');
                 //Content of the message is the value of the radio button
                 var message = {
                     "prompt" : prompt,
@@ -820,7 +843,7 @@ dataEntry.getFormData = function(formElement, newDataEntry, isOfficial) {
                 var checkbox = document.getElementById(checkboxArray[k]);
                 var prompt = checkbox.value;
                 var thread = checkboxArray[k];
-                var responseBox = checkbox.getAttribute('data-responseBox');
+                var responseBox = isOfficial ? checkbox.getAttribute('data-responseBoxOfficial') : checkbox.getAttribute('data-responseBox');
                 var text;
                 //Content of the message is the value of the checkbox + any additional input if specified.
                 if (checkbox.checked === true) {
@@ -875,4 +898,17 @@ dataEntry.comboID = function(...strings) {
     }
 
     return newID;
+}
+
+// TODO: super basic for now, make it work better later
+dataEntry.getLearnletLevel = function(string) {
+    return string.substr(0, 1);
+}
+
+dataEntry.getLearnlet = function(string) {
+    return string.substr(2, 1);
+}
+
+dataEntry.getLearnletTitle = function() {
+    return $('.chapterTitle')[0].textContent;
 }
