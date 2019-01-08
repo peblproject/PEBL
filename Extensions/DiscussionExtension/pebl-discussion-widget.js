@@ -305,9 +305,14 @@ function createDiscussionBox(element, chatButton) {
             if (chatButton.hasAttribute('data-sharing')) {
                 var sharing = chatButton.getAttribute('data-sharing');
                 //Assuming one group for now
-                if (sharing === 'team' && groups.length > 0) {
-                    thread = comboID(groups[0].groupName, thread);
-                } else if ((sharing === 'team' && groups.length == 0) || sharing === 'private') {
+                if (sharing === 'team') {
+                    if (window.parent.extensionDashboard && window.parent.extensionDashboard.programID) {
+                        thread = comboID(window.parent.extensionDashboard.programID, thread);
+                    } else {
+                        thread = comboID(userProfile.identity, thread);
+                        window.alert('This activity requires you to be part of a team. Consider relaunching this learnlet through the dashboard.');
+                    }
+                } else if (sharing === 'private') {
                     thread = comboID(userProfile.identity, thread);
                 }
             }

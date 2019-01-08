@@ -383,8 +383,13 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
             var learnletTitle = dataEntry.getLearnletTitle();
 
             //Thread is either group + id, user + id, or id
-            if (sharing === 'team' && groups.length > 0) {
-                dataEntryID = dataEntry.comboID(groups[0].groupName, id);
+            if (sharing === 'team') {
+                if (window.parent.extensionDashboard && window.parent.extensionDashboard.programID) {
+                    dataEntryID = dataEntry.comboID(window.parent.extensionDashboard.programID, id);
+                } else {
+                    dataEntryID = dataEntry.comboID(userProfile.identity, id);
+                    window.alert('This activity requires you to be part of a team. Consider relaunching this learnlet through the dashboard.');
+                }
             } else if (sharing === 'private') {
                 dataEntryID = dataEntry.comboID(userProfile.identity, id);
             } else {
@@ -420,7 +425,7 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
             newDataEntry.checkboxes = new Set();
 
             for (var i = 0; i < forms.length; i++) {
-                var subID = dataEntryID + '_' + i;
+                var subID = dataEntry.comboID(dataEntryID, i);
                 //Create textarea fields
                 if (forms[i].type === 'text') {
                     $(formElement).append(dataEntry.createTextEntry(subID, forms[i], newDataEntry));
