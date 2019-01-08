@@ -1,5 +1,4 @@
 .dataEntryCallout, .dataEntrySubFormCallout {
-	display: block;
     background-color: rgb(240, 240, 240);
     border-left: 10px solid rgb(0, 168, 142);
     border-right: 10px solid rgb(0, 168, 142);
@@ -10,6 +9,8 @@
     overflow: hidden; /* fix for Firefox */
     break-inside: avoid-column;
     -webkit-column-break-inside: avoid;
+    display: flex;
+    flex-direction: column;
 }
 
 .dataEntryCallout::after {
@@ -32,6 +33,7 @@
     justify-content: space-around;
     align-items: center;
     color: white;
+    order: 1;
 }
 
 .dataEntryHeader > div {
@@ -49,6 +51,7 @@
 .dataEntryCallout form {
     max-height: calc(100vh - 192px);
     overflow: auto;
+    order: 2;
 }
 
 .dataEntryCallout form *,
@@ -78,6 +81,7 @@
     justify-content: space-around;
     width: 100%;
     min-height: 10px;
+    order: 3;
 }
 
 .dataEntryFooter > button {

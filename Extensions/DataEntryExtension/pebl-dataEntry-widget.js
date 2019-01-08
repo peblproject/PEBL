@@ -405,7 +405,7 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
             var header = document.createElement('div');
             header.classList.add('dataEntryHeader');
 
-            calloutDiv.appendChild(header);
+            
 
             var formElement = document.createElement('form');
             //Prevent default form submit
@@ -636,6 +636,7 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
             //formElement.appendChild(formFooter);
             
             calloutDiv.appendChild(formElement);
+            calloutDiv.appendChild(header);
             calloutDiv.appendChild(formFooter);
 
             var insertLocation = document.getElementById(insertID);
