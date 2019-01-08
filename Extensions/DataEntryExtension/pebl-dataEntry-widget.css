@@ -54,10 +54,8 @@
     order: 2;
 }
 
-.dataEntryCallout form *,
-.dataEntrySubFormCallout form *,
-.dataEntryFooter,
-.dataEntryHeader {
+.dataEntryCallout form,
+.dataEntrySubFormCallout form {
     will-change: transform;
 }
 
