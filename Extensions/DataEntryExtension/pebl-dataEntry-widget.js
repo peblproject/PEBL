@@ -653,24 +653,36 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
 
 //Message handler for standard textarea messages
 dataEntry.messageHandler = function(message, userProfile) {
-    if (!document.getElementById(message.id)) {          
-        var mine = userProfile.identity == message.name;
-        var userIcon = document.createElement('i');
-        userIcon.classList.add('fa', 'fa-user');
-        var userIdBox = $('<span class="userId"></span>');
-        userIdBox.text(message.name);
-        var timestampBox = $('<span class="timestamp"></span>');
-        timestampBox.text(new Date(message.timestamp).toLocaleString());
-        var textBox = $('<p class="message"></p>');
-        textBox.text(message.text);
-        var messageContainer = $('<div id="' + message.id  + '" class="' + (mine?"your ":"") + 'response"></div>');
-        messageContainer.append($(userIcon));
-        messageContainer.append(userIdBox);
-        messageContainer.append(timestampBox);
-        messageContainer.append(textBox);
+    var mine = userProfile.identity == message.name;
+    var userIcon = document.createElement('i');
+    userIcon.classList.add('fa', 'fa-user');
+    var userIdBox = $('<span class="userId"></span>');
+    userIdBox.text(message.name);
+    var timestampBox = $('<span class="timestamp"></span>');
+    timestampBox.text(new Date(message.timestamp).toLocaleString());
+    var textBox = $('<p class="message"></p>');
+    textBox.text(message.text);
+    var messageContainer = $('<div data-timestamp="' + message.timestamp + '" id="' + dataEntry.comboID(message.name, message.thread) + '" class="' + (mine?"your ":"") + 'response"></div>');
+    messageContainer.append($(userIcon));
+    messageContainer.append(userIdBox);
+    messageContainer.append(timestampBox);
+    messageContainer.append(textBox);
 
-        var responseBox = document.getElementById(message.responseBox);
-        
+    var responseBox = document.getElementById(message.responseBox);
+
+    //Only show latest submission for each user
+    var existingMessage = document.getElementById(dataEntry.comboID(message.name, message.thread));
+    if (existingMessage) {
+        var newTimestamp = new Date(message.timestamp);
+        var oldTimestamp = new Date(existingMessage.getAttribute('data-timestamp'));
+        //Replace the existing message with the newer one
+        if (newTimestamp > oldTimestamp) {
+            $(existingMessage).remove();
+            $(responseBox).prepend(messageContainer);
+        } else {
+            //Don't add it
+        }
+    } else {
         $(responseBox).prepend(messageContainer);
     }
 }
