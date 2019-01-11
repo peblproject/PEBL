@@ -8,73 +8,8 @@ guidedTour.stages = {};
 
 //TODO: Move the configuration of the stages object out of this file
 guidedTour.startTour = function(element) {
-	guidedTour.createTour(element, {
-            1: {
-            	targetElement: $('#main-menu__collapsed').children('a').first(),
-                message: "Test message 1",
-                position: "bottom-left",
-                beforeNext: function() {
-                	showMainMenu();
-                }
-            },
-            2: {
-            	targetElement: $('#140B51A9-4C11-4620-B691-1B3E757C2528'),
-                message: "Test message 2",
-                position: "bottom-left",
-                beforeNext: function() {
-                	showMainMenu();
-                }
-            },
-            3: {
-            	targetElement: $('#AC3682C5-89D4-4867-AC13-1DC2FE7C6218'),
-            	message: "Test message 3",
-            	position: "bottom-right",
-            	beforeNext: function() {
-                	showMainMenu();
-                }
-            },
-            4: {
-            	targetElement: $('#startTourButton'),
-            	message: "Test message 4",
-            	position: "left",
-            	beforeNext: function() {
-                	showMainMenu();
-                }
-            },
-            5: {
-            	targetElement: $('#knowledgeNetworkButton'),
-            	message: "Test message 5",
-            	position: "bottom-left",
-            	beforeNext: function() {
-                	showMainMenu();
-                }
-            },
-            6: {
-            	targetElement: $('#askAnExpertButton'),
-            	message: "Test message 6",
-            	position: "bottom-right",
-            	beforeNext: function() {
-                	showMainMenu();
-                }
-            },
-            7: {
-            	targetElement: $('#tableOfContentsButton'),
-            	message: "Test message 7",
-            	position: "bottom-left",
-            	beforeNext: function() {
-                	showMainMenu();
-                }
-            },
-            8: {
-            	targetElement: $('#rateThisLearnletButton'),
-            	message: "Test message 8",
-            	position: "bottom-right",
-            	end: true,
-            	afterNext: function() {
-            		hideMainMenu();
-            	}
-            }
-        });
+    if (globalPebl.extension.config.guidedTour)
+    	guidedTour.createTour(element, globalPebl.extension.config.guidedTour);
 }
 
 guidedTour.createTour = function(element, stages) {
@@ -126,7 +61,8 @@ guidedTour.endTour = function() {
 	$('#tutorialMessageContainer').remove();
 }
 
-guidedTour.animateToElement = function(element, position) {
+guidedTour.animateToElement = function(querySelector, position) {
+    var element = $(querySelector);
 	var targetLeft = element.offset().left;
 	var targetTop = element.offset().top;
 
