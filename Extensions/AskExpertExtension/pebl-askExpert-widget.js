@@ -26,7 +26,7 @@ askExpert.createAskExpert = function(element) {
 	    var askFrame = document.createElement('iframe');
 	    askFrame.id = 'askFrame';
 	    askFrame.classList.add('askFrame');
-	    askFrame.src = 'https://ask.extension.org/ask';
+	    askFrame.src = 'https://ask.extension.org/groups/1982/ask';
 	    wrapper.appendChild(askFrame);
 	    askContainer.appendChild(wrapper);
 	    element.appendChild(askContainer);
