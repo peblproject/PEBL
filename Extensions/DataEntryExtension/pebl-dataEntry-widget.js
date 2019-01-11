@@ -85,6 +85,7 @@ dataEntry.createRadioEntry = function(id, form, activeEntry) {
                 input.type = 'radio';
                 input.classList.add('edit');
                 input.setAttribute('prompt', form.tableRows[k].rowHeader);
+                input.setAttribute('data-title', form.prompt)
                 input.setAttribute('data-responseBox', dataEntry.comboID(id, 'table_radio', k, l, 'responseBox'));
                 input.setAttribute('data-responseBoxOfficial', dataEntry.comboID(id, 'table_radio', k, l, 'responseBoxOfficial'))
                 input.name = id + '_table_radio_' + k;
@@ -264,8 +265,8 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
                 newSubFormDataEntry.viewMode();
             });
 
-            var viewModeButtonIcon = document.createElement('i');
-            viewModeButtonIcon.classList.add('fa', 'fa-eye');
+            var viewModeButtonIcon = document.createElement('span');
+            viewModeButtonIcon.textContent = 'View';
 
             viewModeButton.appendChild(viewModeButtonIcon);
 
@@ -275,8 +276,8 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
                 newSubFormDataEntry.editMode();
             });
 
-            var editModeButtonIcon = document.createElement('i');
-            editModeButtonIcon.classList.add('fa', 'fa-edit');
+            var editModeButtonIcon = document.createElement('span');
+            editModeButtonIcon.textContent = 'Edit';
 
             editModeButton.appendChild(editModeButtonIcon);
 
@@ -594,8 +595,8 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                 newDataEntry.viewMode();
             });
 
-            var viewModeButtonIcon = document.createElement('i');
-            viewModeButtonIcon.classList.add('fa', 'fa-eye');
+            var viewModeButtonIcon = document.createElement('span');
+            viewModeButtonIcon.textContent = 'View';
 
             viewModeButton.appendChild(viewModeButtonIcon);
 
@@ -605,8 +606,8 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                 newDataEntry.editMode();
             });
 
-            var editModeButtonIcon = document.createElement('i');
-            editModeButtonIcon.classList.add('fa', 'fa-edit');
+            var editModeButtonIcon = document.createElement('span');
+            editModeButtonIcon.textContent = 'Edit';
 
             editModeButton.appendChild(editModeButtonIcon);
 
@@ -616,8 +617,8 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                 newDataEntry.officialMode();
             });
 
-            var officialModeButtonIcon = document.createElement('i');
-            officialModeButtonIcon.classList.add('fa', 'fa-star');
+            var officialModeButtonIcon = document.createElement('span');
+            officialModeButtonIcon.textContent = 'Official';
 
             officialModeButton.appendChild(officialModeButtonIcon);
 
@@ -626,12 +627,12 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
             //If viewmode is set to viewOnly, don;t show the edit mode button
             if (!displayMode || displayMode !== 'viewOnly')
                 header.appendChild(editModeButton);
-            if (sharing !== 'private')
+            if (sharing === 'team')
                 header.appendChild(officialModeButton);
 
             $(formFooter).append(formSubmit);
             //TODO: Add conditional to only append the the official button if user is team leader
-            if (sharing !== 'private')
+            if (sharing === 'team')
                 $(formFooter).append(formSubmitOfficial);
             //formElement.appendChild(formFooter);
             
@@ -672,7 +673,7 @@ dataEntry.messageHandler = function(message, userProfile) {
     var responseBox = document.getElementById(message.responseBox);
 
     //Only show latest submission for each user
-    var existingMessage = document.getElementById(dataEntry.comboID(message.name, message.thread));
+    var existingMessage = responseBox.querySelector('[id="' + dataEntry.comboID(message.name, message.thread) + '"]');
     if (existingMessage) {
         var newTimestamp = new Date(message.timestamp);
         var oldTimestamp = new Date(existingMessage.getAttribute('data-timestamp'));
@@ -734,7 +735,7 @@ dataEntry.checkboxMessageHandler = function(message, userProfile) {
     if (temp.length > 0)
         checkboxViewElem.textContent += ' - "' + temp + '"';
 
-    var elem = document.getElementById(dataEntry.comboID(message.thread, message.name));
+    var elem = responseBox.querySelector('[id="' + dataEntry.comboID(message.thread, message.name) + '"]');
     //If it already exists
     if (elem) {
         var oldTimestamp = elem.getAttribute('data-timestamp');
@@ -758,15 +759,16 @@ dataEntry.checkboxMessageHandler = function(message, userProfile) {
 //Message handler for radio button messages
 dataEntry.radioMessageHandler = function(message, userProfile) {
     var mine = userProfile.identity == message.name;
-    var elem = document.getElementById(dataEntry.comboID(message.thread, message.name));
+    
 
     var messageContainer = document.createElement('div');
-    messageContainer.id = dataEntry.comboID(message.thread, message.name);
+    messageContainer.setAttribute('data-id', dataEntry.comboID(message.thread, message.name));
     messageContainer.setAttribute('data-timestamp', message.timestamp);
     var messageSpan = document.createElement('span');
     messageSpan.textContent = message.name;
 
     var responseBox = document.getElementById(message.responseBox);
+    var elem = document.querySelector('[data-id="' + dataEntry.comboID(message.thread, message.name) + '"]');
 
     messageContainer.appendChild(messageSpan);
     if (elem) {
@@ -841,15 +843,17 @@ dataEntry.getFormData = function(formElement, newDataEntry, isOfficial) {
             var radioArray = Array.from(newDataEntry.radios);
             for (var j = 0; j < radioArray.length; j++) {
                 var val = $('input[name="' + radioArray[j] + '"]:checked').val();
+                var title = $('input[name="' + radioArray[j] + '"]:checked').attr('data-title');
                 var prompt = $('input[name="' + radioArray[j] + '"]:checked').attr('prompt');
                 var responseBox = isOfficial ? $('input[name="' + radioArray[j] + '"]:checked').attr('data-responseBoxOfficial') : $('input[name="' + radioArray[j] + '"]:checked').attr('data-responseBox');
                 //Content of the message is the value of the radio button
                 var message = {
                     "prompt" : prompt,
-                    "thread" : radioArray[j],
+                    "thread" : isOfficial ? dataEntry.comboID(radioArray[j], 'Official') : radioArray[j],
                     "text" : val,
                     "responseBox": responseBox,
-                    "type": "radio"
+                    "type": "radio",
+                    "title": title
                 };
                 messages.push(message);
             }
