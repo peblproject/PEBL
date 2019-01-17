@@ -19,7 +19,7 @@ knowledgeNetwork.receiveMessage = function(event) {
     if (data === 'ready') {
         knowledgeNetwork.frameIsReady = true;
     } else if (obj && obj.message === "pullResource") {
-        knowledgeNetwork.pullResource(obj.target, obj.location, obj.url, obj.docType, obj.name, obj.externalURL);
+        knowledgeNetwork.pullResource(obj.target, obj.url, obj.docType, obj.name, obj.externalURL);
     } else if (obj && obj.message === "iframeUpdate") {
         $('.registryFrame').css('height', obj.height);
     } else if (data === 'registryBackToTop') {
@@ -27,12 +27,12 @@ knowledgeNetwork.receiveMessage = function(event) {
     }
 }
 
-knowledgeNetwork.pullResource = function(target, location, url, docType, name, externalURL)  {
+knowledgeNetwork.pullResource = function(target, url, docType, name, externalURL)  {
     knowledgeNetwork.getCurrentPrefix(function(currentPrefix, currentSection) {
         globalPebl.storage.getCurrentBook(function(book) {
             var data = {
                 target: target,
-                location: location,
+                location: currentSection,
                 card: currentPrefix,
                 book: book,
                 externalURL: externalURL,
