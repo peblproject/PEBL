@@ -336,7 +336,6 @@ function createDiscussionBox(element, chatButton) {
 
 function handleChatButtonClick(elem) {
     $('.lightBox').remove();
-    event.preventDefault();
     var element,
         question;
     if (elem)
