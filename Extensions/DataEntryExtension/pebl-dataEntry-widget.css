@@ -20,6 +20,21 @@
     clear: both;
 }
 
+.dataEntryCallout.editMode .unofficialView,
+.dataEntryCallout.editMode .officialView,
+.dataEntryCallout.unofficialViewMode .officialView,
+.dataEntryCallout.unofficialViewMode .edit,
+.dataEntryCallout.officialViewMode .unofficialView,
+.dataEntryCallout.officialViewMode .edit {
+    display: none;
+}
+
+.dataEntryCallout.editMode .dataEntryEditModeButton,
+.dataEntryCallout.unofficialViewMode .dataEntryViewModeButton,
+.dataEntryCallout.officialViewMode .dataEntryOfficialModeButton {
+    background: #5ac1b0;
+}
+
 .dataEntryCallout p {
     font-weight: bolder;
     font-style: italic;
@@ -54,8 +69,8 @@
     order: 2;
 }
 
-.dataEntryCallout form,
-.dataEntrySubFormCallout form {
+.dataEntryCallout form.fixScrolling,
+.dataEntrySubFormCallout form.fixScrolling {
     will-change: transform;
 }
 
@@ -187,7 +202,6 @@
 }
 
 .dataEntryCheckboxResponseContainer {
-    display: none;
     padding: 0.5em;
     min-width: 25%;
 }

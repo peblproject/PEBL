@@ -25,8 +25,8 @@ dataEntry.activeEntries = {};
 
 //Creates a textarea
 dataEntry.createTextEntry = function(id, form, activeEntry) {
-    var textResponses = $('<div id="' + dataEntry.comboID(id, "responseBox") + '" class="textResponses unofficialView" style="display:none;"><div><!--<a class="showMore">Show more...</a>--></div></div>');
-    var textOfficialResponses = $('<div id="' + dataEntry.comboID(id, "responseBoxOfficial") + '" class="textResponses officialView" style="display:none;"><div><!--<a class="showMore">Show more...</a>--></div></div>')
+    var textResponses = $('<div id="' + dataEntry.comboID(id, "responseBox") + '" class="textResponses unofficialView"><div><!--<a class="showMore">Show more...</a>--></div></div>');
+    var textOfficialResponses = $('<div id="' + dataEntry.comboID(id, "responseBoxOfficial") + '" class="textResponses officialView"><div><!--<a class="showMore">Show more...</a>--></div></div>')
     var textInput = $('<div class="textInput"><label id="textDetailText">' + form.prompt + '</label><textarea class="edit" data-responseBoxOfficial="' + dataEntry.comboID(id, "responseBoxOfficial") + '" data-responseBox="' + dataEntry.comboID(id, "responseBox") + '" data-prompt="' + form.prompt + '" required="required" oninvalid="globalPebl.extension.dataEntry.invalidForm();" id="' + id + '"></textarea></div>');
     var text = $('<div class="textBox"></div>');
     text.append(textInput);
@@ -100,13 +100,11 @@ dataEntry.createRadioEntry = function(id, form, activeEntry) {
                 var responseBox = document.createElement('div');
                 responseBox.classList.add('radioResponses', 'unofficialView');
                 responseBox.id = dataEntry.comboID(id, 'table_radio', k, l, 'responseBox');
-                responseBox.setAttribute('style', 'display: none');
 
                 //This is the official viewmode container
                 var responseBoxOfficial = document.createElement('div');
                 responseBoxOfficial.classList.add('radioResponses', 'officialView');
                 responseBoxOfficial.id = dataEntry.comboID(id, 'table_radio', k, l, 'responseBoxOfficial');
-                responseBoxOfficial.setAttribute('stlye', 'display: none');
 
                 td.appendChild(input);
                 td.appendChild(responseBox);
@@ -197,8 +195,8 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
 
             for (var j = 0; j < form.subForms.length; j++) {
                 if (form.subForms[j].type === 'text') {
-                    var textResponses = $('<div id="' + dataEntry.comboID(id, 'subForm', j, "responseBox") + '" class="textResponses unofficialView" style="display:none;"><div><!--<a class="showMore">Show more...</a>--></div></div>');
-                    var textInput = $('<div class="textInput" style="display:none;"><label id="textDetailText">' + form.subForms[j].prompt + '</label><textarea class="edit" data-responseBox="' + dataEntry.comboID(id, 'subForm', j, "responseBox") + '" data-prompt="' + form.subForms[j].prompt + '" required="required" oninvalid="globalPebl.extension.dataEntry.invalidForm();" id="' + dataEntry.comboID(id, 'subForm', j) + '"></textarea></div>');
+                    var textResponses = $('<div id="' + dataEntry.comboID(id, 'subForm', j, "responseBox") + '" class="textResponses unofficialView"><div><!--<a class="showMore">Show more...</a>--></div></div>');
+                    var textInput = $('<div class="textInput"><label id="textDetailText">' + form.subForms[j].prompt + '</label><textarea class="edit" data-responseBox="' + dataEntry.comboID(id, 'subForm', j, "responseBox") + '" data-prompt="' + form.subForms[j].prompt + '" required="required" oninvalid="globalPebl.extension.dataEntry.invalidForm();" id="' + dataEntry.comboID(id, 'subForm', j) + '"></textarea></div>');
                     var text = $('<div class="textBox"></div>');
                     text.append(textInput);
                     text.append(textResponses);
@@ -505,87 +503,27 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
 
             newDataEntry.officialMode = function() {
                 dataEntry.handleResize(function() {
-                    $(calloutDiv).find('.edit').each(function() {
-                        $(this).hide();
-                    });
-
-                    $(calloutDiv).find('.unofficialView').each(function() {
-                        $(this).hide();
-                    });
-
-                    $(calloutDiv).find('.officialView').each(function() {
-                        $(this).show();
-                    });
-
-                    $(calloutDiv).find('.dataEntryViewModeButton').each(function() {
-                        $(this).removeClass('active');
-                    });
-
-                    $(calloutDiv).find('.dataEntryEditModeButton').each(function() {
-                        $(this).removeClass('active');
-                    });
-
-                    $(calloutDiv).find('.dataEntryOfficialModeButton').each(function() {
-                        $(this).addClass('active');
-                    });
+                    $(calloutDiv).addClass('officialViewMode');
+                    $(calloutDiv).removeClass('unofficialViewMode');
+                    $(calloutDiv).removeClass('editMode');
                 });
             }
 
             //toggle viewMode for this dataEntry
             newDataEntry.viewMode = function() {
                 dataEntry.handleResize(function() {
-                    $(calloutDiv).find('.edit').each(function() {
-                        $(this).hide();
-                    });
-
-                    $(calloutDiv).find('.unofficialView').each(function() {
-                        $(this).show();
-                    });
-
-                    $(calloutDiv).find('.officialView').each(function() {
-                        $(this).hide();
-                    });
-
-                    $(calloutDiv).find('.dataEntryViewModeButton').each(function() {
-                        $(this).addClass('active');
-                    });
-
-                    $(calloutDiv).find('.dataEntryEditModeButton').each(function() {
-                        $(this).removeClass('active');
-                    });
-
-                    $(calloutDiv).find('.dataEntryOfficialModeButton').each(function() {
-                        $(this).removeClass('active');
-                    });
+                    $(calloutDiv).removeClass('officialViewMode');
+                    $(calloutDiv).addClass('unofficialViewMode');
+                    $(calloutDiv).removeClass('editMode');
                 });
             }
 
             //toggle editMode for this dataEntry
             newDataEntry.editMode = function() {
                 dataEntry.handleResize(function() {
-                    $(calloutDiv).find('.edit').each(function() {
-                        $(this).show();
-                    });
-
-                    $(calloutDiv).find('.unofficialView').each(function() {
-                        $(this).hide();
-                    });
-
-                    $(calloutDiv).find('.officialView').each(function() {
-                        $(this).hide();
-                    });
-
-                    $(calloutDiv).find('.dataEntryViewModeButton').each(function() {
-                        $(this).removeClass('active');
-                    });
-
-                    $(calloutDiv).find('.dataEntryEditModeButton').each(function() {
-                        $(this).addClass('active');
-                    });
-
-                    $(calloutDiv).find('.dataEntryOfficialModeButton').each(function() {
-                        $(this).removeClass('active');
-                    });
+                    $(calloutDiv).removeClass('officialViewMode');
+                    $(calloutDiv).removeClass('unofficialViewMode');
+                    $(calloutDiv).addClass('editMode');
                 });
             }
 
@@ -601,7 +539,7 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
             viewModeButton.appendChild(viewModeButtonIcon);
 
             var editModeButton = document.createElement('div');
-            editModeButton.classList.add('dataEntryEditModeButton', 'active');
+            editModeButton.classList.add('dataEntryEditModeButton');
             editModeButton.addEventListener('click', function() {
                 newDataEntry.editMode();
             });
@@ -646,9 +584,15 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
             insertLocation.remove();
 
 
+            //Do not add the will-change: transform fix when in safari, it doesn't need it and it breaks the rendering when not scrollable
+            if (!(!!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/)))
+                formElement.classList.add('fixScrolling');
+
             //Put the dataEntry into viewmode if specified.
             if (displayMode && displayMode === 'viewOnly')
                 newDataEntry.viewMode();
+            else
+                newDataEntry.editMode();
         });
     });
 }
