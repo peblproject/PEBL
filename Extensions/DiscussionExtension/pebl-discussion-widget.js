@@ -1,5 +1,9 @@
 var globalPebl = window.parent.PeBL;
 
+var discussion = {};
+
+globalPebl.extension.discussion = discussion;
+
 $(document).ready(function() {
     
     //Find inDesign shortcodes and replace with actual pebl shortcodes
@@ -20,15 +24,15 @@ $(document).ready(function() {
         var detailText = $(this)[0].hasAttribute('data-detailText') ? $(this)[0].getAttribute('data-detailText') : null;
         var insertID = $(this)[0].getAttribute('id');
         var sharing = $(this)[0].getAttribute('data-sharing') ? $(this)[0].getAttribute('data-sharing') : null;
-        createDiscussion(insertID, buttonText, prompt, id, detailText, sharing);
+        discussion.createDiscussion(insertID, buttonText, prompt, id, detailText, sharing);
     });
 
     $(document.body).on('click', '.chat', function(evt) {
-        handleChatButtonClick(evt.currentTarget);
+        discussion.handleChatButtonClick(evt.currentTarget);
     });
 });
 
-function createDiscussion(insertID, buttonText, question, id, detailText, sharing) {
+discussion.createDiscussion = function(insertID, buttonText, question, id, detailText, sharing) {
     var calloutDiv,
         chatButton,
         chatIcon,
@@ -62,7 +66,7 @@ function createDiscussion(insertID, buttonText, question, id, detailText, sharin
     insertLocation.remove();
 }
 
-function createDiscussionLightBox(question, chatButton) {
+discussion.createDiscussionLightBox = function(question, chatButton) {
     globalPebl.user.getUser(function(userProfile) {
         var private = false;
         var thread = chatButton.id;
@@ -70,14 +74,14 @@ function createDiscussionLightBox(question, chatButton) {
             var sharing = chatButton.getAttribute('data-sharing');
             if (sharing === 'team') {
                 if (window.parent.extensionDashboard && window.parent.extensionDashboard.programID) {
-                    thread = comboID(window.parent.extensionDashboard.programID, thread);
+                    thread = discussion.comboID(window.parent.extensionDashboard.programID, thread);
                 } else {
-                    thread = comboID(userProfile.identity, thread);
+                    thread = discussion.comboID(userProfile.identity, thread);
                     window.alert('This activity requires you to be part of a team. Consider relaunching this learnlet through the dashboard.');
                 }
             } else if (sharing === 'private') {
                 private = true;
-                thread = comboID(userProfile.identity, thread);
+                thread = discussion.comboID(userProfile.identity, thread);
             }
         }
 
@@ -155,10 +159,10 @@ function createDiscussionLightBox(question, chatButton) {
         discussionResponseBody.classList.add('discussionResponseBody');
 
         discussionSubmitButton.addEventListener('click', function() {
-            createThread(thread, $(discussionTextArea).val(), question, discussionTextArea, discussionResponseBody);
+            discussion.createThread(thread, $(discussionTextArea).val(), question, discussionTextArea, discussionResponseBody);
         });
 
-        var messageHandle = messageHandler(discussionResponseBody, thread, private);
+        var messageHandle = discussion.messageHandler(discussionResponseBody, thread, private);
         globalPebl.subscribeThread(thread, false, messageHandle);
 
         lightBoxContent.appendChild(discussionHeader);
@@ -173,9 +177,9 @@ function createDiscussionLightBox(question, chatButton) {
     });
 }
 
-function messageHandler(responseBox, thread, replyDisabled) {
+discussion.messageHandler = function(responseBox, thread, replyDisabled) {
     return function (newMessages) {
-        newMessages.sort(sortMessages);
+        newMessages.sort(discussion.sortMessages);
         globalPebl.user.getUser(function (userProfile) {
             if (userProfile) {
                 for (var i = 0; i < newMessages.length; i++) {
@@ -202,7 +206,7 @@ function messageHandler(responseBox, thread, replyDisabled) {
                             messageReplyButton.href = '#!';
                             messageReplyButton.addEventListener('click', function(event) {
                                 event.preventDefault();
-                                replyDiscussion(event);
+                                discussion.replyDiscussion(event);
                             });
                             messageContainer.append($(messageReplyButton));
                         }
@@ -228,7 +232,7 @@ function messageHandler(responseBox, thread, replyDisabled) {
                         // }
                         $(responseBox).prepend(messageContainer);
                         var thread = message.id;
-                        var messageHandle = messageHandler($(chatReplies), thread);
+                        var messageHandle = discussion.messageHandler($(chatReplies), thread);
                         globalPebl.subscribeThread(thread, false, messageHandle);
                     }
                 }
@@ -237,8 +241,8 @@ function messageHandler(responseBox, thread, replyDisabled) {
     };
 }
 
-function createThread(thread, input, prompt, textarea, responseBox) {
-    var messageHandle = messageHandler(responseBox, thread);
+discussion.createThread = function(thread, input, prompt, textarea, responseBox) {
+    var messageHandle = discussion.messageHandler(responseBox, thread);
     globalPebl.subscribeThread(thread, false, messageHandle);
     if (input.trim() != "") {
         var message = {
@@ -252,8 +256,8 @@ function createThread(thread, input, prompt, textarea, responseBox) {
     }
 }
 
-function createSubThread(thread, input, prompt, textarea, responseBox) {
-    var messageHandle = messageHandler(responseBox, thread);
+discussion.createSubThread = function(thread, input, prompt, textarea, responseBox) {
+    var messageHandle = discussion.messageHandler(responseBox, thread);
     globalPebl.subscribeThread(thread, false, messageHandle);
     if (input.trim() != "") {
         var message = {
@@ -269,7 +273,7 @@ function createSubThread(thread, input, prompt, textarea, responseBox) {
 
 
 
-function handleChatButtonClick(elem) {
+discussion.handleChatButtonClick = function(elem) {
     $('.lightBox').remove();
     var element,
         question;
@@ -281,14 +285,14 @@ function handleChatButtonClick(elem) {
     if (globalPebl) {
         if ((element[0].id != null) && (element[0].id != "")) {
             if (element.parent().children(".chatBox").length == 0) {
-                createDiscussionLightBox(question, element[0]);
+                discussion.createDiscussionLightBox(question, element[0]);
             }
         }
     }
 }
 
-function replyDiscussion(event) {
-    replyClose();
+discussion.replyDiscussion = function(event) {
+    discussion.replyClose();
     var parentPost = $(event.currentTarget).parent();
     var parentAuthor = parentPost.children('.userId');
     var parentMessage = parentPost.children('.message').text();
@@ -305,13 +309,13 @@ function replyDiscussion(event) {
     var replyCloseButton = document.createElement('button');
     replyCloseButton.classList.add('replyCloseButton');
     replyCloseButton.textContent = 'Cancel';
-    replyCloseButton.addEventListener('click', replyClose);
+    replyCloseButton.addEventListener('click', discussion.replyClose);
 
     var replySubmitButton = document.createElement('button');
     replySubmitButton.classList.add('replySubmitButton');
     replySubmitButton.textContent = 'Submit';
     replySubmitButton.addEventListener('click', function(event) {
-        replySubmit(parentId, $(replyTextArea).val(), parentMessage, $(replyTextArea), parentChatReplies);
+        discussion.replySubmit(parentId, $(replyTextArea).val(), parentMessage, $(replyTextArea), parentChatReplies);
     });
 
     replyContainer.appendChild(replyTextArea);
@@ -323,17 +327,17 @@ function replyDiscussion(event) {
 
 }
 
-function replyClose() {
+discussion.replyClose = function() {
     $('.replyContainer').remove();
     $('.messageReplyButton').show();
 }
 
-function replySubmit(thread, input, prompt, textarea, responseBox) {
-    createSubThread(thread, input, prompt, textarea, responseBox);
-    replyClose();
+discussion.replySubmit = function(thread, input, prompt, textarea, responseBox) {
+    discussion.createSubThread(thread, input, prompt, textarea, responseBox);
+    discussion.replyClose();
 }
 
-function sortMessages(a, b) {
+discussion.sortMessages = function(a, b) {
     var aDate = new Date(a.timestamp);
     var bDate = new Date(b.timestamp);
     var aTimestamp = aDate.getTime();
@@ -343,7 +347,7 @@ function sortMessages(a, b) {
 }
 
 //Combines any number of strings with _ between them
-comboID = function(...strings) {
+discussion.comboID = function(...strings) {
     var newID = null;
     for (var string of strings) {
         if (newID === null)
