@@ -389,7 +389,7 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                 } else {
                     //User did not use the dashboard to launch the learnlet
                     standalone = true;
-                    dataEntryID = dataEntry.comboID(userProfile.identity, id);
+                    dataEntryID = id;
                     window.alert('This activity requires you to be part of a team. Consider relaunching this learnlet through the dashboard.');
                 }
             } else if (sharing === 'private') {
