@@ -377,6 +377,7 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
     globalPebl.user.getUser(function(userProfile) {
         globalPebl.utils.getGroupMemberships(function(groups) {
             var dataEntryID;
+            var standalone = false;
             var learnletLevel = dataEntry.getLearnletLevel(document.body.id);
             var learnlet = dataEntry.getLearnlet(document.body.id);
             var learnletTitle = dataEntry.getLearnletTitle();
@@ -386,6 +387,8 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                 if (window.parent.extensionDashboard && window.parent.extensionDashboard.programID) {
                     dataEntryID = dataEntry.comboID(window.parent.extensionDashboard.programID, id);
                 } else {
+                    //User did not use the dashboard to launch the learnlet
+                    standalone = true;
                     dataEntryID = dataEntry.comboID(userProfile.identity, id);
                     window.alert('This activity requires you to be part of a team. Consider relaunching this learnlet through the dashboard.');
                 }
@@ -562,17 +565,19 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
 
 
             header.appendChild(viewModeButton);
-            //If viewmode is set to viewOnly, don;t show the edit mode button
-            if (!displayMode || displayMode !== 'viewOnly')
-                header.appendChild(editModeButton);
-            if (sharing === 'team')
-                header.appendChild(officialModeButton);
 
             $(formFooter).append(formSubmit);
-            //TODO: Add conditional to only append the the official button if user is team leader
-            if (sharing === 'team')
+
+            //If viewmode is set to viewOnly, don't show the edit mode button
+            if (!displayMode || displayMode !== 'viewOnly')
+                header.appendChild(editModeButton);
+
+            //If sharing is set to team and not in standalone mode, show the official submit / view buttons
+            if (sharing === 'team' && !standalone) {
+                header.appendChild(officialModeButton);
+                //TODO: Add conditional to only append the the official submit button if user is team leader
                 $(formFooter).append(formSubmitOfficial);
-            //formElement.appendChild(formFooter);
+            }
             
             calloutDiv.appendChild(formElement);
             calloutDiv.appendChild(header);
