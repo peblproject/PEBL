@@ -18,7 +18,7 @@ lowStakesQuiz.createLowStakesMultiChoiceQuestion = function(id, questionNumber, 
     var feedbackElement = document.createElement('div');
 
     questionNumberSpan.textContent = questionNumber + ".";
-    questionPrompt.textContent = prompt;
+    questionPrompt.innerHTML = prompt;
     //questionPromptContainer.appendChild(questionNumberSpan);
     questionPromptContainer.appendChild(questionPrompt);
     questionElement.appendChild(questionPromptContainer);
@@ -33,7 +33,7 @@ lowStakesQuiz.createLowStakesMultiChoiceQuestion = function(id, questionNumber, 
 
     for (var i = 0; i < choices.length; i++) {
         var listElement = document.createElement('li');
-        listElement.textContent = choices[i];
+        listElement.innerHTML = choices[i];
         if (choices[i] === answer) {
             listElement.classList.add('correct');
         }
