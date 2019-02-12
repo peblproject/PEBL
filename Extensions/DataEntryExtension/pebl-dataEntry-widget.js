@@ -30,7 +30,6 @@ dataEntry.createHeader = function(id, form, activeEntry) {
 
     var headerText = document.createElement('span');
 
-    //TODO: Not safe, but needed for bold words in prompt
     headerText.innerHTML = form.prompt;
     header.appendChild(headerText);
 
@@ -43,7 +42,7 @@ dataEntry.createMultipleChoiceEntry = function(id, form, activeEntry) {
 
     var multiChoicePrompt = document.createElement('span');
     multiChoicePrompt.classList.add('dataEntryMultiChoicePrompt');
-    multiChoicePrompt.textContent = form.prompt;
+    multiChoicePrompt.innerHTML = form.prompt;
 
     multiChoiceContainer.appendChild(multiChoicePrompt);
 
@@ -176,7 +175,7 @@ dataEntry.createRadioEntry = function(id, form, activeEntry) {
     if (form.prompt) {
         var tablePrompt = document.createElement('span');
         tablePrompt.classList.add('dataEntryTablePrompt');
-        tablePrompt.textContent = form.prompt;
+        tablePrompt.innerHTML = form.prompt;
 
         tableContainer.appendChild(tablePrompt);
     }
@@ -192,7 +191,7 @@ dataEntry.createRadioEntry = function(id, form, activeEntry) {
         var tableHeader = document.createElement('thead');
         for (var j = 0; j < form.tableHeader.length; j++) {
             var th = document.createElement('th');
-            th.textContent = form.tableHeader[j];
+            th.innerHTML = form.tableHeader[j];
             tableHeader.appendChild(th);
         }
         table.appendChild(tableHeader);
@@ -202,7 +201,7 @@ dataEntry.createRadioEntry = function(id, form, activeEntry) {
     for (var k = 0; k < form.tableRows.length; k++) {
         var tr = document.createElement('tr');
         var th = document.createElement('th');
-        th.textContent = form.tableRows[k].rowHeader;
+        th.innerHTML = form.tableRows[k].rowHeader;
         tr.appendChild(th);
         //Add each input thats part of that row
         for (var l = 0; l < form.tableRows[k].inputs.length; l++) {
@@ -310,7 +309,7 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
 
     //The text to the right of the checkbox
     var textSpan = document.createElement('span');
-    textSpan.textContent = form.prompt;
+    textSpan.innerHTML = form.prompt;
 
     //If specified, add an additional text input after the text, which gets appended to the full text.
     if (form.input) {
