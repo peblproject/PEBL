@@ -76,7 +76,7 @@ discussion.createDiscussionLightBox = function(question, chatButton) {
                 if (window.parent.extensionDashboard && window.parent.extensionDashboard.programID) {
                     thread = discussion.comboID(window.parent.extensionDashboard.programID, thread);
                 } else {
-                    thread = discussion.comboID(userProfile.identity, thread);
+                    //Leave the thread as is
                     window.alert('This activity requires you to be part of a team. Consider relaunching this learnlet through the dashboard.');
                 }
             } else if (sharing === 'private') {
