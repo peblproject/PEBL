@@ -248,9 +248,68 @@
 .tocDeleteConfirmDialogOverlay {
     position: fixed;
     width: auto;
+    top: 0;
     left: 0;
     right: 0;
     height: 100%;
     z-index: 15000;
     background-color: rgba(0, 0, 0, 0.4);
+}
+
+.responsive-wrapper {
+    position: relative;
+    height: 100%;
+    -webkit-overflow-scrolling: touch;
+    overflow: auto;
+}
+
+.dynamicPageHeader {
+    position: fixed;
+    width: 100%;
+    left: 0;
+    top: 50px;
+    background-color: rgb(228, 228, 228);
+    height: 50px;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
+    box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
+}
+
+.dynamicPageHeaderLink {
+    position: relative;
+    left: 25px;
+    top: 15px;
+    text-decoration: none;
+    color: blue;
+    display: block;
+    overflow: hidden;
+    width: 85%;
+}
+
+.dynamicPage {
+    position: fixed;
+    width: 100%;
+    left: 0;
+    top: 100px;
+    bottom: 0;
+    background-color: white;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
+    box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
+}
+
+.dynamicPageFrame {
+    position: relative;
+    height: 99%;
+    border: none;
+    width: 100%;
+    margin: 0;
+}
+
+i.dynamicPageCloseButton {
+    cursor: pointer;
+    position: fixed;
+    top: 51px;
+    right: 20px;
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 3rem;
+    font-weight: bold;
 }

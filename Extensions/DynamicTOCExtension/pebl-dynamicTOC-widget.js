@@ -6,6 +6,10 @@ var dynamicTOC = {};
 
 globalPebl.extension.dynamicTOC = dynamicTOC;
 
+$(document).ready(function() {
+    dynamicTOC.openDocumentAtDestination();
+});
+
 dynamicTOC.toc_sort = function(a, b) {
 	var parts = {
         a: a.split('-'),
@@ -29,22 +33,113 @@ dynamicTOC.toc_sort = function(a, b) {
     return parseFloat(a_compare) - parseFloat(b_compare);
 };
 
+dynamicTOC.sendDocumentToDestination = function(url, docType, externalURL, title) {
+    var obj = {
+        'url': url,
+        'docType': docType,
+        'externalURL': externalURL,
+        'title': title
+    };
+
+    localStorage.setItem('documentToOpen', JSON.stringify(obj));
+}
+
+dynamicTOC.openDocumentAtDestination = function() {
+    var tryOpenDocumentAtDestination = setInterval(function() {
+        if (globalPebl)
+            if (localStorage.getItem('documentToOpen') !== null) {
+                var documentObj = JSON.parse(localStorage.getItem('documentToOpen'));
+                dynamicTOC.createDynamicPage(documentObj.url, documentObj.docType, documentObj.externalURL, documentObj.title);
+                localStorage.removeItem('documentToOpen');
+            }
+            clearInterval(tryOpenDocumentAtDestination);
+    }, 10);
+}
+
+dynamicTOC.handleDynamicPageHeaderLinkClick = function(event) {
+    event.preventDefault();
+    //If in iOS let the app handle opening in a new window ()
+    window.open($(event.currentTarget).attr('href'), '_blank');
+
+}
+
+dynamicTOC.createDynamicPage = function(url, docType, externalURL, title) {
+    dynamicTOC.closeDynamicPage();
+
+    var dynamicPageHeader = document.createElement('div');
+    dynamicPageHeader.id = 'dynamicPageHeader';
+    dynamicPageHeader.classList.add('dynamicPageHeader');
+
+    var dynamicPageHeaderLink = document.createElement('a');
+    dynamicPageHeaderLink.id = 'dynamicPageHeaderLink';
+    dynamicPageHeaderLink.classList.add('dynamicPageHeaderLink');
+    dynamicPageHeaderLink.href = externalURL;
+    dynamicPageHeaderLink.innerHTML = externalURL;
+    dynamicPageHeaderLink.addEventListener('click', function() {
+        dynamicTOC.handleDynamicPageHeaderLinkClick(event);
+    });
+
+    dynamicPageHeader.appendChild(dynamicPageHeaderLink);
+
+
+    var dynamicPageCloseButton = document.createElement('i');
+    dynamicPageCloseButton.id = 'dynamicPageCloseButton';
+    dynamicPageCloseButton.classList.add('dynamicPageCloseButton', 'fa', 'fa-times');
+    dynamicPageCloseButton.addEventListener('click', function() {
+        dynamicTOC.closeDynamicPage();
+    });
+
+    var dynamicPage = document.createElement('div');
+    dynamicPage.id = 'dynamicPage';
+    dynamicPage.classList.add('dynamicPage');
+    dynamicPage.setAttribute('resource-id', url);
+    dynamicPage.setAttribute('title', title);
+
+    var dynamicPageWrapper = document.createElement('div');
+    dynamicPageWrapper.classList.add('responsive-wrapper');
+
+    var dynamicPageFrame = document.createElement('iframe');
+    dynamicPageFrame.id = 'dynamicPageFrame';
+    dynamicPageFrame.classList.add('dynamicPageFrame');
+
+    dynamicPageWrapper.appendChild(dynamicPageFrame);
+
+    if (docType === 'html') {
+        dynamicPageFrame.src = externalURL;
+    } else if (docType === 'pdf') {
+        // dynamicPageFrame.src = 'pdfjs-1.8.188-dist/web/viewer.html';
+        // dynamicPageFrame.onload = function() {
+        //  var frame = top.frames[0].document.getElementById('dynamicPageFrame');
+        //  frame.contentWindow.PDFViewerApplication.open(arrayBuffer);
+        // }
+        dynamicPageFrame.src = 'http://docs.google.com/gview?url=' + externalURL + '&embedded=true';
+    }
+
+    dynamicPage.appendChild(dynamicPageWrapper);
+    document.body.appendChild(dynamicPageHeader);
+    document.body.appendChild(dynamicPage);
+    document.body.appendChild(dynamicPageCloseButton);
+}
+
+dynamicTOC.closeDynamicPage = function() {
+    $('#dynamicPageHeader').remove();
+    $('#dynamicPageCloseButton').remove();
+    $('#dynamicPage').remove();
+}
+
 dynamicTOC.handleTocPageTextClick = function(event) {
     event.preventDefault();
     //If its a dynamic document
     if ($(event.currentTarget).attr('url')) {
         if ($(event.currentTarget).attr('tocLink')) {
-            sendDocumentToDestination($(event.currentTarget).attr('url'), $(event.currentTarget).attr('docType'), $(event.currentTarget).attr('externalURL'), $(event.currentTarget).text());
-            if ($('body')[0].baseURI.substr(1) === $(event.currentTarget).attr('href')) {
-                handleCloseButtonClick();
-                openDocumentAtDestination();
-            } else {
-                globalReadium.reader.openContentUrl($(event.currentTarget).attr('href'));
-            }
+            dynamicTOC.sendDocumentToDestination($(event.currentTarget).attr('url'), $(event.currentTarget).attr('docType'), $(event.currentTarget).attr('externalURL'), $(event.currentTarget).text());
+            $('#tocContainer').remove();
+            globalReadium.reader.openContentUrl($(event.currentTarget).attr('href'));
+            dynamicTOC.openDocumentAtDestination();
         } else {
-            createDynamicPage($(event.currentTarget).attr('url'), $(event.currentTarget).attr('docType'), $(event.currentTarget).attr('externalURL'), $(event.currentTarget).text()); 
-            handleCloseButtonClick();
-            hideAddedResources();
+            dynamicTOC.createDynamicPage($(event.currentTarget).attr('url'), $(event.currentTarget).attr('docType'), $(event.currentTarget).attr('externalURL'), $(event.currentTarget).text()); 
+            $('#tocContainer').remove();
+            //hideAddedResources();
         } 
     } else {
         globalReadium.reader.openContentUrl($(event.currentTarget).attr('href'));
