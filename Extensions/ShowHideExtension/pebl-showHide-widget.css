@@ -6,7 +6,6 @@
     text-shadow: 1px 1px 3px #666666;
     color: #ffffff;
     background: #077ebc;
-    padding: 10px 20px 10px 20px;
     text-decoration: none;
     margin-bottom: 1em;
     border: none;
@@ -20,6 +19,13 @@
     overflow: hidden; /* fix for Firefox */
     break-inside: avoid-column;
     -webkit-column-break-inside: avoid;
+}
+
+.showHideButton.text {
+    padding: 10px 20px 10px 20px;
+    height: auto;
+    width: auto;
+    font-size: 1em;
 }
 
 .showHideButton:hover {

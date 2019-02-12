@@ -7,26 +7,35 @@ globalPebl.extension.showHide = showHide;
 
 showHide.toggleVisibility = function(event, programInvoked) {
     console.log(event);
-    var id = event.currentTarget.otherId,
-        buttonText1 = event.currentTarget.buttonText1,
-        buttonText2 = event.currentTarget.buttonText2,
+    var id = event.currentTarget.getAttribute('otherId'),
+        buttonText1 = event.currentTarget.getAttribute('buttonText1'),
+        buttonText2 = event.currentTarget.getAttribute('buttonText2'),
         state;
 
+    console.log(event.currentTarget);
 
 
     if ($('#' + id + ':visible').length == 0) {
         // var res = str.replace(buttonText1, buttonText2);
         // $('#' + id + 'Btn').html(res);
         $('#' + id + 'Btn')[0].classList.remove('hiding');
-        $('#' + id + 'Btn').children('i').first()[0].classList.remove('fa-plus');
-        $('#' + id + 'Btn').children('i').first()[0].classList.add('fa-minus');
+        if (buttonText2 != null) {
+            $('#' + id + 'Btn').text(buttonText2);
+        } else {
+            $('#' + id + 'Btn').children('i').first()[0].classList.remove('fa-plus');
+            $('#' + id + 'Btn').children('i').first()[0].classList.add('fa-minus');
+        }
     state = "showing";
     } else {
         // var res = str.replace(buttonText2, buttonText1);
         // $('#' + id + 'Btn').html(res);
         $('#' + id + 'Btn')[0].classList.add('hiding');
-        $('#' + id + 'Btn').children('i').first()[0].classList.add('fa-plus');
-        $('#' + id + 'Btn').children('i').first()[0].classList.remove('fa-minus');
+        if (buttonText1 != null) {
+            $('#' + id + 'Btn').text(buttonText1);
+        } else {
+            $('#' + id + 'Btn').children('i').first()[0].classList.add('fa-plus');
+            $('#' + id + 'Btn').children('i').first()[0].classList.remove('fa-minus');
+        }
     state = "hiding";
     }
 
@@ -79,20 +88,27 @@ showHide.createShowHide = function(insertID, buttonText1, buttonText2, id, isInl
 
     button = document.createElement('button');
     button.id = id + 'Btn';
-    button.otherId = id;
+    button.setAttribute('otherId', id);
     button.classList.add('showHideButton');
     button.classList.add('hiding');
     if (isInline == true) {
         button.classList.add('inline');
     }
-    button.buttonText1 = buttonText1;
-    button.buttonText2 = buttonText2;
+    button.setAttribute('buttonText1', buttonText1);
+    button.setAttribute('buttonText2', buttonText2);
     button.addEventListener('click', showHide.toggleVisibility);
 
-    buttonIcon = document.createElement('i');
-    buttonIcon.classList.add('fa', 'fa-plus');
-    button.appendChild(buttonIcon);
-    //button.innerHTML = buttonText1;
+    if (buttonText1 != null && buttonText2 != null) {
+        button.classList.add('text');
+        button.textContent = buttonText1;
+    }
+    else {
+        buttonIcon = document.createElement('i');
+        buttonIcon.classList.add('fa', 'fa-plus');
+        button.appendChild(buttonIcon);
+    }
+    
+    
 
     if (cassMapping) {
         button.setAttribute('data-cassMapping', cassMapping);
