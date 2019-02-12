@@ -1,8 +1,8 @@
 .dataEntryCallout, .dataEntrySubFormCallout {
-    background-color: rgb(240, 240, 240);
-    border-left: 10px solid rgb(0, 168, 142);
-    border-right: 10px solid rgb(0, 168, 142);
-    width: calc(100% - 20px);
+    background-color: white;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    width: calc(100% - 2px);
     margin: 0;
     clear: both;
     max-height: calc(100vh - 105px);
@@ -20,19 +20,35 @@
     clear: both;
 }
 
-.dataEntryCallout.editMode .unofficialView,
-.dataEntryCallout.editMode .officialView,
-.dataEntryCallout.unofficialViewMode .officialView,
-.dataEntryCallout.unofficialViewMode .edit,
-.dataEntryCallout.officialViewMode .unofficialView,
-.dataEntryCallout.officialViewMode .edit {
+.dataEntryCallout .unofficialView,
+.dataEntryCallout .officialView,
+.dataEntryCallout .privateView,
+.dataEntryCallout .teamView,
+.dataEntryCallout .classView,
+.dataEntryCallout .edit {
     display: none;
+}
+
+.dataEntryCallout.privateViewMode .privateView,
+.dataEntryCallout.teamViewMode .teamView,
+.dataEntryCallout.classViewMode .classView,
+.dataEntryCallout.unofficialViewMode .unofficialView,
+.dataEntryCallout.officialViewMode .officialView,
+.dataEntryCallout.editMode .edit {
+    display: block;
 }
 
 .dataEntryCallout.editMode .dataEntryEditModeButton,
 .dataEntryCallout.unofficialViewMode .dataEntryViewModeButton,
-.dataEntryCallout.officialViewMode .dataEntryOfficialModeButton {
-    background: #5ac1b0;
+.dataEntryCallout.officialViewMode .dataEntryOfficialModeButton,
+.dataEntryCallout.privateViewMode .dataEntryPrivateViewModeButton,
+.dataEntryCallout.teamViewMode .dataEntryTeamViewModeButton,
+.dataEntryCallout.classViewMode .dataEntryClassViewModeButton {
+    background: white;
+    color: #000000;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #eee;
+    font-weight: bold;
 }
 
 .dataEntryCallout p {
@@ -80,11 +96,14 @@
 
 .dataEntryCallout form > .textBox,
 .dataEntryCallout form > .dataEntryTableContainer,
-.dataEntryCallout form > p,
-.dataEntrySubFormCallout form > .textBox,
-.dataEntrySubFormCallout form > p {
+.dataEntrySubFormCallout form > .textBox {
     padding-right: 1em;
     padding-left: 1em;
+}
+
+.dataEntryCallout form > p,
+.dataEntrySubFormCallout form > p {
+    padding: 1em;
 }
 
 .dataEntryFooter {
@@ -134,14 +153,25 @@
     font-weight: normal;
     font-size: 14px;
     border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
     clear: both;
+}
+
+.dataEntryTextResponseNoData {
+    margin-top: 1em !important;
+    margin-left: 2em !important;
+    margin-bottom: 1em !important;
+}
+
+.textResponses > .response:not([style*="display: none"]) ~ .dataEntryTextResponseNoData {
+    display: none;
 }
 
 .textResponses .response {
     position: relative;
     padding: .8em 1em .5em 3em;
     margin: 0;
-    background: none;
+    background: #eee;
     border-bottom: 1px solid #ddd;
 }
 
@@ -183,8 +213,9 @@
 .dataEntryCheckboxContainer {
     display: flex;
     align-items: center;
-    background: rgba(0, 168, 142, 0.2);
-    margin-bottom: 5px;
+    border-top: 1px solid #ddd;
+/*    background: rgba(0, 168, 142, 0.2);*/
+/*    margin-bottom: 5px;*/
 }
 
 .dataEntryCheckboxContainer > span {
@@ -217,4 +248,41 @@
     left: 0;
     max-height: calc(100% - 70px);
     overflow: auto;
+}
+
+.pollingWindow {
+    background: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: 1em;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+
+.pollingWindow > .dataEntryCallout {
+    width: 100% !important;
+}
+
+.pollingWindow form > p {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.pollingWindow .dataEntryMultiChoiceButton {
+    font-size: 1em;
+    font-weight: bold;
+    padding: 1em;
+}
+
+.pollingWindow .dataEntryFormSubmit {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.pollingWindow .dataEntryMultiChoicePrompt {
+    font-size: 1.2em;
 }
