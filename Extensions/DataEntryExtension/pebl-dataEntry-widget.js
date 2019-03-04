@@ -25,8 +25,15 @@ dataEntry.invalidFormActive = false;
 dataEntry.activeEntries = {};
 
 dataEntry.createHeader = function(id, form, activeEntry) {
+    var cssClass = '';
+    if (form.cssClass) {
+        cssClass = form.cssClass;
+    }
+
     var header = document.createElement('div');
     header.classList.add('dataEntryHeaderEntry');
+    if (cssClass.length > 1)
+        header.classList.add(cssClass);
 
     var headerText = document.createElement('span');
 
@@ -36,7 +43,68 @@ dataEntry.createHeader = function(id, form, activeEntry) {
     return header;
 }
 
-dataEntry.createMultipleChoiceEntry = function(id, form, activeEntry) {
+dataEntry.createDropdownEntry = function(id, form, activeEntry) {
+    var dropdownContainer = document.createElement('div');
+    dropdownContainer.classList.add('dataEntryDropdownContainer');
+
+    var dropdownPrompt = document.createElement('span');
+    dropdownPrompt.classList.add('dataEntryDropdownPrompt');
+    dropdownPrompt.innerHTML = form.prompt;
+
+    dropdownContainer.appendChild(dropdownPrompt);
+
+    var dropdownInput = document.createElement('select');
+    dropdownInput.classList.add('edit');
+    dropdownInput.id = id;
+    dropdownInput.setAttribute('data-prompt', form.prompt);
+    dropdownInput.setAttribute('data-responseBox', dataEntry.comboID(id, 'responseBox'));
+    dropdownInput.setAttribute('data-responseBoxOfficial', dataEntry.comboID(id, 'responseBoxOfficial'));
+    dropdownInput.setAttribute('data-responseBoxPrivate', dataEntry.comboID(id, 'responseBoxPrivate'));
+    dropdownInput.setAttribute('data-responseBoxTeam', dataEntry.comboID(id, 'responseBoxTeam'));
+    dropdownInput.setAttribute('data-responseBoxClass', dataEntry.comboID(id, 'responseBoxClass'));
+
+    for (var option of form.options) {
+        var optionElem = document.createElement('option');
+        optionElem.value = option;
+        optionElem.textContent = option;
+        optionElem.title = option;
+        dropdownInput.appendChild(optionElem);
+    }
+
+    dropdownContainer.appendChild(dropdownInput);
+
+    var dropdownResponses = document.createElement('div');
+    dropdownResponses.classList.add('textResponses', 'unofficialView');
+    dropdownResponses.id = dataEntry.comboID(id, 'responseBox');
+
+    var dropdownOfficialResponses = document.createElement('div');
+    dropdownOfficialResponses.classList.add('textResponses', 'officialView');
+    dropdownOfficialResponses.id = dataEntry.comboID(id, 'responseBoxOfficial');
+
+    var dropdownPrivateResponses = document.createElement('div');
+    dropdownPrivateResponses.classList.add('textResponses', 'privateView');
+    dropdownPrivateResponses.id = dataEntry.comboID(id, 'responseBoxPrivate');
+
+    var dropdownTeamResponses = document.createElement('div');
+    dropdownTeamResponses.classList.add('textResponses', 'teamView');
+    dropdownTeamResponses.id = dataEntry.comboID(id, 'responseBoxTeam');
+
+    var dropdownClassResponses = document.createElement('div');
+    dropdownClassResponses.classList.add('textResponses', 'classView');
+    dropdownClassResponses.id = dataEntry.comboID(id, 'responseBoxClass');
+
+    dropdownContainer.appendChild(dropdownResponses);
+    dropdownContainer.appendChild(dropdownOfficialResponses);
+    dropdownContainer.appendChild(dropdownPrivateResponses);
+    dropdownContainer.appendChild(dropdownTeamResponses);
+    dropdownContainer.appendChild(dropdownClassResponses);
+
+    activeEntry.dropdowns.add(id);
+
+    return dropdownContainer;
+}
+
+dataEntry.createMultipleChoiceEntry = function(id, form, activeEntry, useGraphView) {
     var multiChoiceContainer = document.createElement('div');
     multiChoiceContainer.classList.add('dataEntryMultiChoiceContainer');
 
@@ -54,6 +122,22 @@ dataEntry.createMultipleChoiceEntry = function(id, form, activeEntry) {
     multiChoiceResponseContainer.classList.add('dataEntryMultiChoiceResponseContainer');
     multiChoiceResponseContainer.id = dataEntry.comboID(id, 'responseBox');
 
+    var multiChoiceTeamResponseContainerGraph = document.createElement('div');
+    multiChoiceTeamResponseContainerGraph.classList.add('dataEntryMultiChoiceResponseContainer');
+    multiChoiceTeamResponseContainerGraph.id = dataEntry.comboID(id, 'responseBoxTeam', 'graph');
+
+    var multiChoiceClassResponseContainerGraph = document.createElement('div');
+    multiChoiceClassResponseContainerGraph.classList.add('dataEntryMultiChoiceResponseContainer');
+    multiChoiceClassResponseContainerGraph.id = dataEntry.comboID(id, 'responseBoxClass', 'graph');
+
+    var multiChoiceTeamResponseContainer = document.createElement('div');
+    multiChoiceTeamResponseContainer.classList.add('textResponses', 'teamView');
+    multiChoiceTeamResponseContainer.id = dataEntry.comboID(id, 'responseBoxTeam');
+
+    var multiChoiceClassResponseContainer = document.createElement('div');
+    multiChoiceClassResponseContainer.classList.add('textResponses', 'classView');
+    multiChoiceClassResponseContainer.id = dataEntry.comboID(id, 'responseBoxClass');
+
     for (var i = 0; i < form.responses.length; i++) {
         var multiChoiceButton = document.createElement('button');
         multiChoiceButton.classList.add('dataEntryMultiChoiceButton', 'edit');
@@ -61,6 +145,15 @@ dataEntry.createMultipleChoiceEntry = function(id, form, activeEntry) {
         multiChoiceButton.setAttribute('data-prompt', form.prompt);
         multiChoiceButton.setAttribute('data-index', i);
         multiChoiceButton.setAttribute('data-responseBox', dataEntry.comboID(id, 'responseBox'));
+        multiChoiceButton.setAttribute('data-responseBoxTeamGraph', dataEntry.comboID(id, 'responseBoxTeam', 'graph'));
+        multiChoiceButton.setAttribute('data-responseBoxClassGraph', dataEntry.comboID(id, 'responseBoxClass', 'graph'));
+        multiChoiceButton.setAttribute('data-responseBoxTeam', dataEntry.comboID(id, 'responseBoxTeam'));
+        multiChoiceButton.setAttribute('data-responseBoxClass', dataEntry.comboID(id, 'responseBoxClass'));
+        if (useGraphView && useGraphView === 'true') {
+            multiChoiceButton.setAttribute('data-useGraphView', 'true');
+        } else {
+            multiChoiceButton.setAttribute('data-useGraphView', 'false');
+        }
         multiChoiceButton.addEventListener('click', function() {
             $(multiChoiceButtonsContainer).find('.dataEntryMultiChoiceButton').each(function() {
                 $(this).removeClass('active');
@@ -70,68 +163,124 @@ dataEntry.createMultipleChoiceEntry = function(id, form, activeEntry) {
 
         multiChoiceButtonsContainer.appendChild(multiChoiceButton);
 
-        var multiChoiceResponse = document.createElement('div');
-        multiChoiceResponse.classList.add('unofficialView', 'dataEntryMultiChoiceResponse');
-        multiChoiceResponse.setAttribute('data-index', i);
+        if (useGraphView && useGraphView === 'true') {
+            var multiChoiceResponseTeam = document.createElement('div');
+            multiChoiceResponseTeam.classList.add('teamView', 'dataEntryMultiChoiceResponse');
+            multiChoiceResponseTeam.setAttribute('data-index', i);
 
-        var multiChoiceResponseContent = document.createElement('div');
-        multiChoiceResponseContent.classList.add('dataEntryMultiChoiceResponseContent');
+            var multiChoiceResponseContentTeam = document.createElement('div');
+            multiChoiceResponseContentTeam.classList.add('dataEntryMultiChoiceResponseContent');
 
-        var multiChoiceResponseTextContainer = document.createElement('div');
-        multiChoiceResponseTextContainer.classList.add('dataEntryMultiChoiceResponseTextContainer');
+            var multiChoiceResponseTextContainerTeam = document.createElement('div');
+            multiChoiceResponseTextContainerTeam.classList.add('dataEntryMultiChoiceResponseTextContainer');
 
-        var multiChoiceResponseText = document.createElement('span');
-        multiChoiceResponseText.textContent = form.responses[i];
+            var multiChoiceResponseTextTeam = document.createElement('span');
+            multiChoiceResponseTextTeam.textContent = form.responses[i];
 
-        multiChoiceResponseTextContainer.appendChild(multiChoiceResponseText);
+            multiChoiceResponseTextContainerTeam.appendChild(multiChoiceResponseTextTeam);
 
-        var multiChoiceResponseGraphContainer = document.createElement('div');
-        multiChoiceResponseGraphContainer.classList.add('dataEntryMultiChoiceResponseGraphContainer');
+            var multiChoiceResponseGraphContainerTeam = document.createElement('div');
+            multiChoiceResponseGraphContainerTeam.classList.add('dataEntryMultiChoiceResponseGraphContainer');
 
-        var multiChoiceResponseGraphParentBar = document.createElement('div');
-        multiChoiceResponseGraphParentBar.classList.add('dataEntryMultiChoiceResponseGraphParentBar');
+            var multiChoiceResponseGraphParentBarTeam = document.createElement('div');
+            multiChoiceResponseGraphParentBarTeam.classList.add('dataEntryMultiChoiceResponseGraphParentBar');
 
-        var multiChoiceResponseGraphFillBar = document.createElement('div');
-        multiChoiceResponseGraphFillBar.classList.add('dataEntryMultiChoiceResponseGraphFillBar');
+            var multiChoiceResponseGraphFillBarTeam = document.createElement('div');
+            multiChoiceResponseGraphFillBarTeam.classList.add('dataEntryMultiChoiceResponseGraphFillBar');
 
-        multiChoiceResponseGraphParentBar.appendChild(multiChoiceResponseGraphFillBar);
+            multiChoiceResponseGraphParentBarTeam.appendChild(multiChoiceResponseGraphFillBarTeam);
 
-        multiChoiceResponseGraphContainer.appendChild(multiChoiceResponseGraphParentBar);
+            multiChoiceResponseGraphContainerTeam.appendChild(multiChoiceResponseGraphParentBarTeam);
 
 
-        var multiChoiceResponseCount = document.createElement('span');
-        multiChoiceResponseCount.classList.add('dataEntryMultiChoiceResponseCount');
-
+            var multiChoiceResponseCountTeam = document.createElement('span');
+            multiChoiceResponseCountTeam.classList.add('dataEntryMultiChoiceResponseCount');
         
+            multiChoiceResponseContentTeam.appendChild(multiChoiceResponseTextContainerTeam);
+            multiChoiceResponseContentTeam.appendChild(multiChoiceResponseGraphContainerTeam);
+            multiChoiceResponseContentTeam.appendChild(multiChoiceResponseCountTeam);
 
-        multiChoiceResponseContent.appendChild(multiChoiceResponseTextContainer);
-        multiChoiceResponseContent.appendChild(multiChoiceResponseGraphContainer);
-        multiChoiceResponseContent.appendChild(multiChoiceResponseCount);
+            multiChoiceResponseTeam.appendChild(multiChoiceResponseContentTeam);
 
-        multiChoiceResponse.appendChild(multiChoiceResponseContent);
+            multiChoiceTeamResponseContainerGraph.appendChild(multiChoiceResponseTeam);
 
-        multiChoiceResponseContainer.appendChild(multiChoiceResponse);
+            // ---------------------------------
+
+            var multiChoiceResponseClass = document.createElement('div');
+            multiChoiceResponseClass.classList.add('classView', 'dataEntryMultiChoiceResponse');
+            multiChoiceResponseClass.setAttribute('data-index', i);
+
+            var multiChoiceResponseContentClass = document.createElement('div');
+            multiChoiceResponseContentClass.classList.add('dataEntryMultiChoiceResponseContent');
+
+            var multiChoiceResponseTextContainerClass = document.createElement('div');
+            multiChoiceResponseTextContainerClass.classList.add('dataEntryMultiChoiceResponseTextContainer');
+
+            var multiChoiceResponseTextClass = document.createElement('span');
+            multiChoiceResponseTextClass.textContent = form.responses[i];
+
+            multiChoiceResponseTextContainerClass.appendChild(multiChoiceResponseTextClass);
+
+            var multiChoiceResponseGraphContainerClass = document.createElement('div');
+            multiChoiceResponseGraphContainerClass.classList.add('dataEntryMultiChoiceResponseGraphContainer');
+
+            var multiChoiceResponseGraphParentBarClass = document.createElement('div');
+            multiChoiceResponseGraphParentBarClass.classList.add('dataEntryMultiChoiceResponseGraphParentBar');
+
+            var multiChoiceResponseGraphFillBarClass = document.createElement('div');
+            multiChoiceResponseGraphFillBarClass.classList.add('dataEntryMultiChoiceResponseGraphFillBar');
+
+            multiChoiceResponseGraphParentBarClass.appendChild(multiChoiceResponseGraphFillBarClass);
+
+            multiChoiceResponseGraphContainerClass.appendChild(multiChoiceResponseGraphParentBarClass);
+
+
+            var multiChoiceResponseCountClass = document.createElement('span');
+            multiChoiceResponseCountClass.classList.add('dataEntryMultiChoiceResponseCount');
+        
+            multiChoiceResponseContentClass.appendChild(multiChoiceResponseTextContainerClass);
+            multiChoiceResponseContentClass.appendChild(multiChoiceResponseGraphContainerClass);
+            multiChoiceResponseContentClass.appendChild(multiChoiceResponseCountClass);
+
+            multiChoiceResponseClass.appendChild(multiChoiceResponseContentClass);
+
+            multiChoiceClassResponseContainerGraph.appendChild(multiChoiceResponseClass);
+        }
     }
 
     multiChoiceContainer.appendChild(multiChoicePrompt);
     multiChoiceContainer.appendChild(multiChoiceButtonsContainer);
     multiChoiceContainer.appendChild(multiChoiceResponseContainer);
+    multiChoiceContainer.appendChild(multiChoiceTeamResponseContainerGraph);
+    multiChoiceContainer.appendChild(multiChoiceClassResponseContainerGraph);
+    multiChoiceContainer.appendChild(multiChoiceTeamResponseContainer);
+    multiChoiceContainer.appendChild(multiChoiceClassResponseContainer);
 
     activeEntry.multiChoices.add(id);
 
-    var pollingInterval = function() {
-        console.log('updating count');
-        var totalCount = $(multiChoiceResponseContainer).find('.dataEntryMultiChoicePlaceholder').length;
-        $(multiChoiceResponseContainer).children().each(function() {
-            var count = $(this).children('.dataEntryMultiChoicePlaceholder').length;
-            $(this).find('.dataEntryMultiChoiceResponseCount').first().text(count);
-            var width = count > 0 ? (count / totalCount) * 100 + '%' : '0%';
-            $(this).find('.dataEntryMultiChoiceResponseGraphFillBar').first().css('width', width);
-        });
-    }
+    if (useGraphView && useGraphView === 'true') {
+        var pollingInterval = function() {
+            console.log('updating count');
+            var totalCountTeam = $(multiChoiceTeamResponseContainerGraph).find('.dataEntryMultiChoicePlaceholder').length;
+            $(multiChoiceTeamResponseContainerGraph).children().each(function() {
+                var count = $(this).children('.dataEntryMultiChoicePlaceholder').length;
+                $(this).find('.dataEntryMultiChoiceResponseCount').first().text(count);
+                var width = count > 0 ? (count / totalCountTeam) * 100 + '%' : '0%';
+                $(this).find('.dataEntryMultiChoiceResponseGraphFillBar').first().css('width', width);
+            });
 
-    //TODO: Do this better..
-    window.updatePollingCount = setInterval(pollingInterval, 2000);
+            var totalCountClass = $(multiChoiceClassResponseContainerGraph).find('.dataEntryMultiChoicePlaceholder').length;
+            $(multiChoiceClassResponseContainerGraph).children().each(function() {
+                var count = $(this).children('.dataEntryMultiChoicePlaceholder').length;
+                $(this).find('.dataEntryMultiChoiceResponseCount').first().text(count);
+                var width = count > 0 ? (count / totalCountClass) * 100 + '%' : '0%';
+                $(this).find('.dataEntryMultiChoiceResponseGraphFillBar').first().css('width', width);
+            });
+        }
+
+        //TODO: Do this better..
+        window.updatePollingCount = setInterval(pollingInterval, 2000);
+    }
 
     return multiChoiceContainer;
 }
@@ -142,16 +291,23 @@ dataEntry.createTextEntry = function(id, form, activeEntry) {
     if (form.required && form.required === 'true') {
         requiredString = 'required="required"';
     }
+
     var placeholderString = '';
     if (form.placeholder) {
         placeholderString = 'placeholder="' + form.placeholder + '"';
     }
+
+    var cssClass = '';
+    if (form.cssClass) {
+        cssClass = form.cssClass;
+    }
+
     var textResponses = $('<div id="' + dataEntry.comboID(id, "responseBox") + '" class="textResponses unofficialView"><p class="dataEntryTextResponseNoData">Nothing has been submitted yet.</p></div>');
     var textOfficialResponses = $('<div id="' + dataEntry.comboID(id, "responseBoxOfficial") + '" class="textResponses officialView"><p class="dataEntryTextResponseNoData">Nothing has been submitted yet.</p></div>');
     var textPrivateResponses = $('<div id="' + dataEntry.comboID(id, "responseBoxPrivate") + '" class="textResponses privateView"><p class="dataEntryTextResponseNoData">Nothing has been submitted yet.</p></div>');
     var textTeamResponses = $('<div id="' + dataEntry.comboID(id, "responseBoxTeam") + '" class="textResponses teamView"><p class="dataEntryTextResponseNoData">Nothing has been submitted yet.</p></div>');
     var textClassResponses = $('<div id="' + dataEntry.comboID(id, "responseBoxClass") + '" class="textResponses classView"><p class="dataEntryTextResponseNoData">Nothing has been submitted yet.</p></div>');
-    var textInput = $('<div class="textInput"><label id="textDetailText">' + form.prompt + '</label><textarea ' + placeholderString + ' class="edit" data-responseBoxClass="' + dataEntry.comboID(id, "responseBoxClass") + '" data-responseBoxTeam="' + dataEntry.comboID(id, "responseBoxTeam") + '" data-responseBoxPrivate="' + dataEntry.comboID(id, "responseBoxPrivate") + '" data-responseBoxOfficial="' + dataEntry.comboID(id, "responseBoxOfficial") + '" data-responseBox="' + dataEntry.comboID(id, "responseBox") + '" data-prompt="' + form.prompt + '" ' + requiredString +  ' oninvalid="globalPebl.extension.dataEntry.invalidForm();" id="' + id + '"></textarea></div>');
+    var textInput = $('<div class="textInput ' + cssClass + '"><label id="textDetailText">' + form.prompt + '</label><textarea ' + placeholderString + ' class="edit" data-responseBoxClass="' + dataEntry.comboID(id, "responseBoxClass") + '" data-responseBoxTeam="' + dataEntry.comboID(id, "responseBoxTeam") + '" data-responseBoxPrivate="' + dataEntry.comboID(id, "responseBoxPrivate") + '" data-responseBoxOfficial="' + dataEntry.comboID(id, "responseBoxOfficial") + '" data-responseBox="' + dataEntry.comboID(id, "responseBox") + '" data-prompt="' + form.prompt + '" ' + requiredString +  ' oninvalid="globalPebl.extension.dataEntry.invalidForm();" id="' + id + '"></textarea></div>');
     var text = $('<div class="textBox"></div>');
     text.append(textInput);
     text.append(textResponses);
@@ -191,7 +347,7 @@ dataEntry.createRadioEntry = function(id, form, activeEntry) {
         var tableHeader = document.createElement('thead');
         for (var j = 0; j < form.tableHeader.length; j++) {
             var th = document.createElement('th');
-            th.innerHTML = form.tableHeader[j];
+            th.textContent = form.tableHeader[j];
             tableHeader.appendChild(th);
         }
         table.appendChild(tableHeader);
@@ -201,7 +357,7 @@ dataEntry.createRadioEntry = function(id, form, activeEntry) {
     for (var k = 0; k < form.tableRows.length; k++) {
         var tr = document.createElement('tr');
         var th = document.createElement('th');
-        th.innerHTML = form.tableRows[k].rowHeader;
+        th.textContent = form.tableRows[k].rowHeader;
         tr.appendChild(th);
         //Add each input thats part of that row
         for (var l = 0; l < form.tableRows[k].inputs.length; l++) {
@@ -575,8 +731,17 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
             var newDataEntry = {};
             dataEntry.activeEntries[id] = newDataEntry;
 
+            var dataEntryWrapper = document.createElement('div');
+            dataEntryWrapper.classList.add('dataEntryWrapper');
+
+            var dataEntryCfiPlaceholder = document.createElement('p');
+            dataEntryCfiPlaceholder.classList.add('dataEntryCfiPlaceholder');
+            dataEntryWrapper.appendChild(dataEntryCfiPlaceholder);
+
             var calloutDiv = document.createElement('div');
             calloutDiv.classList.add('dataEntryCallout');
+
+            dataEntryWrapper.appendChild(calloutDiv);
 
             var header = document.createElement('div');
             header.classList.add('dataEntryHeader');
@@ -591,15 +756,32 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
 
 
             var questionParagraph = document.createElement('p');
+            questionParagraph.classList.add('edit');
             questionParagraph.innerHTML = question;
+            if (!question) {
+                questionParagraph.style.display = 'none';
+            }
+
+            var teamViewParagraph = document.createElement('p');
+            teamViewParagraph.classList.add('teamView');
+            teamViewParagraph.textContent = 'View your team‘s responses below for this activity.';
+
+            var classViewParagraph = document.createElement('p');
+            classViewParagraph.classList.add('classView');
+            classViewParagraph.textContent = 'View responses from the class below for this activity.';
 
             formElement.appendChild(questionParagraph);
+            if (variableSharing) {
+                formElement.appendChild(teamViewParagraph);
+                formElement.appendChild(classViewParagraph);
+            }
 
             //Keep track of textareas and radio buttons that get added
             newDataEntry.textareas = new Set();
             newDataEntry.radios = new Set();
             newDataEntry.checkboxes = new Set();
             newDataEntry.multiChoices = new Set();
+            newDataEntry.dropdowns = new Set();
 
             for (var i = 0; i < forms.length; i++) {
                 var subID = dataEntry.comboID(dataEntryID, i);
@@ -614,7 +796,9 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                 } else if (forms[i].type === 'header') {
                     formElement.appendChild(dataEntry.createHeader(subID, forms[i], newDataEntry));
                 } else if (forms[i].type === 'multipleChoice') {
-                    formElement.appendChild(dataEntry.createMultipleChoiceEntry(subID, forms[i], newDataEntry));
+                    formElement.appendChild(dataEntry.createMultipleChoiceEntry(subID, forms[i], newDataEntry, polling));
+                } else if (forms[i].type === 'dropdown') {
+                    formElement.appendChild(dataEntry.createDropdownEntry(subID, forms[i], newDataEntry));
                 }
             }
 
@@ -702,7 +886,7 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                 if (message != null) {
                     var finalMessage = {
                         "prompt": "TeamDataEntry",
-                        "thread": dataEntry.comboID(userProfile.currentTeam, dataEntryID),
+                        "thread": dataEntry.comboID(userProfile.currentClass, userProfile.currentTeam, dataEntryID),
                         "text": JSON.stringify(message)
                     }
 
@@ -720,7 +904,7 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                 if (message != null) {
                     var finalMessage = {
                         "prompt": "ClassDataEntry",
-                        "thread": dataEntryID,
+                        "thread": dataEntry.comboID(userProfile.currentClass, dataEntryID),
                         "text": JSON.stringify(message)
                     }
 
@@ -882,26 +1066,32 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                 header.appendChild(editModeButton);
 
             if (variableSharing) {
-                header.appendChild(privateViewModeButton);
+                //header.appendChild(privateViewModeButton);
                 if (userProfile.currentTeam)
                     header.appendChild(teamViewModeButton);
-                header.appendChild(classViewModeButton);
 
-                $(formFooter).append(variableFormSubmitPrivate);
+                if (userProfile.currentClass)
+                    header.appendChild(classViewModeButton);
+
+                //$(formFooter).append(variableFormSubmitPrivate);
                 if (userProfile.currentTeam)
                     $(formFooter).append(variableFormSubmitTeam);
-                $(formFooter).append(variableFormSubmitClass);
 
-                var privateMessageHandle = dataEntry.dataMessageHandler(dataEntry.comboID(userProfile.identity, dataEntryID));
-                globalPebl.subscribeThread(dataEntry.comboID(userProfile.identity, dataEntryID), false, privateMessageHandle);
+                if (userProfile.currentClass)
+                    $(formFooter).append(variableFormSubmitClass);
+
+                // var privateMessageHandle = dataEntry.dataMessageHandler(dataEntry.comboID(userProfile.identity, dataEntryID));
+                // globalPebl.subscribeThread(dataEntry.comboID(userProfile.identity, dataEntryID), false, privateMessageHandle);
 
                 if (userProfile.currentTeam) {
-                    var teamMessageHandle = dataEntry.dataMessageHandler(dataEntry.comboID(userProfile.currentTeam, dataEntryID));
-                    globalPebl.subscribeThread(dataEntry.comboID(userProfile.currentTeam, dataEntryID), false, teamMessageHandle);
+                    var teamMessageHandle = dataEntry.dataMessageHandler(dataEntry.comboID(userProfile.currentClass, userProfile.currentTeam, dataEntryID));
+                    globalPebl.subscribeThread(dataEntry.comboID(userProfile.currentClass, userProfile.currentTeam, dataEntryID), false, teamMessageHandle);
                 }
                 
-                var classMessageHandle = dataEntry.dataMessageHandler(dataEntryID);
-                globalPebl.subscribeThread(dataEntryID, false, classMessageHandle);
+                if (userProfile.currentClass) {
+                    var classMessageHandle = dataEntry.dataMessageHandler(dataEntry.comboID(userProfile.currentClass, dataEntryID));
+                    globalPebl.subscribeThread(dataEntry.comboID(userProfile.currentClass, dataEntryID), false, classMessageHandle);
+                }
             } else {
                 header.appendChild(viewModeButton);
 
@@ -924,7 +1114,7 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                     $(formFooter).append(formSubmitOfficial);
             }
 
-            if (polling)
+            if (polling && polling === 'true')
                 header.appendChild(closeButton);
             
             calloutDiv.appendChild(formElement);
@@ -933,7 +1123,7 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
 
             var insertLocation = document.getElementById(insertID);
 
-            insertLocation.parentNode.insertBefore(calloutDiv, insertLocation);
+            insertLocation.parentNode.insertBefore(dataEntryWrapper, insertLocation);
             insertLocation.remove();
 
 
@@ -948,6 +1138,12 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                 newDataEntry.editMode();
         });
     });
+}
+
+dataEntry.dropdownMessageHandler = function(message, userProfile) {
+    console.log('dropdown');
+    console.log(message);
+
 }
 
 dataEntry.multiChoiceMessageHandler = function(message, userProfile) {
@@ -1143,7 +1339,12 @@ dataEntry.dataMessageHandler = function(thread) {
                         } else if (embeddedMessage.type === 'checkbox') {
                             dataEntry.checkboxMessageHandler(embeddedMessage, userProfile);
                         } else if (embeddedMessage.type === 'multipleChoice') {
-                            dataEntry.multiChoiceMessageHandler(embeddedMessage, userProfile);
+                            if (embeddedMessage.useGraphView === 'true')
+                                dataEntry.multiChoiceMessageHandler(embeddedMessage, userProfile);
+                            else
+                                dataEntry.messageHandler(embeddedMessage, userProfile);
+                        } else if (embeddedMessage.type === 'dropdown') {
+                            dataEntry.messageHandler(embeddedMessage, userProfile);
                         }
                     }
                 }
@@ -1159,20 +1360,46 @@ dataEntry.getFormData = function(formElement, newDataEntry, responseType) {
     if (validForm) {
         var messages = [];
         //Submit the form
+        if (newDataEntry.dropdowns.size > 0) {
+            var dropdownArray = Array.from(newDataEntry.dropdowns);
+            for (var i = 0; i < dropdownArray.length; i++) {
+                var elem = $('#' + dropdownArray[i]);
+                var val = elem.val();
+                var prompt = elem.attr('data-prompt');
+                var responseBox = elem.attr('data-responseBox' + responseType);
+                var message = {
+                    "prompt": prompt,
+                    "thread": dropdownArray[i],
+                    "text": val,
+                    "responseBox": responseBox,
+                    "type": "dropdown"
+                }
+                messages.push(message);
+            }
+        }
+
         if (newDataEntry.multiChoices.size > 0) {
             var multiChoiceArray = Array.from(newDataEntry.multiChoices);
             for (var i = 0; i < multiChoiceArray.length; i++) {
                 var elem = $('#' + multiChoiceArray[i]).find('button.active').first()[0];
                 var val = elem.textContent;
+                var useGraphView = elem.getAttribute('data-useGraphView');
+                var graph = '';
+                if (useGraphView === 'true')
+                    graph = 'Graph';
                 var prompt = elem.getAttribute('data-prompt');
-                var responseBox = elem.getAttribute('data-responseBox' + responseType);
+                var responseBox = elem.getAttribute('data-responseBox' + responseType + graph);
                 var index = elem.getAttribute('data-index');
+
+
+                
                 var message = {
                     "prompt": prompt,
                     "thread": multiChoiceArray[i],
                     "text": val,
                     "responseBox": responseBox,
                     "index": index,
+                    "useGraphView": useGraphView,
                     "type": "multipleChoice"
                 }
                 messages.push(message);
