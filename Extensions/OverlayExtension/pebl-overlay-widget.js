@@ -36,8 +36,8 @@ function receiveMessage(event) {
 }
 
 $(document).ready(function() {
-    globalPebl = window.top.PeBL;
-    globalReadium = window.top.ReadiumSDK;
+    globalPebl = window.parent.PeBL;
+    globalReadium = window.parent.ReadiumSDK;
     
     preloadIframes();
     createTags();
@@ -55,12 +55,19 @@ $(document).ready(function() {
 
     openDocumentAtDestination();
 
-    $(document.body).on('click', "#discussButton", function() {
-        handleDiscussButtonClick();
+    $(document.body).on('click', '.expandButtonContainerUnderlay', handleExpandButtonClick);
+    $(document.body).on('click', '#closeButton', handleCloseButtonClick);
+    $(document.body).on('click', '#helpButton', handleHelpButtonClick);
+    $(document.body).on('click', '.showCardTagsButton', toggleCardTags);
+
+    $(document.body).on('click', ".discussButton", function() {
+        globalPebl.extension.discussion.handleChatButtonClick(this);
+        //handleDiscussButtonClick(this);
     });
     
-    $(document.body).on('click', "#notesButton", function() {
-        handleNotesButtonClick();
+    $(document.body).on('click', ".notesButton", function() {
+        globalPebl.extension.discussion.handleChatButtonClick(this);
+        //handleNotesButtonClick();
     });
 
     //FindMenu click handlers
@@ -209,7 +216,7 @@ $(document).ready(function() {
         var notificationID = $(this).attr('notification-id');
         var destination = null;
         globalPebl.removeNotification(notificationID);
-        globalPebl.getToc(function(toc) {
+        globalPebl.utils.getToc(function(toc) {
             Object.keys(toc).forEach(function(section) {
                 Object.keys(toc[section]).forEach(function(subsection) {
                     if (toc[section][subsection].prefix && toc[section][subsection].prefix === prefix) {
@@ -309,9 +316,6 @@ function createTags() {
     if (tags) {
         var showCardTagsButton = document.createElement('button');
         showCardTagsButton.classList.add('showCardTagsButton', 'contracted', 'hidden');
-        showCardTagsButton.addEventListener('click', function() {
-            toggleCardTags();
-        });
 
         var tagContainer = document.createElement('div');
         tagContainer.classList.add('cardTagContainer', 'expanded');
@@ -323,12 +327,13 @@ function createTags() {
 
                 for (var i = 0; i < tags[key].length; i++) {
                     var tag = document.createElement('div');
+                    tag.id = globalPebl.utils.getUuid();
                     tag.classList.add('cardTag', key);
                     tag.setAttribute('data-bucket', key);
                     tag.setAttribute('data-tag', tags[key][i]);
-                    tag.addEventListener('click', function(event) {
-                        var bucket = event.currentTarget.getAttribute('data-bucket');
-                        var tag = event.currentTarget.getAttribute('data-tag');
+                    $(document.body).on('click', '#' + tag.id, function(event) {
+                        var bucket = this.getAttribute('data-bucket');
+                        var tag = this.getAttribute('data-tag');
 
                         var elem = $('#peblSidebar').find('div[data-bucket="' + bucket + '"]').filter('div[data-tag="' + tag + '"]');
                         $('.peblSidebarTagList').scrollTop($('.peblSidebarTagList').scrollTop() + (elem.position().top - $('.peblSidebarTagList').position().top) - ($('.peblSidebarTagList').height()/2) + (elem.height()/2)  );
@@ -411,8 +416,9 @@ function createSidebar() {
                 for (var j = 0; j < categories[i].length; j++) {
                     var element = document.createElement('div');
                     element.classList.add('sidebarTagElement');
-                    element.addEventListener('click', function() {
-                        filterPosts(event);
+                    element.id = globalPebl.utils.getUuid();
+                    $(document.body).on('click', '#' + element.id, function() {
+                        filterPosts(this);
                     });
                     element.setAttribute('data-bucket', i);
                     element.setAttribute('data-tag', categories[i][j]);
@@ -443,7 +449,7 @@ function createSidebar() {
 
         var sidebarExpandButton = document.createElement('div');
         sidebarExpandButton.classList.add('peblSidebarExpandButton', 'contracted');
-        sidebarExpandButton.addEventListener('click', function() {
+        $(document.body).on('click', '.peblSidebarExpandButton', function() {
             if (!tagCountSet) {
                 $('.sidebarTagElement').each(function() {
                     var tag = $(this).attr('data-tag');
@@ -463,7 +469,7 @@ function createSidebar() {
 
         var sidebarExtendedFrameCloseButton = document.createElement('i');
         sidebarExtendedFrameCloseButton.classList.add('fa', 'fa-times', 'peblSidebarExtendedFrameCloseButton');
-        sidebarExtendedFrameCloseButton.addEventListener('click', closeSidebarExtendedFrame);
+        $(document.body).on('click', '.peblSidebarExtendedFrameCloseButton', closeSidebarExtendedFrame);
 
         sidebarExtendedFrame.appendChild(sidebarExtendedFrameCloseButton);
 
@@ -498,8 +504,8 @@ function createSidebarSearch() {
     var sidebarSearchField = document.createElement('input');
     sidebarSearchField.classList.add('peblSidebarSearchField');
     sidebarSearchField.placeholder = 'Search your resources...';
-    sidebarSearchField.addEventListener('input', function(event) {
-        performSidebarSearch(event);
+    $(document.body).on('input', '.peblSidebarSearchField', function(event) {
+        performSidebarSearch(event, this);
     });
 
     sidebarSearchContainer.appendChild(sidebarSearchField);
@@ -507,13 +513,13 @@ function createSidebarSearch() {
     return sidebarSearchContainer;
 }
 
-function performSidebarSearch(event) {
+function performSidebarSearch(event, elem) {
     if (Fuse) {
         if (!searchableTOC) {
             generateSearchableTOC();
             return;
         }
-        var input = $(event.currentTarget).val();
+        var input = $(elem).val();
         var options = {
             shouldSort: true,
             tokenize: true,
@@ -530,7 +536,7 @@ function performSidebarSearch(event) {
         //No input, show everything
         if (input.length < 1) {
             var posts = {};
-            globalPebl.getToc(function(toc) {
+            globalPebl.utils.getToc(function(toc) {
                 Object.keys(toc).forEach(function(section) {
                     Object.keys(toc[section]).sort(toc_sort).forEach(function(subsection) {
                         if (toc[section][subsection].tags != null && toc[section].Section != null) {
@@ -572,7 +578,7 @@ function performSidebarSearch(event) {
         } else {
             var result = fuse.search(input);
             var newResult = {};
-            globalPebl.getToc(function(toc) {
+            globalPebl.utils.getToc(function(toc) {
                 Object.keys(toc).forEach(function(section) {
                     Object.keys(toc[section]).sort(toc_sort).forEach(function(subsection) {
                         for (var i = 0; i < result.length; i++) {
@@ -624,7 +630,7 @@ function performSidebarSearch(event) {
 
 function generateSearchableTOC() {
     var result = [];
-    globalPebl.getToc(function(toc) {
+    globalPebl.utils.getToc(function(toc) {
         Object.keys(toc).forEach(function(key) {
             Object.keys(toc[key]).forEach(function(key2) {
                 if (toc[key][key2].post)
@@ -668,8 +674,7 @@ function parseFilterTag(filterTag) {
     };
 }
 
-function filterPosts(event) {
-    var elem = event.currentTarget;
+function filterPosts(elem) {
     var bucket = elem.getAttribute('data-bucket');
     var tag = elem.getAttribute('data-tag');
     if ($(elem).hasClass('active')) {
@@ -681,7 +686,7 @@ function filterPosts(event) {
     }
     var posts = {};
 
-    globalPebl.getToc(function(toc) {
+    globalPebl.utils.getToc(function(toc) {
         Object.keys(toc).forEach(function(section) {
             Object.keys(toc[section]).sort(toc_sort).forEach(function(subsection) {
                 if (toc[section][subsection].tags != null && toc[section].Section != null) {
@@ -896,7 +901,7 @@ function getTagCount(elem, tagArr) {
             getTagCount(elem, tagArr);
         }, 1000);
     var counter = new Set();
-    globalPebl.getToc(function(toc) {
+    globalPebl.utils.getToc(function(toc) {
         if (Object.keys(toc).length < 1)
             return setTimeout(function() {
                 getTagCount(elem, tagArr);
@@ -958,7 +963,7 @@ function createFooterFindButton() {
     var findButton = document.createElement('button');
     findButton.id = 'findButton';
     findButton.classList.add('findButton');
-    findButton.addEventListener('click', handleFindButtonClick);
+    $(document.body).on('click', '#findButton', handleFindButtonClick);
 
     var findButtonIcon = document.createElement('i');
     findButtonIcon.classList.add('fa', 'fa-search', 'footerIcon');
@@ -1035,11 +1040,17 @@ function createFooterDiscussButton() {
     discussButtonContainer.classList.add('discussButtonContainer');
 
     var discussButton = document.createElement('button');
-    discussButton.id = 'discussButton';
+    discussButton.id = $('body')[0].baseURI.split('/').pop().slice(0, -6) + '_Discussion';
     discussButton.classList.add('discussButton');
+
+    var discussPrompt = document.createElement('p');
+    discussPrompt.textContent = $('h1.title').text() + ' Discussion';
+    discussPrompt.style.display = 'none';
 
     var discussIcon = document.createElement('i');
     discussIcon.classList.add('fa', 'fa-comments', 'footerIcon');
+
+    discussButtonContainer.appendChild(discussPrompt);
 
     discussButton.appendChild(discussIcon);
 
@@ -1078,7 +1089,7 @@ function createFooterAddedResourcesButton() {
     var addedResourcesButton = document.createElement('button');
     addedResourcesButton.id = 'addedResourcesButton';
     addedResourcesButton.classList.add('addedResourcesButton');
-    addedResourcesButton.addEventListener('click', handleAddedResourcesButtonClick);
+    $(document.body).on('click', '#addedResourcesButton', handleAddedResourcesButtonClick);
 
     var addedResourcesBadgeContainer = document.createElement('div');
     addedResourcesBadgeContainer.classList.add('addedResourcesBadgeContainer');
@@ -1111,8 +1122,13 @@ function createFooterNotesButton() {
     notesButtonContainer.classList.add('notesButtonContainer');
 
     var notesButton = document.createElement('button');
-    notesButton.id = 'notesButton';
+    notesButton.id = $('body')[0].baseURI.split('/').pop().slice(0, -6) + '_Notes';
+    notesButton.setAttribute('data-sharing', 'private');
     notesButton.classList.add('notesButton');
+
+    var notesPrompt = document.createElement('p');
+    notesPrompt.textContent = $('h1.title').text() + ' Notes';
+    notesPrompt.style.display = 'none';
 
     var notesIcon = document.createElement('i');
     notesIcon.classList.add('fa', 'fa-sticky-note', 'footerIcon');
@@ -1128,6 +1144,8 @@ function createFooterNotesButton() {
 
     notesButton.appendChild(notesTextContainer);
 
+    notesButtonContainer.appendChild(notesPrompt);
+
     notesButtonContainer.appendChild(notesButton);
 
     return notesButtonContainer;
@@ -1136,7 +1154,6 @@ function createFooterNotesButton() {
 function createExpandButton() {
     var expandButtonContainerUnderlay = document.createElement('div');
     expandButtonContainerUnderlay.classList.add('expandButtonContainerUnderlay');
-    expandButtonContainerUnderlay.addEventListener('click', handleExpandButtonClick);
 
     var expandButtonContainer = document.createElement('div');
     expandButtonContainer.id = 'expandButtonContainer';
@@ -1160,7 +1177,6 @@ function createCloseButton() {
     var closeButton = document.createElement('i');
     closeButton.id = 'closeButton';
     closeButton.classList.add('fa', 'fa-times', 'closeButton');
-    closeButton.addEventListener('click', handleCloseButtonClick);
     return closeButton;
 }
 
@@ -1172,7 +1188,6 @@ function createHelpButton() {
     var helpButton = document.createElement('i');
     helpButton.id = 'helpButton';
     helpButton.classList.add('helpButton', 'fa', 'fa-question-circle');
-    helpButton.addEventListener('click', handleHelpButtonClick);
     helpButtonContainer.appendChild(helpButton);
 
     return helpButtonContainer;
@@ -1187,7 +1202,7 @@ function createNotificationButton() {
     peblNotificationButton.id = 'peblNotificationButton';
     peblNotificationButton.classList.add('fa', 'fa-bell', 'peblNotificationButton');
     peblNotificationButton.setAttribute('aria-hidden', 'true');
-    peblNotificationButton.addEventListener('click', handleNotificationButtonClick);
+    $(document.body).on('click', '#peblNotificationButton', handleNotificationButtonClick);
 
     var peblNotificationBadge = document.createElement('div');
     peblNotificationBadge.id = 'peblNotificationBadge';
@@ -1201,7 +1216,7 @@ function createAskButton() {
     var askButtonContainer = document.createElement('div');
     askButtonContainer.id = 'askButtonContainer';
     askButtonContainer.classList.add('askButtonContainer');
-    askButtonContainer.addEventListener('click', handleAskButtonClick);
+    $(document.body).on('click', '#askButtonContainer', handleAskButtonClick);
 
     var askButton = document.createElement('i');
     askButton.id = 'askButton';
@@ -1221,7 +1236,7 @@ function createSearchButton() {
     var searchButtonContainer = document.createElement('div');
     searchButtonContainer.id = 'searchButtonContainer';
     searchButtonContainer.classList.add('searchButtonContainer');
-    searchButtonContainer.addEventListener('click', handleRegistryButtonClick);
+    $(document.body).on('click', '#searchButtonContainer', handleRegistryButtonClick);
 
     var searchButton = document.createElement('i');
     searchButton.id = 'searchButton';
@@ -1266,7 +1281,7 @@ function createTOCButton() {
     var tocButtonContainer = document.createElement('div');
     tocButtonContainer.id = 'tocButtonContainer';
     tocButtonContainer.classList = 'tocButtonContainer';
-    tocButtonContainer.addEventListener('click', handleTOCButtonClick);
+    $(document.body).on('click', '#tocButtonContainer', handleTOCButtonClick);
 
     var tocButton = document.createElement('i');
     tocButton.id = 'tocButton';
@@ -1364,7 +1379,7 @@ function createUITutorial() {
     tutorialMessageCancelButon.id = 'tutorialMessageCancelButton';
     tutorialMessageCancelButon.classList.add('tutorialMessageCancelButton');
     tutorialMessageCancelButon.textContent = 'Cancel';
-    tutorialMessageCancelButon.addEventListener('click', function() {
+    $(document.body).on('click', '#tutorialMessageCancelButton', function() {
         endTutorial();
         handleCloseButtonClick();
     });
@@ -1375,7 +1390,7 @@ function createUITutorial() {
     tutorialMessageNextButton.classList.add('tutorialMessageNextButton');
     tutorialMessageNextButton.textContent = 'Next';
     tutorialMessageContainer.appendChild(tutorialMessageNextButton);
-    tutorialMessageNextButton.addEventListener('click', nextTutorialStage);
+    $(document.body).on('click', '#tutorialMessageNextButton', nextTutorialStage);
 
     var tutorialMessageArrow = document.createElement('div');
     tutorialMessageArrow.id = 'tutorialMessageArrow';
@@ -1553,7 +1568,7 @@ function createNotifications() {
 
     var notificationsClearButton = document.createElement('div');
     notificationsClearButton.classList.add('notificationsClearButton');
-    notificationsClearButton.addEventListener('click', function() {
+    $(document.body).on('click', '.notificationsClearButton', function() {
         $('#notificationsContainer').children('div').each(function() {
             globalPebl.removeNotification($(this).attr('notification-id'));
         });
@@ -1572,51 +1587,51 @@ function createNotifications() {
             return;
         var notificationsObj = obj;
 
-        Object.keys(notificationsObj).forEach(function(key) {
-            var pulled;
-            if (notificationsObj[key].payload.actorId === globalPebl.userManager.profile.identity) {
-                pulled = true;
-            } else {
-                pulled = false;
-            }
-            var notificationElementWrapper = document.createElement('div');
-            notificationElementWrapper.classList.add('notificationElementWrapper');
-            notificationElementWrapper.setAttribute('url', notificationsObj[key].payload.url);
-            notificationElementWrapper.setAttribute('docType', notificationsObj[key].payload.docType);
-            notificationElementWrapper.setAttribute('externalURL', notificationsObj[key].payload.externalURL);
-            notificationElementWrapper.setAttribute('title', notificationsObj[key].payload.name);
-            notificationElementWrapper.setAttribute('destination', notificationsObj[key].payload.card);
-            notificationElementWrapper.setAttribute('notification-id', notificationsObj[key].id);
+        // Object.keys(notificationsObj).forEach(function(key) {
+        //     var pulled;
+        //     if (notificationsObj[key].payload.actorId === globalPebl.userManager.profile.identity) {
+        //         pulled = true;
+        //     } else {
+        //         pulled = false;
+        //     }
+        //     var notificationElementWrapper = document.createElement('div');
+        //     notificationElementWrapper.classList.add('notificationElementWrapper');
+        //     notificationElementWrapper.setAttribute('url', notificationsObj[key].payload.url);
+        //     notificationElementWrapper.setAttribute('docType', notificationsObj[key].payload.docType);
+        //     notificationElementWrapper.setAttribute('externalURL', notificationsObj[key].payload.externalURL);
+        //     notificationElementWrapper.setAttribute('title', notificationsObj[key].payload.name);
+        //     notificationElementWrapper.setAttribute('destination', notificationsObj[key].payload.card);
+        //     notificationElementWrapper.setAttribute('notification-id', notificationsObj[key].id);
 
-            var notificationElement = document.createElement('p');
-            notificationElement.classList.add('notificationElement');
+        //     var notificationElement = document.createElement('p');
+        //     notificationElement.classList.add('notificationElement');
 
-            var notificationElementSenderText = document.createElement('span');
-            notificationElementSenderText.classList.add('notificationElementSenderText');
-            if (pulled)
-                notificationElementSenderText.textContent = 'You added ';
-            else
-                notificationElementSenderText.textContent = notificationsObj[key].payload.actorId + ' shared ';
+        //     var notificationElementSenderText = document.createElement('span');
+        //     notificationElementSenderText.classList.add('notificationElementSenderText');
+        //     if (pulled)
+        //         notificationElementSenderText.textContent = 'You added ';
+        //     else
+        //         notificationElementSenderText.textContent = notificationsObj[key].payload.actorId + ' shared ';
 
-            var notificationElementContentText = document.createElement('span');
-            notificationElementContentText.classList.add('notificationElementContentText');
-            notificationElementContentText.textContent = notificationsObj[key].payload.name;
+        //     var notificationElementContentText = document.createElement('span');
+        //     notificationElementContentText.classList.add('notificationElementContentText');
+        //     notificationElementContentText.textContent = notificationsObj[key].payload.name;
 
-            var toSpan = document.createElement('span');
-            toSpan.textContent = ' to ';
+        //     var toSpan = document.createElement('span');
+        //     toSpan.textContent = ' to ';
 
-            var notificationElementLocationText = document.createElement('a');
-            notificationElementLocationText.classList.add('notificationElementLocationText');
-            notificationElementLocationText.textContent = niceName(notificationsObj[key].payload.book.replace('.epub', ''));
+        //     var notificationElementLocationText = document.createElement('a');
+        //     notificationElementLocationText.classList.add('notificationElementLocationText');
+        //     notificationElementLocationText.textContent = niceName(notificationsObj[key].payload.book.replace('.epub', ''));
 
-            notificationElement.appendChild(notificationElementSenderText);
-            notificationElement.appendChild(notificationElementContentText);
-            notificationElement.appendChild(toSpan);
-            notificationElement.appendChild(notificationElementLocationText);
+        //     notificationElement.appendChild(notificationElementSenderText);
+        //     notificationElement.appendChild(notificationElementContentText);
+        //     notificationElement.appendChild(toSpan);
+        //     notificationElement.appendChild(notificationElementLocationText);
 
-            notificationElementWrapper.appendChild(notificationElement);
-            notificationsContainer.appendChild(notificationElementWrapper);
-        });
+        //     notificationElementWrapper.appendChild(notificationElement);
+        //     notificationsContainer.appendChild(notificationElementWrapper);
+        // });
 
         notificationsWrapper.appendChild(notificationsContainer);
         notificationsWrapper.appendChild(notificationsClearButton);
@@ -1745,7 +1760,7 @@ function createRegistrySearch() {
 function createTOC() {
     clearUI();
 
-    globalPebl.getToc(function(obj) {
+    globalPebl.utils.getToc(function(obj) {
         var tocObject = obj;
 
         var tocContainer = document.createElement('div');
@@ -1830,6 +1845,7 @@ function createTOC() {
                             tocPageTextWrapper.classList.add('tocPageTextWrapperDynamic');
 
                             var tocPageText = document.createElement('a');
+                            tocPageText.id = globalPebl.utils.getUuid();
                             tocPageText.classList.add('tocPageText');
                             tocPageText.setAttribute('style', 'color: rgb(115, 115, 115) !important;');
                             tocPageText.textContent = tocObject[sectionKey][dynamicKey].documentName;
@@ -1839,8 +1855,8 @@ function createTOC() {
                             tocPageText.setAttribute('externalURL', tocObject[sectionKey][dynamicKey].externalURL);
                             tocPageText.href = tocObject[sectionKey][pageKey].location;
                             tocPageText.setAttribute('tocLink', 'true');
-                            tocPageText.addEventListener('click', function() {
-                                handleTocPageTextClick(event);
+                            $(document.body).on('click', '#' + tocPageText.id, function() {
+                                handleTocPageTextClick(event, this);
                             });
 
                             tocPageTextWrapper.appendChild(tocPageText);
@@ -1888,11 +1904,12 @@ function createTOC() {
                             tocPageTextWrapper.classList.add('tocPageTextWrapperWide');
 
                             var tocPageText = document.createElement('a');
+                            tocPageText.id = globalPebl.utils.getUuid();
                             tocPageText.classList.add('tocPageText');
                             tocPageText.textContent = tocObject[sectionKey][pageKey].pages[cardKey].title;
                             tocPageText.href = tocObject[sectionKey][pageKey].pages[cardKey].location;
-                            tocPageText.addEventListener('click', function() {
-                                handleTocPageTextClick(event);
+                            $(document.body).on('click', '#' + tocPageText.id, function() {
+                                handleTocPageTextClick(event, this);
                             });
 
                             tocPageTextWrapper.appendChild(tocPageText);
@@ -1919,6 +1936,7 @@ function createTOC() {
                                     tocPageTextWrapper.classList.add('tocPageTextWrapperDynamic');
 
                                     var tocPageText = document.createElement('a');
+                                    tocPageText.id = globalPebl.utils.getUuid();
                                     tocPageText.classList.add('tocPageText');
                                     tocPageText.setAttribute('style', 'color: rgb(115, 115, 115) !important;');
                                     tocPageText.textContent = tocObject[sectionKey][dynamicKey].documentName;
@@ -1928,8 +1946,8 @@ function createTOC() {
                                     tocPageText.setAttribute('externalURL', tocObject[sectionKey][dynamicKey].externalURL);
                                     tocPageText.href = tocObject[sectionKey][pageKey].pages[cardKey].location;
                                     tocPageText.setAttribute('tocLink', 'true');
-                                    tocPageText.addEventListener('click', function() {
-                                        handleTocPageTextClick(event);
+                                    $(document.body).on('click', '#' + tocPageText.id, function() {
+                                        handleTocPageTextClick(event, this);
                                     });
 
                                     tocPageTextWrapper.appendChild(tocPageText);
@@ -2021,8 +2039,8 @@ function createDynamicPage(url, docType, externalURL, title) {
         dynamicPageHeaderLink.classList.add('dynamicPageHeaderLink');
         dynamicPageHeaderLink.href = 'openinbrowser:' + externalURL;
         dynamicPageHeaderLink.innerHTML = externalURL;
-        dynamicPageHeaderLink.addEventListener('click', function() {
-            handleDynamicPageHeaderLinkClick(event);
+        $(document.body).on('click', '#dynamicPageHeaderLink', function() {
+            handleDynamicPageHeaderLinkClick(event, this);
         });
 
         dynamicPageHeader.appendChild(dynamicPageHeaderLink);
@@ -2069,7 +2087,7 @@ function createOverlayCloseButton() {
     var overlayCloseButton = document.createElement('i');
     overlayCloseButton.id = 'overlayCloseButton';
     overlayCloseButton.classList.add('overlayCloseButton', 'fa', 'fa-times');
-    overlayCloseButton.addEventListener('click', handleOverlayCloseButtonClick);
+    $(document.body).on('click', '#overlayCloseButton', handleOverlayCloseButtonClick);
 
     return overlayCloseButton;
 }
@@ -2167,14 +2185,14 @@ function handleAskButtonClick() {
 
 function handleRegistryButtonClick() {
     frameIsReady = false;
-    if (currentSection) {
+    // if (currentSection) {
         expandOverlay();
         createRegistrySearch();
         document.getElementById('searchButton').classList.add('active');
         document.getElementById('searchButtonLabel').classList.add('active');
-    } else {
-        setTimeout(handleRegistryButtonClick, 1000);
-    }
+    // } else {
+    //     setTimeout(handleRegistryButtonClick, 1000);
+    // }
 }
 
 function handleExpandButtonClick() {
@@ -2217,7 +2235,7 @@ function handleFindButtonClick() {
 }
 
 function handleDiscussButtonClick() {
-    closeLightBox();
+    $('#discussionLightbox').remove();
     var currentBook = globalPebl.activityManager.currentBook;
     var currentPage = $('body')[0].baseURI.split('/').pop().slice(0, -6);
     var discussionId;
@@ -2390,7 +2408,7 @@ function handleAddedResourcesButtonClick() {
         }
         addedResourcesContainer.id = 'addedResourcesContainer';
 
-        globalPebl.getToc(function(obj) {
+        globalPebl.utils.getToc(function(obj) {
             var tocObject = obj;
 
             Object.keys(tocObject).forEach(function(sectionKey) {
@@ -2416,6 +2434,7 @@ function handleAddedResourcesButtonClick() {
                             tocPageTextWrapper.classList.add('tocPageTextWrapper');
 
                             var tocPageText = document.createElement('a');
+                            tocPageText.id = globalPebl.utils.getUuid();
                             tocPageText.classList.add('tocPageText');
                             tocPageText.style = 'font-size: 28px !important;'
                             tocPageText.textContent = tocObject[sectionKey][pageKey].documentName;
@@ -2423,8 +2442,8 @@ function handleAddedResourcesButtonClick() {
                             tocPageText.setAttribute('url', tocObject[sectionKey][pageKey].url);
                             tocPageText.setAttribute('docType', tocObject[sectionKey][pageKey].docType);
                             tocPageText.setAttribute('externalURL', tocObject[sectionKey][pageKey].externalURL);
-                            tocPageText.addEventListener('click', function() {
-                                handleTocPageTextClick(event);
+                            $(document.body).on('click', '#' + tocPageText.id, function() {
+                                handleTocPageTextClick(event, this);
                             });
 
                             tocPageTextWrapper.appendChild(tocPageText);
@@ -2455,49 +2474,49 @@ function handleAddedResourcesButtonClick() {
     }
 }
 
-function handleTocPageTextClick(event) {
+function handleTocPageTextClick(event, elem) {
     event.preventDefault();
         //If its a dynamic document
-        if ($(event.currentTarget).attr('url')) {
-            if ($(event.currentTarget).attr('tocLink')) {
-                sendDocumentToDestination($(event.currentTarget).attr('url'), $(event.currentTarget).attr('docType'), $(event.currentTarget).attr('externalURL'), $(event.currentTarget).text());
-                if ($('body')[0].baseURI.substr(1) === $(event.currentTarget).attr('href')) {
+        if ($(elem).attr('url')) {
+            if ($(elem).attr('tocLink')) {
+                sendDocumentToDestination($(elem).attr('url'), $(elem).attr('docType'), $(elem).attr('externalURL'), $(elem).text());
+                if ($('body')[0].baseURI.substr(1) === $(elem).attr('href')) {
                     handleCloseButtonClick();
                     openDocumentAtDestination();
                 } else {
-                    globalReadium.reader.openContentUrl($(event.currentTarget).attr('href'));
+                    globalReadium.reader.openContentUrl($(elem).attr('href'));
                 }
             } else {
-                createDynamicPage($(event.currentTarget).attr('url'), $(event.currentTarget).attr('docType'), $(event.currentTarget).attr('externalURL'), $(event.currentTarget).text()); 
+                createDynamicPage($(elem).attr('url'), $(elem).attr('docType'), $(elem).attr('externalURL'), $(elem).text()); 
                 handleCloseButtonClick();
                 hideAddedResources();
             } 
         } else {
-            globalReadium.reader.openContentUrl($(event.currentTarget).attr('href'));
+            globalReadium.reader.openContentUrl($(elem).attr('href'));
         }
 }
 
-function handleDynamicPageHeaderLinkClick(event) {
+function handleDynamicPageHeaderLinkClick(event, elem) {
     event.preventDefault();
     //If in iOS let the app handle opening in a new window ()
     if (!!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform))
-        window.location.href = $(event.currentTarget).attr('href');
+        window.location.href = $(elem).attr('href');
     else
-        window.open($(event.currentTarget).attr('href').replace('openinbrowser:', ''), '_blank');
+        window.open($(elem).attr('href').replace('openinbrowser:', ''), '_blank');
 
 }
 
 function getNotificationsCount() {
-    globalPebl.getNotifications(function(obj) {
-        var notificationsObj = obj;
-        var notificationsCount = Object.keys(notificationsObj).length;
-        setNotificationBadgeCounter(notificationsCount);
+    // globalPebl.getNotifications(function(obj) {
+    //     var notificationsObj = obj;
+    //     var notificationsCount = Object.keys(notificationsObj).length;
+    //     setNotificationBadgeCounter(notificationsCount);
 
-    });
+    // });
 }
 
 function getCurrentPrefix(page) {
-    globalPebl.getToc(function(obj) {
+    globalPebl.utils.getToc(function(obj) {
         Object.keys(obj).forEach(function(section) {
             Object.keys(obj[section]).forEach(function(subsection) {
                 if (obj[section][subsection].location && !obj[section][subsection].fake && obj[section][subsection].location == page) {
@@ -2525,7 +2544,7 @@ function getAddedResources() {
     }
     var docCounter = 0;
     if (currentPage && currentPage !== '') {
-        globalPebl.getToc(function(obj) {
+        globalPebl.utils.getToc(function(obj) {
             var tocObject = obj;
 
             Object.keys(tocObject).forEach(function(sectionKey) {

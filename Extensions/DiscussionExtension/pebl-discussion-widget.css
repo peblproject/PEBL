@@ -1,9 +1,9 @@
 .discussionLightbox {
     position: fixed;
-    top: 1em;
+    top: 55px;
     left: 0;
     right: 0;
-    bottom: 1em;
+    bottom: 0;
     background-color: rgb(240, 240, 240);
     z-index: 5000;
     max-width: 700px;
@@ -12,6 +12,26 @@
     flex-direction: column;
     -webkit-box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
     box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+}
+
+.discussionLightbox textarea {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 700px;
+    word-wrap: break-word;
+    resize: none;
+    margin-bottom: .5em;
+    color: #222;
+    font-weight: normal;
+    font-size: 24px;
+    line-height: 40px;
+    webkit-border-radius: 8px;
+    border-radius: 8px;
+    -webkit-box-shadow: 0px 2px 8px #999;
+    box-shadow: 0px 2px 8px #999;
+    border: 1px solid transparent;
+    border-top: 1px solid #FFF;
 }
 
 .discussionLightboxContent {
