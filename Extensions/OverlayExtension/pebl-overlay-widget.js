@@ -27,7 +27,7 @@ function receiveMessage(event) {
     if (data === 'ready') {
         frameIsReady = true;
     } else if (obj && obj.message === "pullResource") {
-        pullResource(obj.target, obj.location, obj.url, obj.docType, obj.name, obj.externalURL);
+        pullResource(obj.target, obj.url, obj.docType, obj.name, obj.externalURL);
     } else if (obj && obj.message === "iframeUpdate") {
         $('.registryFrame').css('height', obj.height);
     } else if (data === 'registryBackToTop') {
@@ -182,7 +182,7 @@ $(document).ready(function() {
     $(document.body).on('click', '#tocDeleteConfirmButton', function(e) {
         var sectionId = $(this).attr('section-id');
         var documentId = $(this).attr('document-id');
-        globalPebl.removeToc(documentId, sectionId);
+        globalPebl.utils.removeToc(documentId, sectionId);
 
         //Remove from the list
         $('#' + documentId).remove();
@@ -1738,20 +1738,23 @@ function createRegistrySearch() {
 
     registryContainer.appendChild(createOverlayCloseButton());
 
+
     //Post Messages
     var waitingForReady = setInterval(function() {
         if (frameIsReady) {
-            clearInterval(waitingForReady);
-            var iframe = document.getElementById('registryFrame');
-            var currentUser = globalPebl.userManager.profile.identity;
-            var obj = {
-                "messageType": "Login",
-                "user": currentUser,
-                "currentPage": currentPage,
-                "currentSection": currentSection
-            }
-            var message = JSON.stringify(obj);
-            iframe.contentWindow.postMessage(message, '*');
+            globalPebl.user.getUser(function(user) {
+                clearInterval(waitingForReady);
+                var iframe = document.getElementById('registryFrame');
+                var currentUser = user.identity;
+                var obj = {
+                    "messageType": "Login",
+                    "user": currentUser,
+                    "currentPage": currentPage
+                }
+                var message = JSON.stringify(obj);
+                iframe.contentWindow.postMessage(message, '*');
+                //Script on registry page would login as that user
+            });
             //Script on registry page would login as that user
         }
     }, 500);
@@ -1832,6 +1835,7 @@ function createTOC() {
                         if (!dynamicKey.includes('Subsection') && tocObject[sectionKey][dynamicKey].card === cardMatch) {
                             var tocPage = document.createElement('div');
                             tocPage.classList.add('tocPage');
+                            tocPage.id = dynamicKey;
 
                             var tocPageIconWrapper = document.createElement('div');
                             tocPageIconWrapper.classList.add('tocPageIconWrapper');
@@ -1923,6 +1927,7 @@ function createTOC() {
                                 if (!dynamicKey.includes('Subsection') && tocObject[sectionKey][dynamicKey].card === cardMatch) {
                                     var tocPage = document.createElement('div');
                                     tocPage.classList.add('tocPage');
+                                    tocPage.id = dynamicKey;
 
                                     var tocPageIconWrapper = document.createElement('div');
                                     tocPageIconWrapper.classList.add('tocPageIconWrapper');
@@ -2021,66 +2026,56 @@ function createTOCDeleteConfirmDialog(sectionId, documentId) {
 
 function createDynamicPage(url, docType, externalURL, title) {
     closeDynamicPage();
-    globalPebl.getAsset(url, function(obj) {
-        // var blobURL = URL.createObjectURL(obj.content);
-        // var arrayBuffer;
-        // var fileReader = new FileReader();
-        // fileReader.onload = function() {
-        //  arrayBuffer = this.result;
-        // }
-        // fileReader.readAsArrayBuffer(obj.content);
+    var dynamicPageHeader = document.createElement('div');
+    dynamicPageHeader.id = 'dynamicPageHeader';
+    dynamicPageHeader.classList.add('dynamicPageHeader');
 
-        var dynamicPageHeader = document.createElement('div');
-        dynamicPageHeader.id = 'dynamicPageHeader';
-        dynamicPageHeader.classList.add('dynamicPageHeader');
-
-        var dynamicPageHeaderLink = document.createElement('a');
-        dynamicPageHeaderLink.id = 'dynamicPageHeaderLink';
-        dynamicPageHeaderLink.classList.add('dynamicPageHeaderLink');
-        dynamicPageHeaderLink.href = 'openinbrowser:' + externalURL;
-        dynamicPageHeaderLink.innerHTML = externalURL;
-        $(document.body).on('click', '#dynamicPageHeaderLink', function() {
-            handleDynamicPageHeaderLinkClick(event, this);
-        });
-
-        dynamicPageHeader.appendChild(dynamicPageHeaderLink);
-
-
-        var dynamicPageCloseButton = document.createElement('i');
-        dynamicPageCloseButton.id = 'dynamicPageCloseButton';
-        dynamicPageCloseButton.classList.add('dynamicPageCloseButton', 'fa', 'fa-times');
-
-        var dynamicPage = document.createElement('div');
-        dynamicPage.id = 'dynamicPage';
-        dynamicPage.classList.add('dynamicPage');
-        dynamicPage.setAttribute('resource-id', url);
-        dynamicPage.setAttribute('title', title);
-
-        var dynamicPageWrapper = document.createElement('div');
-        dynamicPageWrapper.classList.add('responsive-wrapper');
-
-        var dynamicPageFrame = document.createElement('iframe');
-        dynamicPageFrame.id = 'dynamicPageFrame';
-        dynamicPageFrame.classList.add('dynamicPageFrame');
-
-        dynamicPageWrapper.appendChild(dynamicPageFrame);
-
-        if (docType === 'html') {
-            dynamicPageFrame.src = externalURL;
-        } else if (docType === 'pdf') {
-            // dynamicPageFrame.src = 'pdfjs-1.8.188-dist/web/viewer.html';
-            // dynamicPageFrame.onload = function() {
-            //  var frame = top.frames[0].document.getElementById('dynamicPageFrame');
-            //  frame.contentWindow.PDFViewerApplication.open(arrayBuffer);
-            // }
-            dynamicPageFrame.src = 'http://docs.google.com/gview?url=' + externalURL + '&embedded=true';
-        }
-
-        dynamicPage.appendChild(dynamicPageWrapper);
-        document.body.appendChild(dynamicPageHeader);
-        document.body.appendChild(dynamicPage);
-        document.body.appendChild(dynamicPageCloseButton);
+    var dynamicPageHeaderLink = document.createElement('a');
+    dynamicPageHeaderLink.id = 'dynamicPageHeaderLink';
+    dynamicPageHeaderLink.classList.add('dynamicPageHeaderLink');
+    dynamicPageHeaderLink.href = 'openinbrowser:' + externalURL;
+    dynamicPageHeaderLink.innerHTML = externalURL;
+    $(document.body).on('click', '#dynamicPageHeaderLink', function() {
+        handleDynamicPageHeaderLinkClick(event, this);
     });
+
+    dynamicPageHeader.appendChild(dynamicPageHeaderLink);
+
+
+    var dynamicPageCloseButton = document.createElement('i');
+    dynamicPageCloseButton.id = 'dynamicPageCloseButton';
+    dynamicPageCloseButton.classList.add('dynamicPageCloseButton', 'fa', 'fa-times');
+
+    var dynamicPage = document.createElement('div');
+    dynamicPage.id = 'dynamicPage';
+    dynamicPage.classList.add('dynamicPage');
+    dynamicPage.setAttribute('resource-id', url);
+    dynamicPage.setAttribute('title', title);
+
+    var dynamicPageWrapper = document.createElement('div');
+    dynamicPageWrapper.classList.add('responsive-wrapper');
+
+    var dynamicPageFrame = document.createElement('iframe');
+    dynamicPageFrame.id = 'dynamicPageFrame';
+    dynamicPageFrame.classList.add('dynamicPageFrame');
+
+    dynamicPageWrapper.appendChild(dynamicPageFrame);
+
+    if (docType === 'html') {
+        dynamicPageFrame.src = externalURL;
+    } else if (docType === 'pdf') {
+        // dynamicPageFrame.src = 'pdfjs-1.8.188-dist/web/viewer.html';
+        // dynamicPageFrame.onload = function() {
+        //  var frame = top.frames[0].document.getElementById('dynamicPageFrame');
+        //  frame.contentWindow.PDFViewerApplication.open(arrayBuffer);
+        // }
+        dynamicPageFrame.src = 'http://docs.google.com/gview?url=' + externalURL + '&embedded=true';
+    }
+
+    dynamicPage.appendChild(dynamicPageWrapper);
+    document.body.appendChild(dynamicPageHeader);
+    document.body.appendChild(dynamicPage);
+    document.body.appendChild(dynamicPageCloseButton);
 }
 
 function createOverlayCloseButton() {
@@ -2476,24 +2471,22 @@ function handleAddedResourcesButtonClick() {
 
 function handleTocPageTextClick(event, elem) {
     event.preventDefault();
-        //If its a dynamic document
-        if ($(elem).attr('url')) {
-            if ($(elem).attr('tocLink')) {
-                sendDocumentToDestination($(elem).attr('url'), $(elem).attr('docType'), $(elem).attr('externalURL'), $(elem).text());
-                if ($('body')[0].baseURI.substr(1) === $(elem).attr('href')) {
-                    handleCloseButtonClick();
-                    openDocumentAtDestination();
-                } else {
-                    globalReadium.reader.openContentUrl($(elem).attr('href'));
-                }
-            } else {
-                createDynamicPage($(elem).attr('url'), $(elem).attr('docType'), $(elem).attr('externalURL'), $(elem).text()); 
-                handleCloseButtonClick();
-                hideAddedResources();
-            } 
-        } else {
+    //If its a dynamic document
+    handleOverlayCloseButtonClick();
+    if ($(elem).attr('url')) {
+        if ($(elem).attr('tocLink')) {
+            sendDocumentToDestination($(elem).attr('url'), $(elem).attr('docType'), $(elem).attr('externalURL'), $(elem).text());
+            $('#tocContainer').remove();
             globalReadium.reader.openContentUrl($(elem).attr('href'));
+            openDocumentAtDestination();
+        } else {
+            createDynamicPage($(elem).attr('url'), $(elem).attr('docType'), $(elem).attr('externalURL'), $(elem).text()); 
+            $('#tocContainer').remove();
+            //hideAddedResources();
         }
+    } else {
+        globalReadium.reader.openContentUrl($(elem).attr('href'));
+    }
 }
 
 function handleDynamicPageHeaderLinkClick(event, elem) {
@@ -2655,15 +2648,23 @@ function preloadIframes() {
     }, 1000);
 }
 
-function pullResource(target, location, url, docType, name, externalURL)  {
-    if (currentPrefix) {
+function pullResource(target, url, docType, name, externalURL)  {
+    if (currentSection && currentPrefix) {
         globalPebl.storage.getCurrentBook(function(book) {
-            globalPebl.eventPulled(book, target, location, currentPrefix, url, docType, name, externalURL);
+            var data = {
+                target: target,
+                location: currentSection,
+                card: currentPrefix,
+                book: book,
+                externalURL: externalURL,
+                docType: docType,
+                name: name,
+                url: url
+            }
+            globalPebl.emitEvent(globalPebl.events.newReference, data);
         });
     } else {
-        setTimeout(function() {
-            pullResource(target, location, url, docType, name, externalURL);
-        }, 1000);
+        console.log('no prefix and section');
     }
 }
 
