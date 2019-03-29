@@ -2062,7 +2062,7 @@ function createDynamicPage(url, docType, externalURL, title) {
     dynamicPageWrapper.appendChild(dynamicPageFrame);
 
     if (docType === 'html') {
-        dynamicPageFrame.src = externalURL.replace('http', 'https');
+        dynamicPageFrame.src = externalURL.replace('http://', 'https://');
     } else if (docType === 'pdf') {
         // dynamicPageFrame.src = 'pdfjs-1.8.188-dist/web/viewer.html';
         // dynamicPageFrame.onload = function() {
