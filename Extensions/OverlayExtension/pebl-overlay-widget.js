@@ -2033,7 +2033,7 @@ function createDynamicPage(url, docType, externalURL, title) {
     var dynamicPageHeaderLink = document.createElement('a');
     dynamicPageHeaderLink.id = 'dynamicPageHeaderLink';
     dynamicPageHeaderLink.classList.add('dynamicPageHeaderLink');
-    dynamicPageHeaderLink.href = 'openinbrowser:' + externalURL;
+    dynamicPageHeaderLink.href = externalURL;
     dynamicPageHeaderLink.innerHTML = externalURL;
     $(document.body).on('click', '#dynamicPageHeaderLink', function() {
         handleDynamicPageHeaderLinkClick(event, this);
@@ -2062,14 +2062,14 @@ function createDynamicPage(url, docType, externalURL, title) {
     dynamicPageWrapper.appendChild(dynamicPageFrame);
 
     if (docType === 'html') {
-        dynamicPageFrame.src = externalURL;
+        dynamicPageFrame.src = externalURL.replace('http', 'https');
     } else if (docType === 'pdf') {
         // dynamicPageFrame.src = 'pdfjs-1.8.188-dist/web/viewer.html';
         // dynamicPageFrame.onload = function() {
         //  var frame = top.frames[0].document.getElementById('dynamicPageFrame');
         //  frame.contentWindow.PDFViewerApplication.open(arrayBuffer);
         // }
-        dynamicPageFrame.src = 'http://docs.google.com/gview?url=' + externalURL + '&embedded=true';
+        dynamicPageFrame.src = 'https://docs.google.com/gview?url=' + externalURL + '&embedded=true';
     }
 
     dynamicPage.appendChild(dynamicPageWrapper);
@@ -2491,12 +2491,7 @@ function handleTocPageTextClick(event, elem) {
 
 function handleDynamicPageHeaderLinkClick(event, elem) {
     event.preventDefault();
-    //If in iOS let the app handle opening in a new window ()
-    if (!!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform))
-        window.location.href = $(elem).attr('href');
-    else
-        window.open($(elem).attr('href').replace('openinbrowser:', ''), '_blank');
-
+    window.open($(elem).attr('href').replace('openinbrowser:', ''), '_blank');
 }
 
 function getNotificationsCount() {
