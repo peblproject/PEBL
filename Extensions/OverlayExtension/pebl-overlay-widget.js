@@ -1502,23 +1502,23 @@ function nextTutorialStage() {
         $('#tutorialMessage').text('This option will launch a search of Knowledge Network resources that is in context to the current page.');
         $('#tutorialMessageContainer').attr('Stage', '7');
     } else if (currentStage === '7') {
-        var offset = ($('#discussButton').width() - $('#tutorialMessageContainer').width()) / 2;
+        var offset = ($('.discussButton').width() - $('#tutorialMessageContainer').width()) / 2;
         if (offset < 0)
             offset = 0;
         $('#tutorialMessageContainer').animate({
-            left: $('#discussButton').offset().left + offset
+            left: $('.discussButton').offset().left + offset
         }, 500);
 
         $('#tutorialMessage').text('The Discuss feature provides a place for PeBL eBook users to share feedback and insights in context to the current page.');
         $('#tutorialMessageContainer').attr('Stage', '8');
     } else if (currentStage === '8') {
-        var offset = ($('#notesButton').width() - $('#tutorialMessageContainer').width());
-        if (offset > 0 && $('#notesButton').width() < $('#tutorialMessageContainer').width())
+        var offset = ($('.notesButton').width() - $('#tutorialMessageContainer').width());
+        if (offset > 0 && $('.notesButton').width() < $('#tutorialMessageContainer').width())
             offset = 0;
         else if (offset > 0)
             offset = offset / 2;
         $('#tutorialMessageContainer').animate({
-            left: $('#notesButton').offset().left + offset
+            left: $('.notesButton').offset().left + offset
         }, 500);
 
         if (offset < 0)
