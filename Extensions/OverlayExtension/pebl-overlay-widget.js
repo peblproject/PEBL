@@ -878,6 +878,9 @@ function displayFilteredTOC(posts) {
                     tocPageText.classList.add('tocPageText');
                     tocPageText.href = posts[key].subPages.posts[j].post.filename;
                     tocPageText.textContent = posts[key].subPages.posts[j].post.title;
+                    tocPageText.addEventListener('click', function() {
+                        handleTocPageTextClick(event, this);
+                    });
 
                     tocPagePrefixWrapper.appendChild(tocPagePrefix);
                     tocPageTextWrapper.appendChild(tocPageText);
