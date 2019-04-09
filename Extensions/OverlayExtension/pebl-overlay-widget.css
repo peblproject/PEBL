@@ -1313,6 +1313,7 @@ i.overlayCloseButton {
 
 .tutorialMessageCancelButton {
     padding: 10px;
+    cursor: pointer;
     position: relative;
     bottom: 5px;
     margin-left: 10px;
@@ -1328,6 +1329,7 @@ i.overlayCloseButton {
 
 .tutorialMessageNextButton {
     padding: 10px;
+    cursor: pointer;
     position: relative;
     margin-right: 10px;
     float: right;
