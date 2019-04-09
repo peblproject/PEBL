@@ -55,6 +55,13 @@ $(document).ready(function() {
 
     openDocumentAtDestination();
 
+    $(document.body).on('click', '#tutorialMessageCancelButton', function() {
+        endTutorial();
+        handleCloseButtonClick();
+    });
+
+    $(document.body).on('click', '#tutorialMessageNextButton', nextTutorialStage);
+
     $(document.body).on('click', '.expandButtonContainerUnderlay', handleExpandButtonClick);
     $(document.body).on('click', '#closeButton', handleCloseButtonClick);
     $(document.body).on('click', '#helpButton', handleHelpButtonClick);
@@ -1382,10 +1389,7 @@ function createUITutorial() {
     tutorialMessageCancelButon.id = 'tutorialMessageCancelButton';
     tutorialMessageCancelButon.classList.add('tutorialMessageCancelButton');
     tutorialMessageCancelButon.textContent = 'Cancel';
-    $(document.body).on('click', '#tutorialMessageCancelButton', function() {
-        endTutorial();
-        handleCloseButtonClick();
-    });
+    
     tutorialMessageContainer.appendChild(tutorialMessageCancelButon);
 
     var tutorialMessageNextButton = document.createElement('label');
@@ -1393,7 +1397,7 @@ function createUITutorial() {
     tutorialMessageNextButton.classList.add('tutorialMessageNextButton');
     tutorialMessageNextButton.textContent = 'Next';
     tutorialMessageContainer.appendChild(tutorialMessageNextButton);
-    $(document.body).on('click', '#tutorialMessageNextButton', nextTutorialStage);
+    
 
     var tutorialMessageArrow = document.createElement('div');
     tutorialMessageArrow.id = 'tutorialMessageArrow';
