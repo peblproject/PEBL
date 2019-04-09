@@ -974,7 +974,6 @@ i.helpButton {
 .tocSubsectionPrefixText {
     position: absolute;
     height: auto;
-    width: 100%;
     font-family: 'Helvetica Neue', sans-serif;
     font-size: 20px;
     text-decoration: none;
