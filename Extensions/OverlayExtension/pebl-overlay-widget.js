@@ -1875,9 +1875,9 @@ function createTOC() {
                             var tocPageDeleteButtonWrapper = document.createElement('div');
                             tocPageDeleteButtonWrapper.classList.add('tocPageDeleteButtonWrapper');
 
-                            var tocPageDeleteButton = document.createElement('span');
-                            tocPageDeleteButton.classList.add('tocPageDeleteButton');
-                            tocPageDeleteButton.innerHTML = '&#215;';
+                            var tocPageDeleteButton = document.createElement('i');
+                            tocPageDeleteButton.classList.add('tocPageDeleteButton fa fa-trash-alt fa-2x');
+                            tocPageDeleteButton.setAttribute('aria-hidden', 'true');
                             tocPageDeleteButton.setAttribute('section-id', sectionKey);
                             tocPageDeleteButton.setAttribute('document-id', dynamicKey);
 
@@ -1967,9 +1967,9 @@ function createTOC() {
                                     var tocPageDeleteButtonWrapper = document.createElement('div');
                                     tocPageDeleteButtonWrapper.classList.add('tocPageDeleteButtonWrapper');
 
-                                    var tocPageDeleteButton = document.createElement('span');
-                                    tocPageDeleteButton.classList.add('tocPageDeleteButton');
-                                    tocPageDeleteButton.innerHTML = '&#215;';
+                                    var tocPageDeleteButton = document.createElement('i');
+                                    tocPageDeleteButton.classList.add('tocPageDeleteButton fa fa-trash-alt fa-2x');
+                                    tocPageDeleteButton.setAttribute('aria-hidden', 'true');
                                     tocPageDeleteButton.setAttribute('section-id', sectionKey);
                                     tocPageDeleteButton.setAttribute('document-id', dynamicKey);
 
@@ -2453,9 +2453,9 @@ function handleAddedResourcesButtonClick() {
                             var tocPageDeleteButtonWrapper = document.createElement('div');
                             tocPageDeleteButtonWrapper.classList.add('tocPageDeleteButtonWrapper');
 
-                            var tocPageDeleteButton = document.createElement('span');
-                            tocPageDeleteButton.classList.add('tocPageDeleteButton');
-                            tocPageDeleteButton.innerHTML = '&#215;';
+                            var tocPageDeleteButton = document.createElement('i');
+                            tocPageDeleteButton.classList.add('tocPageDeleteButton fa fa-trash-alt fa-2x');
+                            tocPageDeleteButton.setAttribute('aria-hidden', 'true');
                             tocPageDeleteButton.setAttribute('section-id', sectionKey);
                             tocPageDeleteButton.setAttribute('document-id', pageKey);
 

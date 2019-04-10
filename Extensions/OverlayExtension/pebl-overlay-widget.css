@@ -1076,10 +1076,8 @@ i.helpButton {
 
 .tocPageDeleteButton {
     position: relative;
+    cursor: pointer;
     color: red;
-    font-size: 40px;
-    line-height: 25px;
-    font-weight: bold;
 }
 
 .tocDeleteConfirmDialogContainer {
