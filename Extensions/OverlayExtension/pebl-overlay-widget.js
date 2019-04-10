@@ -1171,7 +1171,7 @@ function createExpandButton() {
 
     var expandButton = document.createElement('i');
     expandButton.id = 'expandButton';
-    expandButton.classList.add('expandButton', 'fa', 'fa-toolbox');
+    expandButton.classList.add('expandButton', 'fa', 'fa-bars');
 
     var expandText = document.createElement('span');
     expandText.classList.add('expandText');

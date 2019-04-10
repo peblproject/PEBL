@@ -300,12 +300,14 @@ p.discussionQuestionBoxText {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 1em;
+    margin: 0 0 1em 6px;
 }
 
 .peblSidebarSearchField {
     width: 100%;
     border: 1px solid rgb(7, 126, 188);
+    padding: 4px;
+    font-size: 1rem;
 }
 
 .peblResourceInfoContainer {
@@ -334,11 +336,16 @@ p.discussionQuestionBoxText {
 }
 
 .sidebarTagElement {
+    cursor: pointer;
     width: 100%;
     display: flex;
     justify-content: space-between;
-    padding: .25em;		
+    padding: .25em;
     border: 1px solid #ddd;
+}
+
+.sidebarTagElement:hover {
+    background-color: rgba(7, 126, 188, 0.1);
 }
 
 .sidebarTagElement.active {
@@ -392,7 +399,7 @@ p.discussionQuestionBoxText {
 .footerIcon {
     position: relative;
     padding-bottom: 0;
-    font-size: 6vmin !important;
+    font-size: 1.5rem;
 }
 
 
@@ -463,6 +470,7 @@ p.discussionQuestionBoxText {
 }
 
 .findButton, .discussButton, .notesButton {
+    cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -476,8 +484,15 @@ p.discussionQuestionBoxText {
     border-radius: 5px;
     font-size: 16px;
     padding: 10px !important;
-    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+/*     box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3); */
     z-index: 4999;
+}
+
+.findButton:hover, 
+.discussButton:hover, 
+.notesButton:hover {
+    background-color: rgba(7, 126, 188, 0.1);
+    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
 }
 
 .findButton > div,
