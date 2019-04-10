@@ -215,6 +215,17 @@ button.replyCloseButton {
     float: right;
     margin-left: 1em;
     margin-bottom: 0;
+    box-shadow: none;
+    color: #fff;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 0.875rem;
+    font-weight: 800;
+    line-height: 1;
+    padding: 1em 2em;
+    text-shadow: none;
+    transition: background 0.2s;
+    border-width: 0;
 }
 
 .callout p {
