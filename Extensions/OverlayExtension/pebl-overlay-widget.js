@@ -222,7 +222,7 @@ $(document).ready(function() {
         var title = $(this).attr('title');
         var notificationID = $(this).attr('notification-id');
         var destination = null;
-        globalPebl.removeNotification(notificationID);
+        globalPebl.utils.removeNotification(notificationID);
         globalPebl.utils.getToc(function(toc) {
             Object.keys(toc).forEach(function(section) {
                 Object.keys(toc[section]).forEach(function(subsection) {
@@ -1577,7 +1577,7 @@ function createNotifications() {
     notificationsClearButton.classList.add('notificationsClearButton');
     $(document.body).on('click', '.notificationsClearButton', function() {
         $('#notificationsContainer').children('div').each(function() {
-            globalPebl.removeNotification($(this).attr('notification-id'));
+            globalPebl.utils.removeNotification($(this).attr('notification-id'));
         });
         clearNotifications();
     });
@@ -1588,63 +1588,64 @@ function createNotifications() {
 
     notificationsClearButton.appendChild(notificationsClearText);
     
+    globalPebl.user.getUser(function(userProfile) {
+        globalPebl.utils.getNotifications(function(notifications) {
+            if (obj.length === 0)
+                return;
 
-    globalPebl.getNotifications(function(obj) {
-        if (Object.keys(obj).length === 0)
-            return;
-        var notificationsObj = obj;
+            for (var notification of notifications) {
+                var pulled;
+                if (notification.payload.actorId === userProfile.identity) {
+                    pulled = true;
+                } else {
+                    pulled = false;
+                }
+                var notificationElementWrapper = document.createElement('div');
+                notificationElementWrapper.classList.add('notificationElementWrapper');
+                notificationElementWrapper.setAttribute('url', notification.payload.url);
+                notificationElementWrapper.setAttribute('docType', notification.payload.docType);
+                notificationElementWrapper.setAttribute('externalURL', notification.payload.externalURL);
+                notificationElementWrapper.setAttribute('title', notification.payload.name);
+                notificationElementWrapper.setAttribute('destination', notification.payload.card);
+                notificationElementWrapper.setAttribute('notification-id', notification.id);
 
-        // Object.keys(notificationsObj).forEach(function(key) {
-        //     var pulled;
-        //     if (notificationsObj[key].payload.actorId === globalPebl.userManager.profile.identity) {
-        //         pulled = true;
-        //     } else {
-        //         pulled = false;
-        //     }
-        //     var notificationElementWrapper = document.createElement('div');
-        //     notificationElementWrapper.classList.add('notificationElementWrapper');
-        //     notificationElementWrapper.setAttribute('url', notificationsObj[key].payload.url);
-        //     notificationElementWrapper.setAttribute('docType', notificationsObj[key].payload.docType);
-        //     notificationElementWrapper.setAttribute('externalURL', notificationsObj[key].payload.externalURL);
-        //     notificationElementWrapper.setAttribute('title', notificationsObj[key].payload.name);
-        //     notificationElementWrapper.setAttribute('destination', notificationsObj[key].payload.card);
-        //     notificationElementWrapper.setAttribute('notification-id', notificationsObj[key].id);
+                var notificationElement = document.createElement('p');
+                notificationElement.classList.add('notificationElement');
 
-        //     var notificationElement = document.createElement('p');
-        //     notificationElement.classList.add('notificationElement');
+                var notificationElementSenderText = document.createElement('span');
+                notificationElementSenderText.classList.add('notificationElementSenderText');
+                if (pulled)
+                    notificationElementSenderText.textContent = 'You added ';
+                else
+                    notificationElementSenderText.textContent = notification.payload.actorId + ' shared ';
 
-        //     var notificationElementSenderText = document.createElement('span');
-        //     notificationElementSenderText.classList.add('notificationElementSenderText');
-        //     if (pulled)
-        //         notificationElementSenderText.textContent = 'You added ';
-        //     else
-        //         notificationElementSenderText.textContent = notificationsObj[key].payload.actorId + ' shared ';
+                var notificationElementContentText = document.createElement('span');
+                notificationElementContentText.classList.add('notificationElementContentText');
+                notificationElementContentText.textContent = notification.payload.name;
 
-        //     var notificationElementContentText = document.createElement('span');
-        //     notificationElementContentText.classList.add('notificationElementContentText');
-        //     notificationElementContentText.textContent = notificationsObj[key].payload.name;
+                var toSpan = document.createElement('span');
+                toSpan.textContent = ' to ';
 
-        //     var toSpan = document.createElement('span');
-        //     toSpan.textContent = ' to ';
+                var notificationElementLocationText = document.createElement('a');
+                notificationElementLocationText.classList.add('notificationElementLocationText');
+                notificationElementLocationText.textContent = niceName(notification.payload.book.replace('.epub', ''));
 
-        //     var notificationElementLocationText = document.createElement('a');
-        //     notificationElementLocationText.classList.add('notificationElementLocationText');
-        //     notificationElementLocationText.textContent = niceName(notificationsObj[key].payload.book.replace('.epub', ''));
+                notificationElement.appendChild(notificationElementSenderText);
+                notificationElement.appendChild(notificationElementContentText);
+                notificationElement.appendChild(toSpan);
+                notificationElement.appendChild(notificationElementLocationText);
 
-        //     notificationElement.appendChild(notificationElementSenderText);
-        //     notificationElement.appendChild(notificationElementContentText);
-        //     notificationElement.appendChild(toSpan);
-        //     notificationElement.appendChild(notificationElementLocationText);
+                notificationElementWrapper.appendChild(notificationElement);
+                notificationsContainer.appendChild(notificationElementWrapper);
+            }
 
-        //     notificationElementWrapper.appendChild(notificationElement);
-        //     notificationsContainer.appendChild(notificationElementWrapper);
-        // });
+            notificationsWrapper.appendChild(notificationsContainer);
+            notificationsWrapper.appendChild(notificationsClearButton);
 
-        notificationsWrapper.appendChild(notificationsContainer);
-        notificationsWrapper.appendChild(notificationsClearButton);
-
-        document.getElementById('peblNotificationButtonContainer').appendChild(notificationsWrapper);
+            document.getElementById('peblNotificationButtonContainer').appendChild(notificationsWrapper);
+        });
     });
+    
 }
 
 function createHelp() {
@@ -2502,12 +2503,10 @@ function handleDynamicPageHeaderLinkClick(event, elem) {
 }
 
 function getNotificationsCount() {
-    // globalPebl.getNotifications(function(obj) {
-    //     var notificationsObj = obj;
-    //     var notificationsCount = Object.keys(notificationsObj).length;
-    //     setNotificationBadgeCounter(notificationsCount);
-
-    // });
+    globalPebl.utils.getNotifications(function(notifications) {
+        var notificationsCount = notifications.length;
+        setNotificationBadgeCounter(notificationsCount);
+    });
 }
 
 function getCurrentPrefix(page) {
