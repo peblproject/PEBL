@@ -1590,7 +1590,7 @@ function createNotifications() {
     
     globalPebl.user.getUser(function(userProfile) {
         globalPebl.utils.getNotifications(function(notifications) {
-            if (obj.length === 0)
+            if (notifications.length === 0)
                 return;
 
             for (var notification of notifications) {
