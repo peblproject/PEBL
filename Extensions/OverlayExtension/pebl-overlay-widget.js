@@ -1595,18 +1595,18 @@ function createNotifications() {
 
             for (var notification of notifications) {
                 var pulled;
-                if (notification.payload.actorId === userProfile.identity) {
+                if (notification.identity === userProfile.identity) {
                     pulled = true;
                 } else {
                     pulled = false;
                 }
                 var notificationElementWrapper = document.createElement('div');
                 notificationElementWrapper.classList.add('notificationElementWrapper');
-                notificationElementWrapper.setAttribute('url', notification.payload.url);
-                notificationElementWrapper.setAttribute('docType', notification.payload.docType);
-                notificationElementWrapper.setAttribute('externalURL', notification.payload.externalURL);
-                notificationElementWrapper.setAttribute('title', notification.payload.name);
-                notificationElementWrapper.setAttribute('destination', notification.payload.card);
+                notificationElementWrapper.setAttribute('url', notification.url);
+                notificationElementWrapper.setAttribute('docType', notification.docType);
+                notificationElementWrapper.setAttribute('externalURL', notification.externalURL);
+                notificationElementWrapper.setAttribute('title', notification.name);
+                notificationElementWrapper.setAttribute('destination', notification.card);
                 notificationElementWrapper.setAttribute('notification-id', notification.id);
 
                 var notificationElement = document.createElement('p');
@@ -1617,18 +1617,18 @@ function createNotifications() {
                 if (pulled)
                     notificationElementSenderText.textContent = 'You added ';
                 else
-                    notificationElementSenderText.textContent = notification.payload.actorId + ' shared ';
+                    notificationElementSenderText.textContent = notification.actor.name + ' shared ';
 
                 var notificationElementContentText = document.createElement('span');
                 notificationElementContentText.classList.add('notificationElementContentText');
-                notificationElementContentText.textContent = notification.payload.name;
+                notificationElementContentText.textContent = notification.name;
 
                 var toSpan = document.createElement('span');
                 toSpan.textContent = ' to ';
 
                 var notificationElementLocationText = document.createElement('a');
                 notificationElementLocationText.classList.add('notificationElementLocationText');
-                notificationElementLocationText.textContent = niceName(notification.payload.book.replace('.epub', ''));
+                notificationElementLocationText.textContent = niceName(notification.book.replace('.epub', ''));
 
                 notificationElement.appendChild(notificationElementSenderText);
                 notificationElement.appendChild(notificationElementContentText);
