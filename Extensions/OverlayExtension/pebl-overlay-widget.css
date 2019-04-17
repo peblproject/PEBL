@@ -249,6 +249,7 @@ p.discussionQuestionBoxText {
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
     flex-shrink: 0;
+    cursor: pointer;
 }
 
 .peblSidebarExpandButton.expanded:after {
