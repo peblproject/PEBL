@@ -190,6 +190,7 @@ p.discussionQuestionBoxText {
     border-radius: 5px;
     margin: 5px;
     display: inline-block;
+    cursor: pointer;
 }
 
 .cardTag.dei_assessment,
