@@ -157,6 +157,12 @@
     height: 5em;
 }
 
+.messageReplyButton {
+    color: blue;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
 .callout {
     padding: 1em;
     display: inline-block;

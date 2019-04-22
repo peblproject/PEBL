@@ -203,7 +203,6 @@ discussion.messageHandler = function(responseBox, thread, replyDisabled) {
                             var messageReplyButton = document.createElement('a');
                             messageReplyButton.classList.add('messageReplyButton');
                             messageReplyButton.textContent = 'Reply';
-                            messageReplyButton.href = '#!';
                             messageReplyButton.addEventListener('click', function(event) {
                                 event.preventDefault();
                                 discussion.replyDiscussion(event);
