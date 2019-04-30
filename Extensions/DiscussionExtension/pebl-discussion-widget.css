@@ -1,9 +1,9 @@
 .discussionLightbox {
     position: fixed;
-    top: 55px;
+    top: 10px;
     left: 0;
     right: 0;
-    bottom: 0;
+    bottom: 10px;
     background-color: rgb(240, 240, 240);
     z-index: 5000;
     max-width: 700px;
@@ -70,7 +70,7 @@
     display: flex;
     flex-direction: column;
     margin: 1em;
-    min-height: 175px;
+    min-height: 135px;
 }
 
 .discussionButtonContainer {
@@ -224,7 +224,6 @@ button.replyCloseButton {
     box-shadow: none;
     color: #fff;
     cursor: pointer;
-    display: inline-block;
     font-size: 0.875rem;
     font-weight: 800;
     line-height: 1;
