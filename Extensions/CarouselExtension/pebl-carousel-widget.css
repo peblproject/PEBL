@@ -44,6 +44,8 @@
 .carousel_dot, .carousel_leftButton, .carousel_rightButton {
 	background-color: transparent;
 	padding: 0;
+	border: none;
+	cursor: pointer;
 }
 
 .carousel_dot:hover, .carousel_leftButton:hover, .carousel_rightButton:hover {

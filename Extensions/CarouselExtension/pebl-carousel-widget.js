@@ -1,15 +1,22 @@
+var globalPebl = window.parent.PeBL;
+var globalReadium = window.parent.READIUM;
+
+var carousel = {};
+
+globalPebl.extension.carousel = carousel;
+
 $(document).ready(function() {
     $('.carousel_carouselExtension').each(function() {
         var insertID = $(this)[0].getAttribute('id');
         var imagesArray = JSON.parse($(this)[0].getAttribute('data-images'));
         var captionsArray = JSON.parse($(this)[0].getAttribute('data-captions'));
-        carousel_createCarousel(insertID, imagesArray, captionsArray);
+        carousel.createCarousel(insertID, imagesArray, captionsArray);
     });
 });
 
-var animationInProgress = false;
+carousel.animationInProgress = false;
 
-function carousel_createCarousel(insertID, imagesArray, captionsArray) {
+carousel.createCarousel = function(insertID, imagesArray, captionsArray) {
 	var carouselWrapper = document.createElement('div');
 	carouselWrapper.classList.add('carousel_wrapper');
 
@@ -32,7 +39,7 @@ function carousel_createCarousel(insertID, imagesArray, captionsArray) {
 	var leftButton = document.createElement('button');
 	leftButton.classList.add('carousel_leftButton');
 	leftButton.addEventListener('click', function() {
-		carousel_prevSlide($(this));
+		carousel.prevSlide($(this));
 	});
 
 	var leftButtonImage = document.createElement('i');
@@ -46,7 +53,7 @@ function carousel_createCarousel(insertID, imagesArray, captionsArray) {
 	var rightButton = document.createElement('button');
 	rightButton.classList.add('carousel_rightButton');
 	rightButton.addEventListener('click', function() {
-		carousel_nextSlide($(this));
+		carousel.nextSlide($(this));
 	});
 
 	var rightButtonImage = document.createElement('i');
@@ -79,14 +86,14 @@ function carousel_createCarousel(insertID, imagesArray, captionsArray) {
 		dot.classList.add('carousel_dot');
 		dot.setAttribute('data-position', i);
 		dot.addEventListener('click', function() {
-			carousel_goToSlide(this.getAttribute('data-position'));
+			carousel.goToSlide(this.getAttribute('data-position'));
 		});
 
 		var dotImage = document.createElement('i');
 		if (i == 0)
 			dotImage.classList.add('fa', 'fa-circle', 'carousel_dotImage');
 		else
-			dotImage.classList.add('fa', 'fa-circle-thin', 'carousel_dotImage');
+			dotImage.classList.add('far', 'fa-circle', 'carousel_dotImage');
 
 		dot.appendChild(dotImage);
 		dotWrapper.appendChild(dot);
@@ -131,11 +138,11 @@ function carousel_createCarousel(insertID, imagesArray, captionsArray) {
     insertLocation.remove();
 }
 
-function carousel_prevSlide(elem) {
-	if (!animationInProgress) {
-		animationInProgress = true;
+carousel.prevSlide = function(elem) {
+	if (!carousel.animationInProgress) {
+		carousel.animationInProgress = true;
 		var totalSlides = elem.parent().siblings('.carousel_dotsContainer').children().length;
-		var currentSlideDot = elem.parent().siblings('.carousel_dotsContainer').find('.fa-circle').first().parent();
+		var currentSlideDot = elem.parent().siblings('.carousel_dotsContainer').find('.fa.fa-circle').first().parent();
 		var currentSlidePosition = parseInt(currentSlideDot.attr('data-position'));
 		var newSlidePosition = currentSlidePosition == 0 ? totalSlides - 1 : currentSlidePosition - 1;
 		var lastSlide = elem.parent().parent().parent().next().children().last();
@@ -144,21 +151,21 @@ function carousel_prevSlide(elem) {
 		lastSlide[0].addEventListener('transitionend', function(e) {
 			e.target.removeEventListener(e.type, arguments.callee);
 			elem.parent().parent().parent().next().prepend(lastSlide);
-			currentSlideDot.children().first().removeClass('fa-circle').addClass('fa-circle-thin');
-			currentSlideDot.parent().parent().find('button[data-position="' + newSlidePosition + '"]').first().children().first().removeClass('fa-circle-thin').addClass('fa-circle');
+			currentSlideDot.children().first().removeClass('fa').addClass('far');
+			currentSlideDot.parent().parent().find('button[data-position="' + newSlidePosition + '"]').first().children().first().removeClass('far').addClass('fa');
 			lastSlide.removeClass('carousel_animatePrev');
 			lastSlide.css('visibility', '');
-			animationInProgress = false;
+			carousel.animationInProgress = false;
 		});
 		lastSlide.addClass('carousel_animatePrev');
 	}
 }
 
-function carousel_nextSlide(elem) {
-	if (!animationInProgress) {
-		animationInProgress = true;
+carousel.nextSlide = function(elem) {
+	if (!carousel.animationInProgress) {
+		carousel.animationInProgress = true;
 		var totalSlides = elem.parent().siblings('.carousel_dotsContainer').children().length;
-		var currentSlideDot = elem.parent().siblings('.carousel_dotsContainer').find('.fa-circle').first().parent();
+		var currentSlideDot = elem.parent().siblings('.carousel_dotsContainer').find('.fa.fa-circle').first().parent();
 		var currentSlidePosition = parseInt(currentSlideDot.attr('data-position'));
 		var newSlidePosition = currentSlidePosition == totalSlides - 1 ? 0 : currentSlidePosition + 1;
 		var currentSlide = elem.parent().parent().parent().next().children().first();
@@ -166,17 +173,17 @@ function carousel_nextSlide(elem) {
 		currentSlide[0].addEventListener('transitionend', function(e) {
 			e.target.removeEventListener(e.type, arguments.callee);
 			elem.parent().parent().parent().next().append(currentSlide);
-			currentSlideDot.children().first().removeClass('fa-circle').addClass('fa-circle-thin');
-			currentSlideDot.parent().parent().find('button[data-position="' + newSlidePosition + '"]').first().children().first().removeClass('fa-circle-thin').addClass('fa-circle');
+			currentSlideDot.children().first().removeClass('fa').addClass('far');
+			currentSlideDot.parent().parent().find('button[data-position="' + newSlidePosition + '"]').first().children().first().removeClass('far').addClass('fa');
 			currentSlide.removeClass('carousel_animateNext');
-			animationInProgress = false;
+			carousel.animationInProgress = false;
 		});
 		currentSlide.addClass('carousel_animateNext');
 	}
 }
 
 
-function carousel_goToSlide(n) {
+carousel.goToSlide = function(n) {
 	var slide = parseInt(n);
 	console.log("Slide " + slide);
 }
