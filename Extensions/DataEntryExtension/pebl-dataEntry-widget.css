@@ -7,6 +7,8 @@
 .dataEntryCfiPlaceholder {
     margin: 0 !important;
     padding: 0 !important;
+    color: transparent !important;
+    font-size: 1px !important;
     line-height: 0 !important;
 }
 
@@ -108,7 +110,9 @@
 
 .dataEntryCallout form > .textBox,
 .dataEntryCallout form > .dataEntryTableContainer,
-.dataEntrySubFormCallout form > .textBox {
+.dataEntrySubFormCallout form > .textBox,
+.dataEntryCallout form > .dataEntryHeaderEntry,
+.dataEntryCallout form > .dataEntryCheckboxContainer {
     padding-right: 1em;
     padding-left: 1em;
     margin-bottom: 1em;
@@ -180,7 +184,8 @@
     display: none;
 }
 
-.textResponses .response {
+.textResponses .response,
+.dataEntryCheckboxContainer .response {
     position: relative;
     padding: .8em 1em .5em 3em;
     margin: 0;
@@ -188,7 +193,8 @@
     border-bottom: 1px solid #ddd;
 }
 
-.textResponses .response > i {
+.textResponses .response > i,
+.dataEntryCheckboxContainer .response > i {
     position: absolute;
     left: 0.5em;
     font-size: 1.5em;
@@ -202,22 +208,26 @@
     font-style: italic;
 }
 
-.textResponses .your.response {
+.textResponses .your.response,
+.dataEntryCheckboxContainer .your.response {
     background-color: #fff;
 }
 
-.textResponses .response .userId {
+.textResponses .response .userId,
+.dataEntryCheckboxContainer .response .userId {
     font-weight: bold;
 }
 
-.textResponses .response .timestamp {
+.textResponses .response .timestamp,
+.dataEntryCheckboxContainer .response .timestamp {
     margin-left: .5em;
     /*    letter-spacing: .5em;*/
     font-size: .75em;
     color: #999;
 }
 
-.textResponses .response .message {
+.textResponses .response .message,
+.dataEntryCheckboxContainer .response .message {
     font-style: normal;
     font-weight: normal;
     margin: .5em 0;
@@ -227,12 +237,15 @@
     display: flex;
     align-items: center;
     border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    justify-content: space-between;
 /*    background: rgba(0, 168, 142, 0.2);*/
 /*    margin-bottom: 5px;*/
 }
 
 .dataEntryCheckboxContainer > span {
     padding: 0.5em;
+    width: 100%;
 }
 
 .dataEntryCheckboxContainer > input[type="checkbox"] {
@@ -247,7 +260,12 @@
 
 .dataEntryCheckboxResponseContainer {
     padding: 0.5em;
-    min-width: 25%;
+    max-width: 50%;
+    font-family: "Helvetica Neue", sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    flex-shrink: 0;
 }
 
 .dataEntryCheckboxResponseContainer > span {
@@ -293,6 +311,13 @@
     padding: 2em;
     cursor: pointer;
     margin: 0.5em;
+    background: #b5bcac;
+}
+
+.dataEntryMultiChoiceButton:hover,
+.dataEntryMultiChoiceButton.active {
+    background: #4b5e26;
+    color: white;
 }
 
 .dataEntryMultiChoiceResponse {
@@ -372,4 +397,66 @@
 
 .pollingWindow .dataEntryCallout form {
     max-height: calc(100vh - 192px);
+}
+
+.showInlineMakeOfficial .inlineMakeOfficialContainer {
+    display: flex;
+}
+
+.inlineMakeOfficialContainer {
+    display: none;
+    color: #08a88e;
+}
+
+.dataEntryTableContainer table th {
+    text-align: center;
+    padding: 0.5em;
+}
+
+.dataEntryTableContainer table td {
+    background: white;
+    text-align: center;
+    padding: 0.5em;
+    border: 1px solid #ccc;
+}
+
+.dataEntryCallout input[type="radio"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    display: inline-block;
+    position: relative;
+    background-color: #c4c4c4;
+    color: #fff;
+    height: 2em;
+    width: 2em;
+    border: 0;
+    border-radius: 50px;
+    cursor: pointer;
+    outline: none;
+    margin-right: 7px;
+}
+
+.dataEntryCallout input[type="radio"]:hover {
+    background-color: #f2c977;
+}
+
+.dataEntryCallout input[type="radio"]:checked {
+    background-color: #328d4e;
+}
+
+.dataEntryCallout input[type="radio"]:checked::before {
+    content: '\02143';
+    position: absolute;
+    font: 1em/1 'Open Sans', sans-serif;
+    left: 8px;
+    top: 5px;
+    transform: rotate(40deg);
+}
+
+.dataEntryTableContainer table input[type="radio"] {
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
 }

@@ -13,8 +13,9 @@ $(document).ready(function() {
         var forms = JSON.parse($(this)[0].getAttribute('data-forms'));
         var sharing = $(this)[0].getAttribute('data-sharing');
         var displayMode = $(this)[0].getAttribute('data-displayMode');
-        var polling = $(this)[0].hasAttribute('data-polling') ? $(this)[0].getAttribute('data-polling') : null;
-        dataEntry.createDataEntry(insertID, prompt, id, forms, sharing, displayMode, polling);
+        var polling = $(this)[0].hasAttribute('data-polling') ? $(this)[0].getAttribute('data-polling') : 'false';
+        var useConfig = $(this)[0].hasAttribute('data-useConfig') ? $(this)[0].getAttribute('data-useConfig') : 'false';
+        dataEntry.createDataEntry(insertID, prompt, id, forms, sharing, displayMode, polling, useConfig);
     });
 });
 
@@ -679,12 +680,12 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
     }
 
     checkboxContainer.appendChild(checkbox);
+    checkboxContainer.appendChild(textSpan);
     checkboxContainer.appendChild(checkboxResponseContainer);
     checkboxContainer.appendChild(checkboxResponseContainerOfficial);
     checkboxContainer.appendChild(checkboxResponseContainerPrivate);
     checkboxContainer.appendChild(checkboxResponseContainerTeam);
     checkboxContainer.appendChild(checkboxResponseContainerClass);
-    checkboxContainer.appendChild(textSpan);
 
     return checkboxContainer;
 }
@@ -697,7 +698,7 @@ dataEntry.invalidForm = function() {
     }
 }
 
-dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, displayMode, polling) {
+dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, displayMode, polling, useConfig) {
     var programID = null;
     if (window.parent.extensionDashboard && window.parent.extensionDashboard.programID)
         programID = window.parent.extensionDashboard.programID;
@@ -705,9 +706,9 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
         globalPebl.utils.getSpecificGroupMembership(programID, function(group) {
             var dataEntryID;
             var variableSharing = false;
-            var learnletLevel = dataEntry.getLearnletLevel(document.body.id);
-            var learnlet = dataEntry.getLearnlet(document.body.id);
-            var learnletTitle = dataEntry.getLearnletTitle();
+            // var learnletLevel = dataEntry.getLearnletLevel(document.body.id);
+            // var learnlet = dataEntry.getLearnlet(document.body.id);
+            // var learnletTitle = dataEntry.getLearnletTitle();
 
             //Thread is either group + id, user + id, or id
             if (sharing === 'team') {
@@ -734,14 +735,20 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
             var dataEntryWrapper = document.createElement('div');
             dataEntryWrapper.classList.add('dataEntryWrapper');
 
-            var dataEntryCfiPlaceholder = document.createElement('p');
-            dataEntryCfiPlaceholder.classList.add('dataEntryCfiPlaceholder');
-            dataEntryWrapper.appendChild(dataEntryCfiPlaceholder);
+            var dataEntryCfiPlaceholderStart = document.createElement('p');
+            dataEntryCfiPlaceholderStart.textContent = 'CFI';
+            dataEntryCfiPlaceholderStart.classList.add('dataEntryCfiPlaceholder');
+            dataEntryWrapper.appendChild(dataEntryCfiPlaceholderStart);
 
             var calloutDiv = document.createElement('div');
             calloutDiv.classList.add('dataEntryCallout');
 
             dataEntryWrapper.appendChild(calloutDiv);
+
+            var dataEntryCfiPlaceholderEnd = document.createElement('p');
+            dataEntryCfiPlaceholderEnd.textContent = 'CFI';
+            dataEntryCfiPlaceholderEnd.classList.add('dataEntryCfiPlaceholder');
+            dataEntryWrapper.appendChild(dataEntryCfiPlaceholderEnd);
 
             var header = document.createElement('div');
             header.classList.add('dataEntryHeader');
@@ -807,6 +814,53 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
             var formFooter = document.createElement('div');
             formFooter.classList.add('dataEntryFooter');
 
+            //Submit the marked responses as the official submission, only visible to team leader in view tab.
+            var submitMarkedResponsesOfficial = $('<button class="dataEntryFormSubmitOfficial unofficialView">Make it Official</button>');
+            submitMarkedResponsesOfficial.on('click', function() {
+                var message = dataEntry.getFormData(formElement, newDataEntry, 'Official', true);
+
+                if (message != null) {
+                    //Submit the official version
+                    var finalMessage = {
+                        "prompt": "DataEntryOfficial",
+                        "thread": dataEntry.comboID(dataEntryID, 'Official'),
+                        "text": JSON.stringify(message)
+                    }
+                    
+                    globalPebl.emitEvent(globalPebl.events.newMessage,
+                    finalMessage);
+
+                    //TODO: Use a different xapi statement for this
+                    if (group) {
+                        var artifactPrompt = {
+                            "prompt": question,
+                            "learnlet": learnlet,
+                            "learnletTitle": learnletTitle
+                        }
+                        var artifactMessage = {
+                            "prompt": JSON.stringify(artifactPrompt),
+                            "thread" : dataEntry.comboID(group.membershipId, learnletLevel),
+                            "text": JSON.stringify(message)
+                        }
+
+                        globalPebl.emitEvent(globalPebl.events.newMessage,
+                        artifactMessage);
+                    }
+
+                    // If useConfig is true, call the function defined in the config
+                    if (useConfig && useConfig === 'true') {
+                        if (globalPebl.extension.config && globalPebl.extension.config.dataEntry) {
+                            var dataEntryConfig = globalPebl.extension.config.dataEntry;
+                            if (dataEntryConfig.onSubmitOfficial && typeof dataEntryConfig.onSubmitOfficial === 'function') {
+                                dataEntryConfig.onSubmitOfficial();
+                            }
+                        }
+                    }
+
+                    newDataEntry.officialMode();
+                }
+            });
+
             var formSubmitOfficial = $('<button class="dataEntryFormSubmitOfficial edit">Make it Official</button>');
             formSubmitOfficial.on('click', function() {
                 var message = dataEntry.getFormData(formElement, newDataEntry, 'Official');
@@ -839,6 +893,16 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                         artifactMessage);
                     }
 
+                    // If useConfig is true, call the function defined in the config
+                    if (useConfig && useConfig === 'true') {
+                        if (globalPebl.extension.config && globalPebl.extension.config.dataEntry) {
+                            var dataEntryConfig = globalPebl.extension.config.dataEntry;
+                            if (dataEntryConfig.onSubmitOfficial && typeof dataEntryConfig.onSubmitOfficial === 'function') {
+                                dataEntryConfig.onSubmitOfficial();
+                            }
+                        }
+                    }
+
                     newDataEntry.officialMode();
                 }
             });
@@ -856,6 +920,16 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
 
                     globalPebl.emitEvent(globalPebl.events.newMessage,
                     finalMessage);
+
+                    // If useConfig is true, call the function defined in the config
+                    if (useConfig && useConfig === 'true') {
+                        if (globalPebl.extension.config && globalPebl.extension.config.dataEntry) {
+                            var dataEntryConfig = globalPebl.extension.config.dataEntry;
+                            if (dataEntryConfig.onSubmit && typeof dataEntryConfig.onSubmit === 'function') {
+                                dataEntryConfig.onSubmit();
+                            }
+                        }
+                    }
 
                     newDataEntry.viewMode();
                 }
@@ -972,16 +1046,16 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
             }
 
             // Poll and set the view of the data entry widget, only if its out of view of the user, otherwise it would be annoying having it switch views while using it
-            newDataEntry.setInitialView = setInterval(function() {
-                if (!dataEntry.isElementInViewport(calloutDiv)) {
-                    if ((sharing === 'team' && group) && $(calloutDiv).find('.officialView').children().not('.placeholder').not('.dataEntryTextResponseNoData').length > 0)
-                        newDataEntry.officialMode();
-                    else if ($(calloutDiv).find('.unofficialView').children('[data-user="' + userProfile.identity + '"]').not('.placeholder').length > 0)
-                        newDataEntry.viewMode();
-                    else if (!displayMode || displayMode !== 'viewOnly')
-                        newDataEntry.editMode();
-                }
-            }, 5000);
+            // newDataEntry.setInitialView = setInterval(function() {
+            //     if (!dataEntry.isElementInViewport(calloutDiv)) {
+            //         if ((sharing === 'team' && group) && $(calloutDiv).find('.officialView').children().not('.placeholder').not('.dataEntryTextResponseNoData').length > 0)
+            //             newDataEntry.officialMode();
+            //         else if ($(calloutDiv).find('.unofficialView').children('[data-user="' + userProfile.identity + '"]').not('.placeholder').length > 0)
+            //             newDataEntry.viewMode();
+            //         else if (!displayMode || displayMode !== 'viewOnly')
+            //             newDataEntry.editMode();
+            //     }
+            // }, 5000);
 
             var closeButton = document.createElement('div');
             closeButton.classList.add('dataEntryCloseButton');
@@ -1110,8 +1184,14 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
             if (sharing === 'team' && group) {
                 header.appendChild(officialModeButton);
                 //TODO: Use the specific permission that lets you make official submissions
-                if (group.role === 'owner')
+                if (group.role === 'owner') {
                     $(formFooter).append(formSubmitOfficial);
+                    // Don't show the inline make official in viewOnly mode
+                    if (!displayMode || displayMode !== 'viewOnly') {
+                        $(formFooter).append(submitMarkedResponsesOfficial);
+                        $(formElement).addClass('showInlineMakeOfficial');
+                    }
+                }
             }
 
             if (polling && polling === 'true')
@@ -1147,7 +1227,7 @@ dataEntry.dropdownMessageHandler = function(message, userProfile) {
 }
 
 dataEntry.multiChoiceMessageHandler = function(message, userProfile) {
-    var mine = userProfile.identity == message.name;
+    var mine = userProfile.name == message.name;
     console.log(message);
 
     var hiddenPlaceholder = document.createElement('span');
@@ -1177,11 +1257,14 @@ dataEntry.multiChoiceMessageHandler = function(message, userProfile) {
 
 //Message handler for standard textarea messages
 dataEntry.messageHandler = function(message, userProfile) {
-    var mine = userProfile.identity == message.name;
+    var mine = userProfile.name == message.name;
     var userIcon = document.createElement('i');
     userIcon.classList.add('fa', 'fa-user');
     var userIdBox = $('<span class="userId"></span>');
-    userIdBox.text(message.name);
+    var userName = message.name;
+    if (message.originalUser)
+        userName += ' via ' + message.originalUser;
+    userIdBox.text(userName);
     var timestampBox = $('<span class="timestamp"></span>');
     timestampBox.text(new Date(message.timestamp).toLocaleString());
     var textBox = $('<p class="message"></p>');
@@ -1191,35 +1274,64 @@ dataEntry.messageHandler = function(message, userProfile) {
         messageContainer.css('display', 'none');
         messageContainer[0].classList.add('placeholder');
     }
+
+    var makeOfficialWrapper = document.createElement('div');
+    makeOfficialWrapper.classList.add('unofficialView');
+    var makeOfficialContainer = document.createElement('div');
+    makeOfficialContainer.classList.add('inlineMakeOfficialContainer');
+
+    var makeOfficialSpan = document.createElement('span');
+    makeOfficialSpan.textContent = 'Official';
+
+    var makeOfficialButton = document.createElement('input');
+    makeOfficialButton.type = 'radio';
+    makeOfficialButton.name = message.thread;
+    makeOfficialButton.setAttribute('data-type', 'text');
+    makeOfficialButton.setAttribute('data-message', message.text);
+    makeOfficialButton.setAttribute('data-prompt', message.prompt);
+    makeOfficialButton.setAttribute('data-responseBoxOfficial', message.responseBox + 'Official');
+    makeOfficialButton.setAttribute('data-user', message.name);
+
+    makeOfficialContainer.appendChild(makeOfficialButton);
+    makeOfficialContainer.appendChild(makeOfficialSpan);
+
+    makeOfficialWrapper.appendChild(makeOfficialContainer);
+
     messageContainer.append($(userIcon));
     messageContainer.append(userIdBox);
     messageContainer.append(timestampBox);
     messageContainer.append(textBox);
+    messageContainer.append(makeOfficialWrapper);
 
     var responseBox = document.getElementById(message.responseBox);
 
     //Only show latest submission for each user
-    var existingMessage = responseBox.querySelector('[id="' + dataEntry.comboID(message.name, message.thread) + '"]');
-    if (existingMessage) {
-        var newTimestamp = new Date(message.timestamp);
-        var oldTimestamp = new Date(existingMessage.getAttribute('data-timestamp'));
-        //Replace the existing message with the newer one
-        if (newTimestamp > oldTimestamp) {
-            $(existingMessage).remove();
-            $(responseBox).prepend(messageContainer);
+    if (responseBox) {
+        var existingMessage = responseBox.querySelector('[id="' + dataEntry.comboID(message.name, message.thread) + '"]');
+        if (existingMessage) {
+            var newTimestamp = new Date(message.timestamp);
+            var oldTimestamp = new Date(existingMessage.getAttribute('data-timestamp'));
+            //Replace the existing message with the newer one
+            if (newTimestamp > oldTimestamp) {
+                $(existingMessage).remove();
+                $(responseBox).prepend(messageContainer);
+            } else {
+                //Don't add it
+            }
         } else {
-            //Don't add it
+            $(responseBox).prepend(messageContainer);
         }
-    } else {
-        $(responseBox).prepend(messageContainer);
     }
 }
 
 dataEntry.checkboxMessageHandler = function(message, userProfile) {
-    var mine = userProfile.identity == message.name;
+    var mine = userProfile.name == message.name;
     var checkbox = document.getElementById(message.thread);
     var responseBox = document.getElementById(message.responseBox);
     var text = message.text;
+    var userName = message.name;
+    if (message.originalUser)
+        userName += ' via ' + message.originalUser;
     //Additional input after the checkbox
     var temp = text.replace(message.prompt, '');
     //Fill the checkboxes for the user with current data
@@ -1254,13 +1366,48 @@ dataEntry.checkboxMessageHandler = function(message, userProfile) {
 
     //Populate the viewmode list
 
-    var checkboxViewElem = document.createElement('span');
-    checkboxViewElem.id = dataEntry.comboID(message.thread, message.name);
-    checkboxViewElem.setAttribute('data-timestamp', message.timestamp);
-    checkboxViewElem.setAttribute('data-user', message.name);
-    checkboxViewElem.textContent = message.name;
+    var userIcon = document.createElement('i');
+    userIcon.classList.add('fa', 'fa-user');
+    var userIdBox = $('<span class="userId"></span>');
+    var userName = message.name;
+    if (message.originalUser)
+        userName += ' via ' + message.originalUser;
+    userIdBox.text(userName);
+    var timestampBox = $('<span class="timestamp"></span>');
+    timestampBox.text(new Date(message.timestamp).toLocaleString());
+    var textBox = $('<p class="message"></p>');
+    var messageContainer = $('<div data-user="' + message.name + '" data-timestamp="' + message.timestamp + '" id="' + dataEntry.comboID(message.thread, message.name) + '" class="' + (mine?"your ":"") + 'response"></div>');
+
+    var makeOfficialWrapper = document.createElement('div');
+    makeOfficialWrapper.classList.add('unofficialView');
+    var makeOfficialContainer = document.createElement('div');
+    makeOfficialContainer.classList.add('inlineMakeOfficialContainer');
+
+    var makeOfficialSpan = document.createElement('span');
+    makeOfficialSpan.textContent = 'Official';
+
+    var makeOfficialButton = document.createElement('input');
+    makeOfficialButton.type = 'radio';
+    makeOfficialButton.name = message.thread;
+    makeOfficialButton.setAttribute('data-type', 'checkbox');
+    makeOfficialButton.setAttribute('data-message', message.text);
+    makeOfficialButton.setAttribute('data-prompt', message.prompt);
+    makeOfficialButton.setAttribute('data-responseBoxOfficial', message.responseBox + 'Official');
+    makeOfficialButton.setAttribute('data-user', message.name);
+
+    makeOfficialContainer.appendChild(makeOfficialButton);
+    makeOfficialContainer.appendChild(makeOfficialSpan);
+
+    makeOfficialWrapper.appendChild(makeOfficialContainer);
+
     if (temp.length > 0)
-        checkboxViewElem.textContent += ' - "' + temp + '"';
+        textBox.text(temp);
+
+    messageContainer.append($(userIcon));
+    messageContainer.append(userIdBox);
+    messageContainer.append(timestampBox);
+    messageContainer.append(textBox);
+    messageContainer.append(makeOfficialWrapper);
 
     var elem = responseBox.querySelector('[id="' + dataEntry.comboID(message.thread, message.name) + '"]');
     //If it already exists
@@ -1271,26 +1418,48 @@ dataEntry.checkboxMessageHandler = function(message, userProfile) {
             //This is more recent, remove the old one
             $(elem).remove();
             if (text === '') {
-                checkboxViewElem.style.display = 'none';
-                checkboxViewElem.classList.add('placeholder');
+                messageContainer.css('display', 'none');
+                messageContainer[0].classList.add('placeholder');
             }
-            $(responseBox).append(checkboxViewElem);
+            $(responseBox).append(messageContainer);
         } else {
             //This is an old message, do nothing
         } 
     } else {
         if (text === '') {
-            checkboxViewElem.style.display = 'none';
-            checkboxViewElem.classList.add('placeholder');
+            messageContainer.css('display', 'none');
+            messageContainer[0].classList.add('placeholder');
         }
-        responseBox.appendChild(checkboxViewElem);
+        $(responseBox).append(messageContainer);
     }
 }
 
 //Message handler for radio button messages
 dataEntry.radioMessageHandler = function(message, userProfile) {
-    var mine = userProfile.identity == message.name;
+    var mine = userProfile.name == message.name;
+
+    var makeOfficialWrapper = document.createElement('div');
+    makeOfficialWrapper.classList.add('unofficialView');
+    var makeOfficialContainer = document.createElement('div');
+    makeOfficialContainer.classList.add('inlineMakeOfficialContainer');
+
+    var makeOfficialSpan = document.createElement('span');
+    makeOfficialSpan.textContent = 'Official';
+
+    var makeOfficialButton = document.createElement('input');
+    makeOfficialButton.type = 'radio';
+    makeOfficialButton.name = message.thread + 'Official';
+    makeOfficialButton.setAttribute('data-type', 'radio');
+    makeOfficialButton.setAttribute('data-message', message.text);
+    makeOfficialButton.setAttribute('data-prompt', message.prompt);
+    makeOfficialButton.setAttribute('data-responseBoxOfficial', message.responseBox + 'Official');
+    makeOfficialButton.setAttribute('data-user', message.name);
+    makeOfficialButton.setAttribute('data-title', message.title);
     
+    makeOfficialContainer.appendChild(makeOfficialButton);
+    makeOfficialContainer.appendChild(makeOfficialSpan);
+
+    makeOfficialWrapper.appendChild(makeOfficialContainer);
 
     var messageContainer = document.createElement('div');
     messageContainer.setAttribute('data-id', dataEntry.comboID(message.thread, message.name));
@@ -1298,11 +1467,14 @@ dataEntry.radioMessageHandler = function(message, userProfile) {
     messageContainer.setAttribute('data-user', message.name);
     var messageSpan = document.createElement('span');
     messageSpan.textContent = message.name;
+    if (message.originalUser)
+        messageSpan.textContent += ' via ' + message.originalUser;
 
     var responseBox = document.getElementById(message.responseBox);
     var elem = document.querySelector('[data-id="' + dataEntry.comboID(message.thread, message.name) + '"]');
 
     messageContainer.appendChild(messageSpan);
+    messageContainer.appendChild(makeOfficialWrapper);
     if (elem) {
         var oldTimestamp = elem.getAttribute('data-timestamp');
         var newTimestamp = message.timestamp;
@@ -1353,136 +1525,201 @@ dataEntry.dataMessageHandler = function(thread) {
     }
 }
 
-dataEntry.getFormData = function(formElement, newDataEntry, responseType) {
+dataEntry.getFormData = function(formElement, newDataEntry, responseType, getMarkedResponses) {
     dataEntry.invalidFormActive = false;
-    //Check if all required inputs have been completed
-    var validForm = formElement.reportValidity();
-    if (validForm) {
+    // Get text from the marked responses instead of the form
+    if (getMarkedResponses) {
         var messages = [];
-        //Submit the form
-        if (newDataEntry.dropdowns.size > 0) {
-            var dropdownArray = Array.from(newDataEntry.dropdowns);
-            for (var i = 0; i < dropdownArray.length; i++) {
-                var elem = $('#' + dropdownArray[i]);
-                var val = elem.val();
-                var prompt = elem.attr('data-prompt');
-                var responseBox = elem.attr('data-responseBox' + responseType);
+
+        $(formElement).find('.inlineMakeOfficialContainer input[type="radio"]:checked').each(function() {
+            var type = this.getAttribute('data-type');
+            if (type === 'text') {
+                var val = this.getAttribute('data-message');
+                var prompt = this.getAttribute('data-prompt');
+                var responseBox = this.getAttribute('data-responseBox' + responseType);
+                var thread = this.name;
+                var originalUser = this.getAttribute('data-user');
                 var message = {
                     "prompt": prompt,
-                    "thread": dropdownArray[i],
+                    "thread": thread,
                     "text": val,
                     "responseBox": responseBox,
-                    "type": "dropdown"
+                    "type": type,
+                    "originalUser" : originalUser
                 }
                 messages.push(message);
-            }
-        }
-
-        if (newDataEntry.multiChoices.size > 0) {
-            var multiChoiceArray = Array.from(newDataEntry.multiChoices);
-            for (var i = 0; i < multiChoiceArray.length; i++) {
-                var elem = $('#' + multiChoiceArray[i]).find('button.active').first()[0];
-                var val = elem.textContent;
-                var useGraphView = elem.getAttribute('data-useGraphView');
-                var graph = '';
-                if (useGraphView === 'true')
-                    graph = 'Graph';
-                var prompt = elem.getAttribute('data-prompt');
-                var responseBox = elem.getAttribute('data-responseBox' + responseType + graph);
-                var index = elem.getAttribute('data-index');
-
-
-                
-                var message = {
-                    "prompt": prompt,
-                    "thread": multiChoiceArray[i],
-                    "text": val,
-                    "responseBox": responseBox,
-                    "index": index,
-                    "useGraphView": useGraphView,
-                    "type": "multipleChoice"
-                }
-                messages.push(message);
-            }
-        }
-
-        if (newDataEntry.textareas.size > 0) {
-            var textareaArray = Array.from(newDataEntry.textareas);
-            for (var i = 0; i < textareaArray.length; i++) {
-                var elem = document.getElementById(textareaArray[i]);
-                var val = elem.value;
-                var prompt = elem.getAttribute('data-prompt');
-                var responseBox = elem.getAttribute('data-responseBox' + responseType);
-                var message = {
-                    "prompt": prompt,
-                    "thread": textareaArray[i],
-                    "text": val,
-                    "responseBox": responseBox,
-                    "type": "text"
-                }
-                messages.push(message);
-            }
-        }
-
-        if (newDataEntry.radios.size > 0) {
-            var radioArray = Array.from(newDataEntry.radios);
-            for (var j = 0; j < radioArray.length; j++) {
-                var val = $('input[name="' + radioArray[j] + '"]:checked').val();
-                var title = $('input[name="' + radioArray[j] + '"]:checked').attr('data-title');
-                var prompt = $('input[name="' + radioArray[j] + '"]:checked').attr('prompt');
-                var responseBox = $('input[name="' + radioArray[j] + '"]:checked').attr('data-responseBox' + responseType);
-                //Content of the message is the value of the radio button
-                var message = {
-                    "prompt" : prompt,
-                    "thread" : dataEntry.comboID(radioArray[j], responseType),
-                    "text" : val,
-                    "responseBox": responseBox,
-                    "type": "radio",
-                    "title": title
-                };
-                messages.push(message);
-            }
-        }
-
-        if (newDataEntry.checkboxes.size > 0) {
-            var checkboxArray = Array.from(newDataEntry.checkboxes);
-            for (var k = 0; k < checkboxArray.length; k++) {
-                var checkbox = document.getElementById(checkboxArray[k]);
-                var prompt = checkbox.value;
-                var thread = checkboxArray[k];
-                var responseBox = checkbox.getAttribute('data-responseBox' + responseType);
+            } else if (type === 'checkbox') {
+                var prompt = this.getAttribute('data-prompt');
+                var thread = this.name;
+                var responseBox = this.getAttribute('data-responseBox' + responseType);
+                var originalUser = this.getAttribute('data-user');
                 var text;
                 //Content of the message is the value of the checkbox + any additional input if specified.
-                if (checkbox.checked === true) {
-                    if (checkbox.hasAttribute('data-moreInput'))
-                        text = prompt + document.getElementById(checkbox.getAttribute('data-moreInput')).value;
-                    else
-                        text = prompt;
-                } else {
-                    text = '';
-                }
+                if (this.hasAttribute('data-moreInput'))
+                    text = prompt + this.getAttribute('data-moreInput');
+                else
+                    text = prompt;
+
                 var message = {
                     "prompt": prompt,
                     "thread": thread,
                     "text": text,
                     "responseBox": responseBox,
-                    "type": "checkbox"
+                    "type": type,
+                    "originalUser": originalUser
+                };
+                messages.push(message);
+            } else if (type === 'radio') {
+                var prompt = this.getAttribute('data-prompt');
+                var text = this.getAttribute('data-message');
+                var thread = this.name;
+                var responseBox = this.getAttribute('data-responseBox' + responseType);
+                var originalUser = this.getAttribute('data-user');
+                var title = this.getAttribute('data-title');
+                var message = {
+                    "prompt" : prompt,
+                    "thread" : thread,
+                    "text" : text,
+                    "responseBox": responseBox,
+                    "type": "radio",
+                    "title": title,
+                    "originalUser": originalUser
                 };
                 messages.push(message);
             }
-        }
+        });
 
         return messages;
     } else {
-        return null;
+        //Check if all required inputs have been completed
+        var validForm = formElement.reportValidity();
+        if (validForm) {
+            var messages = [];
+            //Submit the form
+            if (newDataEntry.dropdowns.size > 0) {
+                var dropdownArray = Array.from(newDataEntry.dropdowns);
+                for (var i = 0; i < dropdownArray.length; i++) {
+                    var elem = $('#' + dropdownArray[i]);
+                    var val = elem.val();
+                    var prompt = elem.attr('data-prompt');
+                    var responseBox = elem.attr('data-responseBox' + responseType);
+                    var message = {
+                        "prompt": prompt,
+                        "thread": dropdownArray[i],
+                        "text": val,
+                        "responseBox": responseBox,
+                        "type": "dropdown"
+                    }
+                    messages.push(message);
+                }
+            }
+
+            if (newDataEntry.multiChoices.size > 0) {
+                var multiChoiceArray = Array.from(newDataEntry.multiChoices);
+                for (var i = 0; i < multiChoiceArray.length; i++) {
+                    var elem = $('#' + multiChoiceArray[i]).find('button.active').first()[0];
+                    var val = elem.textContent;
+                    var useGraphView = elem.getAttribute('data-useGraphView');
+                    var graph = '';
+                    if (useGraphView === 'true')
+                        graph = 'Graph';
+                    var prompt = elem.getAttribute('data-prompt');
+                    var responseBox = elem.getAttribute('data-responseBox' + responseType + graph);
+                    var index = elem.getAttribute('data-index');
+
+
+                    
+                    var message = {
+                        "prompt": prompt,
+                        "thread": multiChoiceArray[i],
+                        "text": val,
+                        "responseBox": responseBox,
+                        "index": index,
+                        "useGraphView": useGraphView,
+                        "type": "multipleChoice"
+                    }
+                    messages.push(message);
+                }
+            }
+
+            if (newDataEntry.textareas.size > 0) {
+                var textareaArray = Array.from(newDataEntry.textareas);
+                for (var i = 0; i < textareaArray.length; i++) {
+                    var elem = document.getElementById(textareaArray[i]);
+                    var val = elem.value;
+                    var prompt = elem.getAttribute('data-prompt');
+                    var responseBox = elem.getAttribute('data-responseBox' + responseType);
+                    var message = {
+                        "prompt": prompt,
+                        "thread": textareaArray[i],
+                        "text": val,
+                        "responseBox": responseBox,
+                        "type": "text"
+                    }
+                    messages.push(message);
+                }
+            }
+
+            if (newDataEntry.radios.size > 0) {
+                var radioArray = Array.from(newDataEntry.radios);
+                for (var j = 0; j < radioArray.length; j++) {
+                    var val = $('input[name="' + radioArray[j] + '"]:checked').val();
+                    var title = $('input[name="' + radioArray[j] + '"]:checked').attr('data-title');
+                    var prompt = $('input[name="' + radioArray[j] + '"]:checked').attr('prompt');
+                    var responseBox = $('input[name="' + radioArray[j] + '"]:checked').attr('data-responseBox' + responseType);
+                    //Content of the message is the value of the radio button
+                    var message = {
+                        "prompt" : prompt,
+                        "thread" : dataEntry.comboID(radioArray[j], responseType),
+                        "text" : val,
+                        "responseBox": responseBox,
+                        "type": "radio",
+                        "title": title
+                    };
+                    messages.push(message);
+                }
+            }
+
+            if (newDataEntry.checkboxes.size > 0) {
+                var checkboxArray = Array.from(newDataEntry.checkboxes);
+                for (var k = 0; k < checkboxArray.length; k++) {
+                    var checkbox = document.getElementById(checkboxArray[k]);
+                    var prompt = checkbox.value;
+                    var thread = checkboxArray[k];
+                    var responseBox = checkbox.getAttribute('data-responseBox' + responseType);
+                    var text;
+                    //Content of the message is the value of the checkbox + any additional input if specified.
+                    if (checkbox.checked === true) {
+                        if (checkbox.hasAttribute('data-moreInput'))
+                            text = prompt + document.getElementById(checkbox.getAttribute('data-moreInput')).value;
+                        else
+                            text = prompt;
+                    } else {
+                        text = '';
+                    }
+                    var message = {
+                        "prompt": prompt,
+                        "thread": thread,
+                        "text": text,
+                        "responseBox": responseBox,
+                        "type": "checkbox"
+                    };
+                    messages.push(message);
+                }
+            }
+
+            return messages;
+        } else {
+            return null;
+        }
     }
 }
 
 //Call readium library function to keep user on the same page after content resizes.
 dataEntry.handleResize = function(callback) {
-    var currentPage = JSON.parse(globalReadium.reader.bookmarkCurrentPage());
+    //var currentPage = JSON.parse(globalReadium.reader.bookmarkCurrentPage());
     callback();
-    globalReadium.reader.openSpineItemElementCfi(currentPage.idref, currentPage.contentCFI);
+    //globalReadium.reader.openSpineItemElementCfi(currentPage.idref, currentPage.contentCFI);
 }
 
 dataEntry.sortMessages = function(a, b) {
