@@ -185,7 +185,7 @@ discussion.messageHandler = function(responseBox, thread, replyDisabled) {
                 for (var i = 0; i < newMessages.length; i++) {
                     var message = newMessages[i];
                     if ($("#" + message.id).length == 0) {          
-                        var mine = userProfile.identity == message.name;
+                        var mine = userProfile.identity == message.identity;
                         var userIcon = document.createElement('i');
                         userIcon.classList.add('fa', 'fa-user');
                         var userIdBox = $('<span class="userId"></span>');
