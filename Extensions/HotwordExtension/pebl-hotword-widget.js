@@ -1,29 +1,33 @@
 var globalPebl = window.parent.PeBL;
 var globalReadium = window.parent.READIUM;
 
+var hotword = {};
+
+globalPebl.extension.hotword = hotword;
+
 $(document).ready(function() {
     //Find inDesign shortcodes and replace with actual pebl shortcodes
-    $("body").children().each(function () {
-        $(this).html( $(this).html().replace(/\[\[\[(type=”hotword”) (word=”.*?”) (description=”.*?”)]]]/g, function(x) {
-            var hotword = x.match(/word=”(.*?)”/);
-            var description = x.match(/description=”(.*?)”/);
+    // $("body").children().each(function () {
+    //     $(this).html( $(this).html().replace(/\[\[\[(type=”hotword”) (word=”.*?”) (description=”.*?”)]]]/g, function(x) {
+    //         var hotword = x.match(/word=”(.*?)”/);
+    //         var description = x.match(/description=”(.*?)”/);
 
-            var widgetCode = '<i class="hotword_hotwordExtension" id="someID" data-hotword="' + hotword[1] + '" data-hotwordText="' + description[1] + '"></i>';
-            return widgetCode;
-        }) );
-    });
+    //         var widgetCode = '<i class="hotword_hotwordExtension" id="someID" data-hotword="' + hotword[1] + '" data-hotwordText="' + description[1] + '"></i>';
+    //         return widgetCode;
+    //     }) );
+    // });
     $(document.body).on('click', '.tooltip', function(event) {
-        handleTooltipClick(event);
+        hotword.handleTooltipClick(event);
     });
     $('.hotword_hotwordExtension').each(function() {
         var insertID = $(this)[0].getAttribute('id');
-        var hotword = $(this)[0].getAttribute('data-hotword');
+        var hotwordMain = $(this)[0].getAttribute('data-hotword');
         var hotwordText = $(this)[0].getAttribute('data-hotwordText');
-        createHotword(insertID, hotword, hotwordText);
+        hotword.createHotword(insertID, hotwordMain, hotwordText);
     });
 });
 
-function createHotword(insertID, tooltip, tooltipText) {
+hotword.createHotword = function(insertID, tooltip, tooltipText) {
     var tooltipSpan,
         tooltipTextSpan,
         insertLocation;
@@ -39,7 +43,7 @@ function createHotword(insertID, tooltip, tooltipText) {
     insertLocation.remove();
 }
 
-function hotword_offsetTop(elem) {
+hotword.offsetTop = function(elem) {
     elem.removeAttr('style');
     elem.css('margin', 0);
 
@@ -58,12 +62,12 @@ function hotword_offsetTop(elem) {
     }
 
     setTimeout(function() {
-        hotword_offsetRight(elem, adjustTop, topStyleString);
+        hotword.offsetRight(elem, adjustTop, topStyleString);
     }, 10);
 
 }
 
-function hotword_offsetRight(elem, adjustTop, topStyleString) {
+hotword.offsetRight = function(elem, adjustTop, topStyleString) {
     var adjustRight = false;
     var rightStyleString = null;
 
@@ -80,11 +84,11 @@ function hotword_offsetRight(elem, adjustTop, topStyleString) {
     }
 
     setTimeout(function() {
-        hotword_offsetLeft(elem, adjustTop, topStyleString, adjustRight, rightStyleString);
+        hotword.offsetLeft(elem, adjustTop, topStyleString, adjustRight, rightStyleString);
     }, 10);
 }
 
-function hotword_offsetLeft(elem, adjustTop, topStyleString, adjustRight, rightStyleString) {
+hotword.offsetLeft = function(elem, adjustTop, topStyleString, adjustRight, rightStyleString) {
     var adjustLeft = false;
     var leftStyleString = null;
 
@@ -104,12 +108,12 @@ function hotword_offsetLeft(elem, adjustTop, topStyleString, adjustRight, rightS
     }
 
     setTimeout(function() {
-        hotword_offsetArrow(elem, adjustTop, topStyleString, adjustRight, rightStyleString, adjustLeft, leftStyleString);
+        hotword.offsetArrow(elem, adjustTop, topStyleString, adjustRight, rightStyleString, adjustLeft, leftStyleString);
     }, 10);
 
 }
 
-function hotword_offsetArrow(elem, adjustTop, topStyleString, adjustRight, rightStyleString, adjustLeft, leftStyleString) {
+hotword.offsetArrow = function(elem, adjustTop, topStyleString, adjustRight, rightStyleString, adjustLeft, leftStyleString) {
 
     var arrowElement = $('<div id="tooltipArrow" class="tooltipArrow"></div>');
     if (adjustTop && adjustLeft) {
@@ -124,9 +128,6 @@ function hotword_offsetArrow(elem, adjustTop, topStyleString, adjustRight, right
         arrowElement = $('<div id="tooltipArrow" class="tooltipArrow" style="' + rightStyleString + '"></div>');
     }
     elem.append(arrowElement);
-
-    if (globalReadium != null && globalReadium.reader.plugins.highlights != null)
-        globalReadium.reader.plugins.highlights.redrawAnnotations();
 }
 
 
@@ -142,7 +143,7 @@ $(document).mouseup(function (e) {
     }
 });
 
-function handleTooltipClick(event) {
+hotword.handleTooltipClick = function(event) {
     var elem = event.currentTarget;
     var tip,
         originalMarginLeft,
@@ -173,15 +174,15 @@ function handleTooltipClick(event) {
 
         var tooltipTextSpan = document.createElement('span');
         tooltipTextSpan.classList.add('tooltiptext');
-	    var textBody = $(this).attr('definition');
+	    var textBody = $(elem).attr('definition');
         tooltipTextSpan.textContent = textBody;
 
         $(elem).append(tooltipTextSpan);
 
-        hotword_offsetTop($(tooltipTextSpan));
+        hotword.offsetTop($(tooltipTextSpan));
 
 	globalPebl.emitEvent(globalPebl.events.eventPreferred, {
-	    name: $(this).text(),
+	    name: $(elem).text(),
 	    type: "hotword",
 	    description: textBody
 	});
