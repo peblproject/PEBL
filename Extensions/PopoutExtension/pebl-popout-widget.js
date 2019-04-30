@@ -1,4 +1,9 @@
 var globalPebl = window.parent.PeBL;
+var globalReadium = window.parent.READIUM;
+
+var popout = {};
+
+globalPebl.extension.popout = popout;
 
 $(document).ready(function() {
 	$('.popout_popoutExtension').each(function() {
@@ -6,11 +11,11 @@ $(document).ready(function() {
 		var title = $(this)[0].getAttribute('data-title');
 		var content = $(this)[0].getAttribute('data-content');
 		var iconType = $(this)[0].getAttribute('data-icon');
-		createPopout(insertID, title, content, iconType);
+		popout.createPopout(insertID, title, content, iconType);
 	});
 });
 
-function createPopout(insertID, title, content, iconType) {
+popout.createPopout = function(insertID, title, content, iconType) {
 	var popoutDiv,
 		popoutShadowDiv,
 		popoutContentDiv,
@@ -47,7 +52,7 @@ function createPopout(insertID, title, content, iconType) {
 	popoutDiv.appendChild(popoutShadowDiv);
 	popoutDiv.appendChild(popoutContentDiv);
 
-	popoutDiv.addEventListener('click', handlePopoutClick);
+	popoutDiv.addEventListener('click', popout.handlePopoutClick);
 
     insertLocation = document.getElementById(insertID);
 
@@ -59,15 +64,14 @@ $().ready(function () {
     $('.popout').addClass('inactive'); // Hide all popouts, no script fallback shows popouts.
 });
 
-function handlePopoutClick(event) {
+popout.handlePopoutClick = function(event) {
 	//Don't close the popout when clicking a link inside it.
 	if (event.target.tagName === 'a')
 		return;
     var e = $(this).closest('.popout');
     e.toggleClass('inactive');
     e.toggleClass('active');
-    if (window.top.ReadiumSDK != null && window.top.ReadiumSDK.reader.plugins.highlights != null)
-            window.top.ReadiumSDK.reader.plugins.highlights.redrawAnnotations();
+
     if (globalPebl != null) {
         var cfi = "";
         // if (window.top.ReadiumSDK != null)
