@@ -69,7 +69,7 @@ $().ready(function() {
         var image = $(this)[0].hasAttribute('data-image') ? $(this)[0].getAttribute('data-image') : null;
         var required = $(this)[0].hasAttribute('data-required') ? $(this)[0].getAttribute('data-required') : true;
         var attempts = $(this)[0].hasAttribute('data-attempts') ? parseInt($(this)[0].getAttribute('data-attempts')) : 2;
-        var feedbackLink = $(this)[0].getAttribute('data-feedbackLink');
+        var feedbackLink = $(this)[0].hasAttribute('data-feedbackLink') ? $(this)[0].getAttribute('data-feedbackLink') : '';
         var linkText = JSON.parse($(this)[0].getAttribute('data-linkText'));
         lowStakesQuiz.createLowStakesMultiChoiceQuestion(id, questionNumber, choices, prompt, answer, image, required, attempts, feedbackLink, linkText);
     });
@@ -279,11 +279,11 @@ lowStakesQuiz.attachClickHandler = function(quizId) {
 }
 
 lowStakesQuiz.handleResize = function(callback) {
-    var currentPage = JSON.parse(globalReadium.reader.bookmarkCurrentPage());
+    //var currentPage = JSON.parse(globalReadium.reader.bookmarkCurrentPage());
     callback();
-    setTimeout(function() {
-        globalReadium.reader.openSpineItemElementCfi(currentPage.idref, currentPage.contentCFI);
-    }, 500);
+    // setTimeout(function() {
+    //     globalReadium.reader.openSpineItemElementCfi(currentPage.idref, currentPage.contentCFI);
+    // }, 500);
 }
 
 lowStakesQuiz.wrongFeedback = function(attempt) {
