@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<package version="3.0" xmlns="http://www.idpf.org/2007/opf" unique-identifier="bookid" prefix="ibooks: http://vocabulary.itunes.apple.com/rdf/ibooks/vocabulary-extensions-1.0/">
+	<metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
+		<meta name="cover" content="COVER-IMAGE.png" />
+		<meta property="ibooks:specified-fonts">true</meta>
+		<dc:title>TODO</dc:title>
+		<dc:creator>TODO</dc:creator>
+		<dc:subject>TODO</dc:subject>
+		<dc:description>TODO</dc:description>
+		<dc:publisher>TODO</dc:publisher>
+		<dc:date>TODO</dc:date>
+		<dc:rights>TODO</dc:rights>
+		<dc:language>TODO</dc:language>
+		<meta property="dcterms:modified">TODO</meta>
+		<dc:identifier id="bookid">TODO</dc:identifier>
+	</metadata>
+	<manifest>
+		
+	</manifest>
+	<spine toc="ncx">
+
+	</spine>
+	<guide>
+
+	</guide>
+</package>
