@@ -15,12 +15,17 @@
 		<dc:identifier id="bookid">TODO</dc:identifier>
 	</metadata>
 	<manifest>
-		
+		<!-- All files added to the ebook should be listed here. -->
+		<item id="chapter1" href="chapter1.xhtml" media-type="application/xhtml+xml" properties="scripted" />
+		<item id="chapter2" href="chapter2.xhtml" media-type="application/xhtml+xml" properties="scripted" />
 	</manifest>
 	<spine toc="ncx">
-
+		<!-- xhtml files should be listed here in the order they should appear. -->
+		<itemref idref="cover" linear="no" />
+		<itemref idref="chapter1" />
+		<itemref idref="chapter2" />
 	</spine>
 	<guide>
-
+		<reference type="cover" href="cover.xhtml" title="Cover" />
 	</guide>
 </package>
