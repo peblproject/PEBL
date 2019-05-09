@@ -27,6 +27,50 @@
     flex-direction: column;
 }
 
+.dataEntryCallout.edit input[type="radio"] {
+    display: inline-block;
+}
+
+.dataEntryCallout input[type="radio"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    position: relative;
+    background-color: #c4c4c4;
+    color: #fff;
+    height: 2em;
+    width: 2em;
+    border: 0;
+    border-radius: 50px;
+    cursor: pointer;
+    outline: none;
+    margin-right: 7px;
+}
+
+.dataEntryCallout input[type="radio"]:hover {
+    background-color: #f2c977;
+}
+
+.dataEntryCallout input[type="radio"]:checked {
+    background-color: #328d4e;
+}
+
+.dataEntryCallout input[type="radio"]:checked::before {
+    content: '\02143';
+    position: absolute;
+    font: 1em/1 'Open Sans', sans-serif;
+    left: 8px;
+    top: 5px;
+    transform: rotate(40deg);
+}
+
+.dataEntryTableContainer table input[type="radio"] {
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .dataEntryCallout::after {
     content: " ";
     display: block;
@@ -276,7 +320,6 @@
     padding-left: 1em;
     padding-right: 1em;
     margin-bottom: 1em;
-    display: flex;
 }
 
 .dataEntryDropdownContainer select {
@@ -418,45 +461,4 @@
     text-align: center;
     padding: 0.5em;
     border: 1px solid #ccc;
-}
-
-.dataEntryCallout input[type="radio"] {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    display: inline-block;
-    position: relative;
-    background-color: #c4c4c4;
-    color: #fff;
-    height: 2em;
-    width: 2em;
-    border: 0;
-    border-radius: 50px;
-    cursor: pointer;
-    outline: none;
-    margin-right: 7px;
-}
-
-.dataEntryCallout input[type="radio"]:hover {
-    background-color: #f2c977;
-}
-
-.dataEntryCallout input[type="radio"]:checked {
-    background-color: #328d4e;
-}
-
-.dataEntryCallout input[type="radio"]:checked::before {
-    content: '\02143';
-    position: absolute;
-    font: 1em/1 'Open Sans', sans-serif;
-    left: 8px;
-    top: 5px;
-    transform: rotate(40deg);
-}
-
-.dataEntryTableContainer table input[type="radio"] {
-    left: 0;
-    right: 0;
-    margin-left: auto;
-    margin-right: auto;
 }
