@@ -80,6 +80,10 @@ discussion.createDiscussionLightBox = function(question, chatButton) {
                 } else {
                     //Leave the thread as is
                 }
+            } else if (sharing === 'class') {
+                if (userProfile.currentClass) {
+                    thread = discussion.comboID(userProfile.currentClass, thread);
+                }
             } else if (sharing === 'private') {
                 private = true;
                 thread = discussion.comboID(userProfile.identity, thread);
