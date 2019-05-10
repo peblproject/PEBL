@@ -1194,8 +1194,8 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                 }
             }
 
-            if (polling && polling === 'true')
-                header.appendChild(closeButton);
+            // if (polling && polling === 'true')
+            //     header.appendChild(closeButton);
             
             calloutDiv.appendChild(formElement);
             calloutDiv.appendChild(header);
