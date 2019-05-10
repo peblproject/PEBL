@@ -705,7 +705,7 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
     globalPebl.user.getUser(function(userProfile) {
         globalPebl.utils.getSpecificGroupMembership(programID, function(group) {
             var dataEntryID;
-            var variableSharing = false;
+            var classSharing = false;
             // var learnletLevel = dataEntry.getLearnletLevel(document.body.id);
             // var learnlet = dataEntry.getLearnlet(document.body.id);
             // var learnletTitle = dataEntry.getLearnletTitle();
@@ -721,10 +721,10 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
                 }
             } else if (sharing === 'private') {
                 dataEntryID = dataEntry.comboID(userProfile.identity, id);
-            } else if (sharing === 'variable') {
+            } else if (sharing === 'class') {
                 dataEntryID = id;
                 //Handle it later...
-                variableSharing = true;
+                classSharing = true;
             } else {
                 dataEntryID = id;
             }
@@ -778,7 +778,7 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
             classViewParagraph.textContent = 'View responses from the class below for this activity.';
 
             formElement.appendChild(questionParagraph);
-            if (variableSharing) {
+            if (classSharing) {
                 formElement.appendChild(teamViewParagraph);
                 formElement.appendChild(classViewParagraph);
             }
@@ -1139,7 +1139,7 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
             if (!displayMode || displayMode !== 'viewOnly')
                 header.appendChild(editModeButton);
 
-            if (variableSharing) {
+            if (classSharing) {
                 //header.appendChild(privateViewModeButton);
                 if (userProfile.currentTeam)
                     header.appendChild(teamViewModeButton);
