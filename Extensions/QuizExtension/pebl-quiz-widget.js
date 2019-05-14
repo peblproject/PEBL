@@ -66,7 +66,7 @@ $().ready(function() {
         var choices = JSON.parse($(this)[0].getAttribute('data-choices'));
         var prompt = $(this)[0].getAttribute('data-prompt');
         var answer = $(this)[0].getAttribute('data-answer');
-        var image = $(this)[0].hasAttribute('data-image') ? $(this)[0].getAttribute('data-image') : null;
+        var image = $(this)[0].hasAttribute('data-img') ? $(this)[0].getAttribute('data-img') : null;
         var required = $(this)[0].hasAttribute('data-required') ? $(this)[0].getAttribute('data-required') : true;
         var attempts = $(this)[0].hasAttribute('data-attempts') ? parseInt($(this)[0].getAttribute('data-attempts')) : 2;
         var feedbackLink = $(this)[0].hasAttribute('data-feedbackLink') ? $(this)[0].getAttribute('data-feedbackLink') : '';
@@ -208,11 +208,17 @@ lowStakesQuiz.attachClickHandler = function(quizId) {
             localStorage.setItem(quizEntry, JSON.stringify(quizAttempts));
             if (correct) {
                 $answers.addClass('reveal');
-                $feedback.text(linkText);
+                if (linkText)
+                    $feedback.text(linkText);
+                else
+                    $feedback.text(lowStakesQuiz.correctFeedback(1));
             } else {
                 $(this).addClass('wrong');
                 //$(this).delay(1000).slideUp();
-                $feedback.text(linkText);
+                if (linkText)
+                    $feedback.text(linkText);
+                else
+                    $feedback.text(lowStakesQuiz.wrongFeedback(1));
             }
 
             if (globalPebl != null)
@@ -243,7 +249,10 @@ lowStakesQuiz.attachClickHandler = function(quizId) {
             localStorage.setItem(quizEntry, JSON.stringify(quizAttempts));
             if (correct == true) {
                 $answers.addClass('reveal');
-                $feedback.text(linkText);
+                if (linkText)
+                    $feedback.text(linkText);
+                else
+                    $feedback.text(lowStakesQuiz.correctFeedback(2));
             } else {
                 setTimeout(function() {
                     $answers.addClass('reveal secondary');
@@ -251,7 +260,10 @@ lowStakesQuiz.attachClickHandler = function(quizId) {
 
                 $(this).addClass('wrong');
                 //$(this).delay(1000).slideUp();
-                $feedback.text(linkText);
+                if (linkText)
+                    $feedback.text(linkText);
+                else
+                    $feedback.text(lowStakesQuiz.wrongFeedback(2));
             }
 
             if (globalPebl != null)
