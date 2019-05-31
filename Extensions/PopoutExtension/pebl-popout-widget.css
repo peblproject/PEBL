@@ -16,7 +16,7 @@
     clear: both;
 }
 
-.popout .popout-icon {
+.popout .popout-icon-container {
     display: none;
     cursor: pointer;
     top: 0;
@@ -28,49 +28,15 @@
     position: relative;
 }
 
-.popout.inactive .popout-icon {
-    display: block;
+.popout .popout-icon {
+    color: white;
+    font-size: 1.5em;
 }
 
-.popout.popout-book .popout-icon {
-    background-size: 30px;
-    background-color: #077ebc;
-}
-
-.popout.popout-book .popout-icon {
-    background: url(../image/icon-book.png) center no-repeat;
-    background-size: 30px;
-    background-color: #077ebc;
-}
-
-.popout.popout-note .popout-icon {
-    background: url(../image/icon-note.png) center no-repeat;
-    background-size: 30px;
-    background-color: #077ebc;
-}
-
-.popout.popout-info .popout-icon {
-    background: url(../image/icon-info2.png) center no-repeat;
-    background-size: 30px;
-    background-color: #077ebc;
-}
-
-.popout.popout-link .popout-icon {
-    background: url(../image/icon-link.png) center no-repeat;
-    background-size: 30px;
-    background-color: #077ebc;
-}
-
-.popout.popout-file .popout-icon {
-    background: url(../image/icon-file.png) center no-repeat;
-    background-size: 30px;
-    background-color: #077ebc;
-}
-
-.popout.popout-chat .popout-icon {
-    background: url(../image/icon-speech1.png) center no-repeat;
-    background-size: 30px;
-    background-color: #077ebc;
+.popout.inactive .popout-icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .popout .popout-content {

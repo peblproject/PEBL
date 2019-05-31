@@ -15,20 +15,35 @@ $(document).ready(function() {
 	});
 });
 
+popout.iconTable = {
+	"book": "book",
+	"file": "file-alt",
+	"info": "info-circle",
+	"link": "link",
+	"chat": "comment-dots",
+	"note": "note"
+}
+
 popout.createPopout = function(insertID, title, content, iconType) {
 	var popoutDiv,
 		popoutShadowDiv,
 		popoutContentDiv,
+		popoutIcon,
 		closeButton,
 		header,
 		paragraph,
 		insertLocation;
 
 	popoutDiv = document.createElement('div');
-	popoutDiv.classList.add('popout', 'popout-' + iconType);
+	popoutDiv.classList.add('popout');
 
 	popoutShadowDiv = document.createElement('div');
-	popoutShadowDiv.classList.add('popout-icon', 'shadow', 'shadow-hover');
+	popoutShadowDiv.classList.add('popout-icon-container', 'shadow', 'shadow-hover');
+
+	popoutIcon = document.createElement('div');
+	popoutIcon.classList.add('popout-icon', 'fa', 'fa-' + popout.iconTable[iconType]);
+
+	popoutShadowDiv.appendChild(popoutIcon);
 
 	popoutContentDiv = document.createElement('div');
 	popoutContentDiv.style.display = 'none';
