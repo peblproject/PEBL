@@ -26,6 +26,7 @@
     height: 40px;
     z-index: 100;
     position: relative;
+    background-color: #077ebc;
 }
 
 .popout .popout-icon {

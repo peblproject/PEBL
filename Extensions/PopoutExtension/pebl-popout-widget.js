@@ -21,7 +21,7 @@ popout.iconTable = {
 	"info": "info-circle",
 	"link": "link",
 	"chat": "comment-dots",
-	"note": "note"
+	"note": "sticky-note"
 }
 
 popout.createPopout = function(insertID, title, content, iconType) {
@@ -40,7 +40,7 @@ popout.createPopout = function(insertID, title, content, iconType) {
 	popoutShadowDiv = document.createElement('div');
 	popoutShadowDiv.classList.add('popout-icon-container', 'shadow', 'shadow-hover');
 
-	popoutIcon = document.createElement('div');
+	popoutIcon = document.createElement('i');
 	popoutIcon.classList.add('popout-icon', 'fa', 'fa-' + popout.iconTable[iconType]);
 
 	popoutShadowDiv.appendChild(popoutIcon);
