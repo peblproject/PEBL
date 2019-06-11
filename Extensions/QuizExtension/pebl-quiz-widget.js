@@ -2,12 +2,25 @@ var globalPebl = window.parent.PeBL;
 var globalReadium = window.parent.READIUM;
 
 var lowStakesQuiz = {};
+if (globalPebl)
+    globalPebl.extension.lowStakesQuiz = lowStakesQuiz;
 
-globalPebl.extension.lowStakesQuiz = lowStakesQuiz;
+lowStakesQuiz.createQuizAnchor = function(id) {
+    var anchor = document.createElement('ol');
+    anchor.id = id;
+    anchor.classList.add('quiz');
 
-lowStakesQuiz.createLowStakesMultiChoiceQuestion = function(id, questionNumber, choices, prompt, answer, image, required, attempts, feedbackLink, linkText) {
+    var quizScore = document.createElement('h3');
+    quizScore.classList.add('quizScore');
+    quizScore.textContent = "You haven't answered all of the questions yet!";
+
+    anchor.appendChild(quizScore);
+
+    return anchor;
+}
+
+lowStakesQuiz.createLowStakesMultiChoiceQuestion = function(insertID, id, questionNumber, choices, prompt, answer, image, required, attempts, feedbackLink, linkText) {
     var quizToAppendTo = document.getElementById(id);
-    var insertPoint = quizToAppendTo.lastElementChild;
     var questionElement = document.createElement('li');
     var questionPromptContainer = document.createElement('div');
     questionPromptContainer.classList.add('questionPromptContainer');
@@ -16,6 +29,16 @@ lowStakesQuiz.createLowStakesMultiChoiceQuestion = function(id, questionNumber, 
     var questionPrompt = document.createElement('span');
     var responseList = document.createElement('ul');
     var feedbackElement = document.createElement('div');
+
+    if (!quizToAppendTo) {
+        quizToAppendTo = lowStakesQuiz.createQuizAnchor(id);
+        var insertLocation = document.getElementById(insertID);
+
+        insertLocation.parentNode.insertBefore(quizToAppendTo, insertLocation);
+        insertLocation.remove();
+    }
+
+    var insertPoint = quizToAppendTo.lastElementChild;
 
     questionNumberSpan.textContent = questionNumber + ".";
     questionPrompt.innerHTML = prompt;
@@ -60,7 +83,8 @@ $(document).on('click', '.feedbackLink', function(evt) {
 });
 
 $().ready(function() {
-    $('.quiz_quizExtension').each(function() {
+    $('.quiz_quizExtension, .peblExtension[data-peblextension="quiz"]').each(function() {
+        var insertID = $(this)[0].getAttribute('id');
         var id = $(this)[0].getAttribute('data-id');
         var questionNumber = $(this)[0].getAttribute('data-questionNumber');
         var choices = JSON.parse($(this)[0].getAttribute('data-choices'));
@@ -71,7 +95,7 @@ $().ready(function() {
         var attempts = $(this)[0].hasAttribute('data-attempts') ? parseInt($(this)[0].getAttribute('data-attempts')) : 2;
         var feedbackLink = $(this)[0].hasAttribute('data-feedbackLink') ? $(this)[0].getAttribute('data-feedbackLink') : '';
         var linkText = JSON.parse($(this)[0].getAttribute('data-linkText'));
-        lowStakesQuiz.createLowStakesMultiChoiceQuestion(id, questionNumber, choices, prompt, answer, image, required, attempts, feedbackLink, linkText);
+        lowStakesQuiz.createLowStakesMultiChoiceQuestion(insertID, id, questionNumber, choices, prompt, answer, image, required, attempts, feedbackLink, linkText);
     });
 
     $('ol.quiz').each(function() {
