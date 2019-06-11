@@ -1,8 +1,8 @@
 var globalPebl = window.parent.PeBL;
 
 var discussion = {};
-
-globalPebl.extension.discussion = discussion;
+if (globalPebl)
+    globalPebl.extension.discussion = discussion;
 
 $(document).ready(function() {
     
@@ -17,7 +17,7 @@ $(document).ready(function() {
     //     }) );
     // });
 
-    $('.discussion_discussionExtension').each(function() {
+    $('.discussion_discussionExtension, .peblExtension[data-peblextension="discussion"]').each(function() {
         var buttonText = $(this)[0].getAttribute('data-buttonText');
         var prompt = $(this)[0].getAttribute('data-prompt');
         var id = $(this)[0].getAttribute('data-id');
