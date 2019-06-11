@@ -2,11 +2,11 @@ var globalPebl = window.parent.PeBL;
 var globalReadium = window.parent.READIUM;
 
 var figure = {};
-
-globalPebl.extension.figure = figure;
+if (globalPebl)
+	globalPebl.extension.figure = figure;
 
 $(document).ready(function() {
-	$('.figure_figureExtension').each(function() {
+	$('.figure_figureExtension, .peblExtension[data-peblextension="figure"]').each(function() {
 		var insertID = $(this)[0].getAttribute('id');
 		var img = JSON.parse($(this)[0].getAttribute('data-img'));
 		var title = $(this)[0].getAttribute('data-title');
