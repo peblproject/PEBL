@@ -2,8 +2,8 @@ var globalPebl = window.parent.PeBL;
 var globalReadium = window.parent.READIUM;
 
 var hotword = {};
-
-globalPebl.extension.hotword = hotword;
+if (globalPebl)
+    globalPebl.extension.hotword = hotword;
 
 $(document).ready(function() {
     //Find inDesign shortcodes and replace with actual pebl shortcodes
@@ -19,7 +19,7 @@ $(document).ready(function() {
     $(document.body).on('click', '.tooltip', function(event) {
         hotword.handleTooltipClick(event);
     });
-    $('.hotword_hotwordExtension').each(function() {
+    $('.hotword_hotwordExtension, .peblExtension[data-peblextension="hotword"]').each(function() {
         var insertID = $(this)[0].getAttribute('id');
         var hotwordMain = $(this)[0].getAttribute('data-hotword');
         var hotwordText = $(this)[0].getAttribute('data-hotwordText');
