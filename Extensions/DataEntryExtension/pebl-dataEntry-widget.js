@@ -1216,12 +1216,14 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
 
             if (userProfile.currentTeam) {
                 var teamMessageHandle = dataEntry.dataMessageHandler(dataEntry.comboID(userProfile.currentClass, userProfile.currentTeam, dataEntryID));
-                globalPebl.subscribeThread(dataEntry.comboID(userProfile.currentClass, userProfile.currentTeam, dataEntryID), false, teamMessageHandle);
+                if (globalPebl)
+                    globalPebl.subscribeThread(dataEntry.comboID(userProfile.currentClass, userProfile.currentTeam, dataEntryID), false, teamMessageHandle);
             }
             
             if (userProfile.currentClass) {
                 var classMessageHandle = dataEntry.dataMessageHandler(dataEntry.comboID(userProfile.currentClass, dataEntryID));
-                globalPebl.subscribeThread(dataEntry.comboID(userProfile.currentClass, dataEntryID), false, classMessageHandle);
+                if (globalPebl)
+                    globalPebl.subscribeThread(dataEntry.comboID(userProfile.currentClass, dataEntryID), false, classMessageHandle);
             }
         } else {
             header.appendChild(viewModeButton);
@@ -1229,11 +1231,13 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
             $(formFooter).append(formSubmit);
 
             var messageHandle = dataEntry.dataMessageHandler(dataEntryID);
-            globalPebl.subscribeThread(dataEntryID, false, messageHandle);
+            if (globalPebl)
+                globalPebl.subscribeThread(dataEntryID, false, messageHandle);
 
             //Assuming we use the discussion mechanism for official submissions, will probably change later.
             var officialMessageHandle = dataEntry.dataMessageHandler(dataEntry.comboID(dataEntryID, 'Official'));
-            globalPebl.subscribeThread(dataEntry.comboID(dataEntryID, 'Official'), false, officialMessageHandle);
+            if (globalPebl)
+                globalPebl.subscribeThread(dataEntry.comboID(dataEntryID, 'Official'), false, officialMessageHandle);
         }
         
 
