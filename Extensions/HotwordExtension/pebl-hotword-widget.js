@@ -22,7 +22,7 @@ $(document).ready(function() {
     $('.hotword_hotwordExtension, .peblExtension[data-peblextension="hotword"]').each(function() {
         var insertID = $(this)[0].getAttribute('id');
         var hotwordMain = $(this)[0].getAttribute('data-hotword');
-        var hotwordText = $(this)[0].getAttribute('data-hotwordText');
+        var hotwordText = $(this)[0].getAttribute('data-hotwordText') || $(this)[0].getAttribute('data-hotwordtext');
         hotword.createHotword(insertID, hotwordMain, hotwordText);
     });
 });

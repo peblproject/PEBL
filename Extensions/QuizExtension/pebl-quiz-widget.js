@@ -86,7 +86,7 @@ $().ready(function() {
     $('.quiz_quizExtension, .peblExtension[data-peblextension="quiz"]').each(function() {
         var insertID = $(this)[0].getAttribute('id');
         var id = $(this)[0].getAttribute('data-id');
-        var questionNumber = $(this)[0].getAttribute('data-questionNumber');
+        var questionNumber = $(this)[0].getAttribute('data-questionNumber') || $(this)[0].getAttribute('data-questionnumber');
         var choices = JSON.parse($(this)[0].getAttribute('data-choices'));
         var prompt = $(this)[0].getAttribute('data-prompt');
         var answer = $(this)[0].getAttribute('data-answer');

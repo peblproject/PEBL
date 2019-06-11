@@ -12,7 +12,7 @@ $(document).ready(function() {
         var insertID = $(this)[0].getAttribute('id');
         var forms = JSON.parse($(this)[0].getAttribute('data-forms'));
         var sharing = $(this)[0].getAttribute('data-sharing');
-        var displayMode = $(this)[0].getAttribute('data-displayMode');
+        var displayMode = $(this)[0].getAttribute('data-displayMode') || $(this)[0].getAttribute('data-displaymode');
         var polling = $(this)[0].hasAttribute('data-polling') ? $(this)[0].getAttribute('data-polling') : 'false';
         var useConfig = $(this)[0].hasAttribute('data-useConfig') ? $(this)[0].getAttribute('data-useConfig') : 'false';
         dataEntry.createDataEntry(insertID, prompt, id, forms, sharing, displayMode, polling, useConfig);

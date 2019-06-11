@@ -18,9 +18,9 @@ $(document).ready(function() {
     // });
 
     $('.discussion_discussionExtension, .peblExtension[data-peblextension="discussion"]').each(function() {
-        var buttonText = $(this)[0].getAttribute('data-buttonText');
+        var buttonText = $(this)[0].getAttribute('data-buttonText') || $(this)[0].getAttribute('data-buttontext');
         var prompt = $(this)[0].getAttribute('data-prompt');
-        var id = $(this)[0].getAttribute('data-id');
+        var id = $(this)[0].getAttribute('id');
         var detailText = $(this)[0].hasAttribute('data-detailText') ? $(this)[0].getAttribute('data-detailText') : null;
         var insertID = $(this)[0].getAttribute('id');
         var sharing = $(this)[0].getAttribute('data-sharing') ? $(this)[0].getAttribute('data-sharing') : null;
