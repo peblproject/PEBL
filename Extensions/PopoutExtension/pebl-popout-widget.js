@@ -2,11 +2,11 @@ var globalPebl = window.parent.PeBL;
 var globalReadium = window.parent.READIUM;
 
 var popout = {};
-
-globalPebl.extension.popout = popout;
+if (globalPebl)
+	globalPebl.extension.popout = popout;
 
 $(document).ready(function() {
-	$('.popout_popoutExtension').each(function() {
+	$('.popout_popoutExtension, .peblExtension[data-peblextension="popout"]').each(function() {
 		var insertID = $(this)[0].getAttribute('id');
 		var title = $(this)[0].getAttribute('data-title');
 		var content = $(this)[0].getAttribute('data-content');
