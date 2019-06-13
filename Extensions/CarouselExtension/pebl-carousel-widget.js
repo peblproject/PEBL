@@ -10,13 +10,14 @@ $(document).ready(function() {
         var insertID = $(this)[0].getAttribute('id');
         var imagesArray = JSON.parse($(this)[0].getAttribute('data-images'));
         var captionsArray = JSON.parse($(this)[0].getAttribute('data-captions'));
-        carousel.createCarousel(insertID, imagesArray, captionsArray);
+        var zoomable = $(this)[0].hasAttribute('data-zoomable') ? $(this)[0].getAttribute('data-zoomable') : null;
+        carousel.createCarousel(insertID, imagesArray, captionsArray, zoomable);
     });
 });
 
 carousel.animationInProgress = false;
 
-carousel.createCarousel = function(insertID, imagesArray, captionsArray) {
+carousel.createCarousel = function(insertID, imagesArray, captionsArray, zoomable) {
 	var carouselWrapper = document.createElement('div');
 	carouselWrapper.classList.add('carousel_wrapper');
 
@@ -108,6 +109,9 @@ carousel.createCarousel = function(insertID, imagesArray, captionsArray) {
 
 		var image = document.createElement('img');
 		image.classList.add('carousel_image');
+		if (zoomable && zoomable === 'true') {
+			image.classList.add('zoomable');
+		}
 		image.src = imagesArray[i];
 
 		imageContainer.appendChild(image);
