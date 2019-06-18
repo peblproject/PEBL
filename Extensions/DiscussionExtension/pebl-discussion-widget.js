@@ -4,11 +4,11 @@ var discussion = {};
 if (globalPebl)
     globalPebl.extension.discussion = discussion;
 
-$(document).ready(function() {
+jQuery(document).ready(function() {
     
     //Find inDesign shortcodes and replace with actual pebl shortcodes
-    // $("body").children().each(function () {
-    //     $(this).html( $(this).html().replace(/\[\[\[(type=”discussion”) (prompt=”.*?”) (button=”.*?”) (visibility=”.*?”) (postLimit=”.*?”) (notify=”.*?”)]]]/g, function(x) {
+    // jQuery("body").children().each(function () {
+    //     jQuery(this).html( jQuery(this).html().replace(/\[\[\[(type=”discussion”) (prompt=”.*?”) (button=”.*?”) (visibility=”.*?”) (postLimit=”.*?”) (notify=”.*?”)]]]/g, function(x) {
     //         var prompt = x.match(/prompt=”(.*?)”/);
     //         var button = x.match(/button=”(.*?)”/);
 
@@ -17,17 +17,17 @@ $(document).ready(function() {
     //     }) );
     // });
 
-    $('.discussion_discussionExtension, .peblExtension[data-peblextension="discussion"]').each(function() {
-        var buttonText = $(this)[0].getAttribute('data-buttonText') || $(this)[0].getAttribute('data-buttontext');
-        var prompt = $(this)[0].getAttribute('data-prompt');
-        var id = $(this)[0].getAttribute('id');
-        var detailText = $(this)[0].hasAttribute('data-detailText') ? $(this)[0].getAttribute('data-detailText') : null;
-        var insertID = $(this)[0].getAttribute('id');
-        var sharing = $(this)[0].getAttribute('data-sharing') ? $(this)[0].getAttribute('data-sharing') : null;
+    jQuery('.discussion_discussionExtension, .peblExtension[data-peblextension="discussion"]').each(function() {
+        var buttonText = jQuery(this)[0].getAttribute('data-buttonText') || jQuery(this)[0].getAttribute('data-buttontext');
+        var prompt = jQuery(this)[0].getAttribute('data-prompt');
+        var id = jQuery(this)[0].getAttribute('id');
+        var detailText = jQuery(this)[0].hasAttribute('data-detailText') ? jQuery(this)[0].getAttribute('data-detailText') : null;
+        var insertID = jQuery(this)[0].getAttribute('id');
+        var sharing = jQuery(this)[0].getAttribute('data-sharing') ? jQuery(this)[0].getAttribute('data-sharing') : null;
         discussion.createDiscussion(insertID, buttonText, prompt, id, detailText, sharing);
     });
 
-    $(document.body).on('click', '.chat', function(evt) {
+    jQuery(document.body).on('click', '.chat', function(evt) {
         discussion.handleChatButtonClick(evt.currentTarget);
     });
 });
@@ -115,7 +115,7 @@ discussion.createDiscussionLightBox = function(question, chatButton) {
         var lightBoxCloseButton = document.createElement('i');
         lightBoxCloseButton.classList.add('fa', 'fa-times');
         lightBoxCloseButton.addEventListener('click', function() {
-            $(lightBox).remove();
+            jQuery(lightBox).remove();
         });
 
         lightBoxCloseButtonContainer.appendChild(lightBoxCloseButton);
@@ -164,7 +164,7 @@ discussion.createDiscussionLightBox = function(question, chatButton) {
         discussionResponseBody.classList.add('discussionResponseBody');
 
         discussionSubmitButton.addEventListener('click', function() {
-            discussion.createThread(thread, $(discussionTextArea).val(), question, discussionTextArea, discussionResponseBody);
+            discussion.createThread(thread, jQuery(discussionTextArea).val(), question, discussionTextArea, discussionResponseBody);
         });
 
         var messageHandle = discussion.messageHandler(discussionResponseBody, thread, private);
@@ -189,18 +189,18 @@ discussion.messageHandler = function(responseBox, thread, replyDisabled) {
             if (userProfile) {
                 for (var i = 0; i < newMessages.length; i++) {
                     var message = newMessages[i];
-                    if ($("#" + message.id).length == 0) {          
+                    if (jQuery("#" + message.id).length == 0) {          
                         var mine = userProfile.identity == message.actor.account.name;
                         var userIcon = document.createElement('i');
                         userIcon.classList.add('fa', 'fa-user');
-                        var userIdBox = $('<span class="userId"></span>');
+                        var userIdBox = jQuery('<span class="userId"></span>');
                         userIdBox.text(message.name);
-                        var timestampBox = $('<span class="timestamp"></span>');
+                        var timestampBox = jQuery('<span class="timestamp"></span>');
                         timestampBox.text(new Date(message.timestamp).toLocaleString());
-                        var textBox = $('<p class="message"></p>');
+                        var textBox = jQuery('<p class="message"></p>');
                         textBox.text(message.text);
-                        var messageContainer = $('<div id="' + message.id  + '" class="' + (mine?"your ":"") + 'response"></div>');
-                        messageContainer.append($(userIcon));
+                        var messageContainer = jQuery('<div id="' + message.id  + '" class="' + (mine?"your ":"") + 'response"></div>');
+                        messageContainer.append(jQuery(userIcon));
                         messageContainer.append(userIdBox);
                         messageContainer.append(timestampBox);
                         messageContainer.append(textBox);
@@ -212,11 +212,11 @@ discussion.messageHandler = function(responseBox, thread, replyDisabled) {
                                 event.preventDefault();
                                 discussion.replyDiscussion(event);
                             });
-                            messageContainer.append($(messageReplyButton));
+                            messageContainer.append(jQuery(messageReplyButton));
                         }
                         var chatReplies = document.createElement('div');
                         chatReplies.classList.add('chatReplies');
-                        messageContainer.append($(chatReplies));
+                        messageContainer.append(jQuery(chatReplies));
                         // if (mine) {
                         //     var messageDeleteButtonWrapper = document.createElement('div');
                         //     messageDeleteButtonWrapper.classList.add('messageDeleteButtonWrapper');
@@ -228,15 +228,15 @@ discussion.messageHandler = function(responseBox, thread, replyDisabled) {
                         //     messageDeleteButton.setAttribute('thread', thread);
                         //     messageDeleteButton.addEventListener('click', function() {
                         //         window.pebl.removeMessage(this.getAttribute('messageID'), this.getAttribute('thread'));
-                        //         $('#' + this.getAttribute('messageID')).remove();
+                        //         jQuery('#' + this.getAttribute('messageID')).remove();
                         //     });
 
                         //     messageDeleteButtonWrapper.appendChild(messageDeleteButton);
-                        //     messageContainer.append($(messageDeleteButtonWrapper));
+                        //     messageContainer.append(jQuery(messageDeleteButtonWrapper));
                         // }
-                        $(responseBox).prepend(messageContainer);
+                        jQuery(responseBox).prepend(messageContainer);
                         var thread = message.id;
-                        var messageHandle = discussion.messageHandler($(chatReplies), thread);
+                        var messageHandle = discussion.messageHandler(jQuery(chatReplies), thread);
                         globalPebl.subscribeThread(thread, false, messageHandle);
                     }
                 }
@@ -256,7 +256,7 @@ discussion.createThread = function(thread, input, prompt, textarea, responseBox)
         };
         globalPebl.emitEvent(globalPebl.events.newMessage,
                              message);
-        $(textarea).val("");
+        jQuery(textarea).val("");
     }
 }
 
@@ -278,13 +278,13 @@ discussion.createSubThread = function(thread, input, prompt, textarea, responseB
 
 
 discussion.handleChatButtonClick = function(elem) {
-    $('.lightBox').remove();
+    jQuery('.lightBox').remove();
     var element,
         question;
     if (elem)
-        element = $(elem);
+        element = jQuery(elem);
     else
-        element = $(this);
+        element = jQuery(this);
     question = element.parent().children('p:first').text();
     if (globalPebl) {
         if ((element[0].id != null) && (element[0].id != "")) {
@@ -297,7 +297,7 @@ discussion.handleChatButtonClick = function(elem) {
 
 discussion.replyDiscussion = function(event) {
     discussion.replyClose();
-    var parentPost = $(event.currentTarget).parent();
+    var parentPost = jQuery(event.currentTarget).parent();
     var parentAuthor = parentPost.children('.userId');
     var parentMessage = parentPost.children('.message').text();
     var parentId = parentPost.attr('id');
@@ -319,21 +319,21 @@ discussion.replyDiscussion = function(event) {
     replySubmitButton.classList.add('replySubmitButton');
     replySubmitButton.textContent = 'Submit';
     replySubmitButton.addEventListener('click', function(event) {
-        discussion.replySubmit(parentId, $(replyTextArea).val(), parentMessage, $(replyTextArea), parentChatReplies);
+        discussion.replySubmit(parentId, jQuery(replyTextArea).val(), parentMessage, jQuery(replyTextArea), parentChatReplies);
     });
 
     replyContainer.appendChild(replyTextArea);
     replyContainer.appendChild(replyCloseButton);
     replyContainer.appendChild(replySubmitButton);
 
-    $(event.currentTarget).hide();
-    $(event.currentTarget).after(replyContainer);
+    jQuery(event.currentTarget).hide();
+    jQuery(event.currentTarget).after(replyContainer);
 
 }
 
 discussion.replyClose = function() {
-    $('.replyContainer').remove();
-    $('.messageReplyButton').show();
+    jQuery('.replyContainer').remove();
+    jQuery('.messageReplyButton').show();
 }
 
 discussion.replySubmit = function(thread, input, prompt, textarea, responseBox) {
