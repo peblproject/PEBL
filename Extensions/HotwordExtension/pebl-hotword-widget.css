@@ -10,7 +10,7 @@
     /*    visibility: hidden;*/
     display: none;
     cursor: pointer;
-    width: 200px;
+    width: 300px;
     background-color: #555;
     color: #fff;
     text-align: left;
@@ -48,4 +48,5 @@
 .tooltip.active .tooltiptext {
     display: block;
     opacity: 1;
+	word-break: break-word;
 }
