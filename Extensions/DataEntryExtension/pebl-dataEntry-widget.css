@@ -140,6 +140,7 @@
 .dataEntryCallout form {
     max-height: calc(70vh - 192px);
     overflow: auto;
+    -webkit-overflow-scrolling: touch;
     order: 2;
 }
 
@@ -293,11 +294,12 @@
 }
 
 .dataEntryCheckboxContainer > input[type="checkbox"] {
-    will-change: transform;
+/*    will-change: transform;
     -ms-transform: scale(1.5);
     -moz-transform: scale(1.5);
     -webkit-transform: scale(1.5);
-    -o-transform: scale(1.5);
+    -o-transform: scale(1.5);*/
+    zoom: 1.5;
     padding: 10px;
     margin: 1em;
 }
