@@ -966,30 +966,36 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
 
         var formSubmit = $('<button class="dataEntryFormSubmit edit">Submit</button>');
         formSubmit.on('click', function() {
-            var message = dataEntry.getFormData(formElement, newDataEntry, '');
+            globalPebl.user.isLoggedIn(function(isLoggedIn) {
+                if (!isLoggedIn) {
+                    window.alert('You need to be logged in to participate in this activity');
+                } else {
+                    var message = dataEntry.getFormData(formElement, newDataEntry, '');
 
-            if (message != null) {
-                var finalMessage = {
-                    "prompt": "DataEntry",
-                    "thread": dataEntryID,
-                    "text": JSON.stringify(message)
-                }
-                if (globalPebl)
-                    globalPebl.emitEvent(globalPebl.events.newMessage,
-                    finalMessage);
-
-                // If useConfig is true, call the function defined in the config
-                if (useConfig && useConfig === 'true') {
-                    if (globalPebl && globalPebl.extension.config && globalPebl.extension.config.dataEntry) {
-                        var dataEntryConfig = globalPebl.extension.config.dataEntry;
-                        if (dataEntryConfig.onSubmit && typeof dataEntryConfig.onSubmit === 'function') {
-                            dataEntryConfig.onSubmit();
+                    if (message != null) {
+                        var finalMessage = {
+                            "prompt": "DataEntry",
+                            "thread": dataEntryID,
+                            "text": JSON.stringify(message)
                         }
+                        if (globalPebl)
+                            globalPebl.emitEvent(globalPebl.events.newMessage,
+                            finalMessage);
+
+                        // If useConfig is true, call the function defined in the config
+                        if (useConfig && useConfig === 'true') {
+                            if (globalPebl && globalPebl.extension.config && globalPebl.extension.config.dataEntry) {
+                                var dataEntryConfig = globalPebl.extension.config.dataEntry;
+                                if (dataEntryConfig.onSubmit && typeof dataEntryConfig.onSubmit === 'function') {
+                                    dataEntryConfig.onSubmit();
+                                }
+                            }
+                        }
+
+                        newDataEntry.viewMode();
                     }
                 }
-
-                newDataEntry.viewMode();
-            }
+            });
         });
 
         var variableFormSubmitPrivate = $('<button class="edit">Submit Privately</button>');
