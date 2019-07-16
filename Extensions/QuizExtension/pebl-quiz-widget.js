@@ -212,105 +212,111 @@ lowStakesQuiz.attachClickHandler = function(quizId) {
 
     $('ol.quiz[id="' + quizId + '"] .choices').off();
     $(document.body).on('click', 'ol.quiz[id="' + quizId + '"] .choices > li', function() {
-        var answered = $(this).text();
-        var prompt = $(this).parent().parent().find(".questionPromptContainer").text();
-        var $answers = $(this).parents('.choices');
-        var $answersText = $answers.children();
-        $answersText = $answersText.map(function(i) {
-            return $($answersText[i]).text();
+        globalPebl.user.isLoggedIn(function(isLoggedIn) {
+            if (!isLoggedIn) {
+                window.alert('You need to be logged in to participate in this activity.');
+            } else {
+                var answered = $(this).text();
+                var prompt = $(this).parent().parent().find(".questionPromptContainer").text();
+                var $answers = $(this).parents('.choices');
+                var $answersText = $answers.children();
+                $answersText = $answersText.map(function(i) {
+                    return $($answersText[i]).text();
+                });
+                var correctAnswer = $answers.find('.correct').text();
+                var $feedback = $answers.siblings('.feedback');
+                var correct = $(this).hasClass('correct'); // T or F
+                var questionNum = $('ol.quiz .choices').index($answers);
+                var linkText = $(this).attr('data-feedbackText');
+
+                if (quizAttempts[questionNum].length == 0) {
+                    // first attempt
+                    $answers.children('li').removeClass('wrong');
+                    quizAttempts[questionNum].push(correct);
+                    localStorage.setItem(quizEntry, JSON.stringify(quizAttempts));
+                    if (correct) {
+                        $answers.addClass('reveal');
+                        if (linkText)
+                            $feedback.text(linkText);
+                        else
+                            $feedback.text(lowStakesQuiz.correctFeedback(1));
+                    } else {
+                        $(this).addClass('wrong');
+                        //$(this).delay(1000).slideUp();
+                        if (linkText)
+                            $feedback.text(linkText);
+                        else
+                            $feedback.text(lowStakesQuiz.wrongFeedback(1));
+                    }
+
+                    if (globalPebl != null)
+                        globalPebl.emitEvent(globalPebl.events.eventAnswered, {
+                            "prompt": prompt,
+                            "answers": $answersText,
+                            "correctAnswers": [
+                                [correctAnswer]
+                            ],
+                            "answered": answered,
+                            "score": correct ? 1 : 0,
+                            "minScore": 0,
+                            "maxScore": 1,
+                            "complete": true,
+                            "success": correct
+                        });
+
+
+                    gradeTest();
+                    lowStakesQuiz.handleResize(function() {
+                        $feedback.slideDown();
+                    });
+                } else if (quizAttempts[questionNum].length == 1 && quizAttempts[questionNum][0] == false) {
+
+                    // 2nd attempt
+                    //$answers.children('li').removeClass('wrong');
+                    quizAttempts[questionNum].push(correct);
+                    localStorage.setItem(quizEntry, JSON.stringify(quizAttempts));
+                    if (correct == true) {
+                        $answers.addClass('reveal');
+                        if (linkText)
+                            $feedback.text(linkText);
+                        else
+                            $feedback.text(lowStakesQuiz.correctFeedback(2));
+                    } else {
+                        setTimeout(function() {
+                            $answers.addClass('reveal secondary');
+                        }, 1500);
+
+                        $(this).addClass('wrong');
+                        //$(this).delay(1000).slideUp();
+                        if (linkText)
+                            $feedback.text(linkText);
+                        else
+                            $feedback.text(lowStakesQuiz.wrongFeedback(2));
+                    }
+
+                    if (globalPebl != null)
+                        globalPebl.emitEvent(globalPebl.events.eventAnswered, {
+                            "prompt": prompt,
+                            "answers": $answersText,
+                            "correctAnswers": [
+                                [correctAnswer]
+                            ],
+                            "answered": answered,
+                            "score": correct ? 1 : 0,
+                            "minScore": 0,
+                            "maxScore": 1,
+                            "complete": true,
+                            "success": correct
+                        });
+                    gradeTest();
+                    lowStakesQuiz.handleResize(function() {
+                        $feedback.slideDown();
+                    });
+                } else if (quizAttempts[questionNum].length > 1) {
+                    // Ignore repeated attempts
+                }
+            }
         });
-        var correctAnswer = $answers.find('.correct').text();
-        var $feedback = $answers.siblings('.feedback');
-        var correct = $(this).hasClass('correct'); // T or F
-        var questionNum = $('ol.quiz .choices').index($answers);
-        var linkText = $(this).attr('data-feedbackText');
-
-        if (quizAttempts[questionNum].length == 0) {
-            // first attempt
-            $answers.children('li').removeClass('wrong');
-            quizAttempts[questionNum].push(correct);
-            localStorage.setItem(quizEntry, JSON.stringify(quizAttempts));
-            if (correct) {
-                $answers.addClass('reveal');
-                if (linkText)
-                    $feedback.text(linkText);
-                else
-                    $feedback.text(lowStakesQuiz.correctFeedback(1));
-            } else {
-                $(this).addClass('wrong');
-                //$(this).delay(1000).slideUp();
-                if (linkText)
-                    $feedback.text(linkText);
-                else
-                    $feedback.text(lowStakesQuiz.wrongFeedback(1));
-            }
-
-            if (globalPebl != null)
-                globalPebl.emitEvent(globalPebl.events.eventAnswered, {
-                    "prompt": prompt,
-                    "answers": $answersText,
-                    "correctAnswers": [
-                        [correctAnswer]
-                    ],
-                    "answered": answered,
-                    "score": correct ? 1 : 0,
-                    "minScore": 0,
-                    "maxScore": 1,
-                    "complete": true,
-                    "success": correct
-                });
-
-
-            gradeTest();
-            lowStakesQuiz.handleResize(function() {
-                $feedback.slideDown();
-            });
-        } else if (quizAttempts[questionNum].length == 1 && quizAttempts[questionNum][0] == false) {
-
-            // 2nd attempt
-            //$answers.children('li').removeClass('wrong');
-            quizAttempts[questionNum].push(correct);
-            localStorage.setItem(quizEntry, JSON.stringify(quizAttempts));
-            if (correct == true) {
-                $answers.addClass('reveal');
-                if (linkText)
-                    $feedback.text(linkText);
-                else
-                    $feedback.text(lowStakesQuiz.correctFeedback(2));
-            } else {
-                setTimeout(function() {
-                    $answers.addClass('reveal secondary');
-                }, 1500);
-
-                $(this).addClass('wrong');
-                //$(this).delay(1000).slideUp();
-                if (linkText)
-                    $feedback.text(linkText);
-                else
-                    $feedback.text(lowStakesQuiz.wrongFeedback(2));
-            }
-
-            if (globalPebl != null)
-                globalPebl.emitEvent(globalPebl.events.eventAnswered, {
-                    "prompt": prompt,
-                    "answers": $answersText,
-                    "correctAnswers": [
-                        [correctAnswer]
-                    ],
-                    "answered": answered,
-                    "score": correct ? 1 : 0,
-                    "minScore": 0,
-                    "maxScore": 1,
-                    "complete": true,
-                    "success": correct
-                });
-            gradeTest();
-            lowStakesQuiz.handleResize(function() {
-                $feedback.slideDown();
-            });
-        } else if (quizAttempts[questionNum].length > 1) {
-            // Ignore repeated attempts
-        }
     });
 }
 
