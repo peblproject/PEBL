@@ -278,6 +278,7 @@ discussion.createSubThread = function(thread, input, prompt, textarea, responseB
 
 
 discussion.handleChatButtonClick = function(elem) {
+    var self = this;
     globalPebl.user.isLoggedIn(function(isLoggedIn) {
         if (!isLoggedIn) {
             window.alert('You need to be logged in to participate in this activity.');
@@ -288,7 +289,7 @@ discussion.handleChatButtonClick = function(elem) {
             if (elem)
                 element = jQuery(elem);
             else
-                element = jQuery(this);
+                element = jQuery(self);
             question = element.parent().children('p:first').text();
             if (globalPebl) {
                 if ((element[0].id != null) && (element[0].id != "")) {
