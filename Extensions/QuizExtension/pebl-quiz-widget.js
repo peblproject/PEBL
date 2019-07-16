@@ -212,22 +212,23 @@ lowStakesQuiz.attachClickHandler = function(quizId) {
 
     $('ol.quiz[id="' + quizId + '"] .choices').off();
     $(document.body).on('click', 'ol.quiz[id="' + quizId + '"] .choices > li', function() {
+        var self = this;
         globalPebl.user.isLoggedIn(function(isLoggedIn) {
             if (!isLoggedIn) {
                 window.alert('You need to be logged in to participate in this activity.');
             } else {
-                var answered = $(this).text();
-                var prompt = $(this).parent().parent().find(".questionPromptContainer").text();
-                var $answers = $(this).parents('.choices');
+                var answered = $(self).text();
+                var prompt = $(self).parent().parent().find(".questionPromptContainer").text();
+                var $answers = $(self).parents('.choices');
                 var $answersText = $answers.children();
                 $answersText = $answersText.map(function(i) {
                     return $($answersText[i]).text();
                 });
                 var correctAnswer = $answers.find('.correct').text();
                 var $feedback = $answers.siblings('.feedback');
-                var correct = $(this).hasClass('correct'); // T or F
+                var correct = $(self).hasClass('correct'); // T or F
                 var questionNum = $('ol.quiz .choices').index($answers);
-                var linkText = $(this).attr('data-feedbackText');
+                var linkText = $(self).attr('data-feedbackText');
 
                 if (quizAttempts[questionNum].length == 0) {
                     // first attempt
@@ -241,7 +242,7 @@ lowStakesQuiz.attachClickHandler = function(quizId) {
                         else
                             $feedback.text(lowStakesQuiz.correctFeedback(1));
                     } else {
-                        $(this).addClass('wrong');
+                        $(self).addClass('wrong');
                         //$(this).delay(1000).slideUp();
                         if (linkText)
                             $feedback.text(linkText);
@@ -286,7 +287,7 @@ lowStakesQuiz.attachClickHandler = function(quizId) {
                             $answers.addClass('reveal secondary');
                         }, 1500);
 
-                        $(this).addClass('wrong');
+                        $(self).addClass('wrong');
                         //$(this).delay(1000).slideUp();
                         if (linkText)
                             $feedback.text(linkText);
