@@ -278,21 +278,27 @@ discussion.createSubThread = function(thread, input, prompt, textarea, responseB
 
 
 discussion.handleChatButtonClick = function(elem) {
-    jQuery('.lightBox').remove();
-    var element,
-        question;
-    if (elem)
-        element = jQuery(elem);
-    else
-        element = jQuery(this);
-    question = element.parent().children('p:first').text();
-    if (globalPebl) {
-        if ((element[0].id != null) && (element[0].id != "")) {
-            if (element.parent().children(".chatBox").length == 0) {
-                discussion.createDiscussionLightBox(question, element[0]);
+    globalPebl.user.isLoggedIn(function(isLoggedIn) {
+        if (!isLoggedIn) {
+            window.alert('You need to be logged in to participate in this activity.');
+        } else {
+            jQuery('.lightBox').remove();
+            var element,
+                question;
+            if (elem)
+                element = jQuery(elem);
+            else
+                element = jQuery(this);
+            question = element.parent().children('p:first').text();
+            if (globalPebl) {
+                if ((element[0].id != null) && (element[0].id != "")) {
+                    if (element.parent().children(".chatBox").length == 0) {
+                        discussion.createDiscussionLightBox(question, element[0]);
+                    }
+                }
             }
         }
-    }
+    });
 }
 
 discussion.replyDiscussion = function(event) {
