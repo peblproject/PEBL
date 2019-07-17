@@ -5,7 +5,7 @@ var dataEntry = {};
 if (globalPebl)
     globalPebl.extension.dataEntry = dataEntry;
 
-$(document).ready(function() {    
+jQuery(document).ready(function() {    
     dataEntry.insertExtensions();
 });
 
@@ -16,15 +16,15 @@ dataEntry.invalidFormActive = false;
 dataEntry.activeEntries = {};
 
 dataEntry.insertExtensions = function() {
-    $('.dataEntryExtension, .peblExtension[data-peblextension="dataentry"]').each(function() {
-        var prompt = $(this)[0].getAttribute('data-prompt');
-        var id = $(this)[0].getAttribute('data-id');
-        var insertID = $(this)[0].getAttribute('id');
-        var forms = JSON.parse($(this)[0].getAttribute('data-forms'));
-        var sharing = $(this)[0].getAttribute('data-sharing');
-        var displayMode = $(this)[0].getAttribute('data-displayMode') || $(this)[0].getAttribute('data-displaymode');
-        var polling = $(this)[0].hasAttribute('data-polling') ? $(this)[0].getAttribute('data-polling') : 'false';
-        var useConfig = $(this)[0].hasAttribute('data-useConfig') ? $(this)[0].getAttribute('data-useConfig') : 'false';
+    jQuery('.dataEntryExtension, .peblExtension[data-peblextension="dataentry"]').each(function() {
+        var prompt = jQuery(this)[0].getAttribute('data-prompt');
+        var id = jQuery(this)[0].getAttribute('data-id');
+        var insertID = jQuery(this)[0].getAttribute('id');
+        var forms = JSON.parse(jQuery(this)[0].getAttribute('data-forms'));
+        var sharing = jQuery(this)[0].getAttribute('data-sharing');
+        var displayMode = jQuery(this)[0].getAttribute('data-displayMode') || jQuery(this)[0].getAttribute('data-displaymode');
+        var polling = jQuery(this)[0].hasAttribute('data-polling') ? jQuery(this)[0].getAttribute('data-polling') : 'false';
+        var useConfig = jQuery(this)[0].hasAttribute('data-useConfig') ? jQuery(this)[0].getAttribute('data-useConfig') : 'false';
         dataEntry.createDataEntry(insertID, prompt, id, forms, sharing, displayMode, polling, useConfig);
     });
 }
@@ -165,10 +165,10 @@ dataEntry.createMultipleChoiceEntry = function(id, form, activeEntry, useGraphVi
             multiChoiceButton.setAttribute('data-useGraphView', 'false');
         }
         multiChoiceButton.addEventListener('click', function() {
-            $(multiChoiceButtonsContainer).find('.dataEntryMultiChoiceButton').each(function() {
-                $(this).removeClass('active');
+            jQuery(multiChoiceButtonsContainer).find('.dataEntryMultiChoiceButton').each(function() {
+                jQuery(this).removeClass('active');
             });
-            $(this).addClass('active')
+            jQuery(this).addClass('active')
         });
 
         multiChoiceButtonsContainer.appendChild(multiChoiceButton);
@@ -314,28 +314,28 @@ dataEntry.createMultipleChoiceEntry = function(id, form, activeEntry, useGraphVi
     if (useGraphView && useGraphView === 'true') {
         var pollingInterval = function() {
             console.log('updating count');
-            var totalCount = $(multiChoiceResponseContainerGraph).find('.dataEntryMultiChoicePlaceholder').length;
-            $(multiChoiceResponseContainerGraph).children().each(function() {
-                var count = $(this).children('.dataEntryMultiChoicePlaceholder').length;
-                $(this).find('.dataEntryMultiChoiceResponseCount').first().text(count);
+            var totalCount = jQuery(multiChoiceResponseContainerGraph).find('.dataEntryMultiChoicePlaceholder').length;
+            jQuery(multiChoiceResponseContainerGraph).children().each(function() {
+                var count = jQuery(this).children('.dataEntryMultiChoicePlaceholder').length;
+                jQuery(this).find('.dataEntryMultiChoiceResponseCount').first().text(count);
                 var width = count > 0 ? (count / totalCount) * 100 + '%' : '0%';
-                $(this).find('.dataEntryMultiChoiceResponseGraphFillBar').first().css('width', width);
+                jQuery(this).find('.dataEntryMultiChoiceResponseGraphFillBar').first().css('width', width);
             });
 
-            var totalCountTeam = $(multiChoiceTeamResponseContainerGraph).find('.dataEntryMultiChoicePlaceholder').length;
-            $(multiChoiceTeamResponseContainerGraph).children().each(function() {
-                var count = $(this).children('.dataEntryMultiChoicePlaceholder').length;
-                $(this).find('.dataEntryMultiChoiceResponseCount').first().text(count);
+            var totalCountTeam = jQuery(multiChoiceTeamResponseContainerGraph).find('.dataEntryMultiChoicePlaceholder').length;
+            jQuery(multiChoiceTeamResponseContainerGraph).children().each(function() {
+                var count = jQuery(this).children('.dataEntryMultiChoicePlaceholder').length;
+                jQuery(this).find('.dataEntryMultiChoiceResponseCount').first().text(count);
                 var width = count > 0 ? (count / totalCountTeam) * 100 + '%' : '0%';
-                $(this).find('.dataEntryMultiChoiceResponseGraphFillBar').first().css('width', width);
+                jQuery(this).find('.dataEntryMultiChoiceResponseGraphFillBar').first().css('width', width);
             });
 
-            var totalCountClass = $(multiChoiceClassResponseContainerGraph).find('.dataEntryMultiChoicePlaceholder').length;
-            $(multiChoiceClassResponseContainerGraph).children().each(function() {
-                var count = $(this).children('.dataEntryMultiChoicePlaceholder').length;
-                $(this).find('.dataEntryMultiChoiceResponseCount').first().text(count);
+            var totalCountClass = jQuery(multiChoiceClassResponseContainerGraph).find('.dataEntryMultiChoicePlaceholder').length;
+            jQuery(multiChoiceClassResponseContainerGraph).children().each(function() {
+                var count = jQuery(this).children('.dataEntryMultiChoicePlaceholder').length;
+                jQuery(this).find('.dataEntryMultiChoiceResponseCount').first().text(count);
                 var width = count > 0 ? (count / totalCountClass) * 100 + '%' : '0%';
-                $(this).find('.dataEntryMultiChoiceResponseGraphFillBar').first().css('width', width);
+                jQuery(this).find('.dataEntryMultiChoiceResponseGraphFillBar').first().css('width', width);
             });
         }
 
@@ -363,13 +363,13 @@ dataEntry.createTextEntry = function(id, form, activeEntry) {
         cssClass = form.cssClass;
     }
 
-    var textResponses = $('<div id="' + dataEntry.comboID(id, "responseBox") + '" class="textResponses unofficialView"><p class="dataEntryTextResponseNoData">Nothing has been submitted yet.</p></div>');
-    var textOfficialResponses = $('<div id="' + dataEntry.comboID(id, "responseBoxOfficial") + '" class="textResponses officialView"><p class="dataEntryTextResponseNoData">Nothing has been submitted yet.</p></div>');
-    var textPrivateResponses = $('<div id="' + dataEntry.comboID(id, "responseBoxPrivate") + '" class="textResponses privateView"><p class="dataEntryTextResponseNoData">Nothing has been submitted yet.</p></div>');
-    var textTeamResponses = $('<div id="' + dataEntry.comboID(id, "responseBoxTeam") + '" class="textResponses teamView"><p class="dataEntryTextResponseNoData">Nothing has been submitted yet.</p></div>');
-    var textClassResponses = $('<div id="' + dataEntry.comboID(id, "responseBoxClass") + '" class="textResponses classView"><p class="dataEntryTextResponseNoData">Nothing has been submitted yet.</p></div>');
-    var textInput = $('<div class="textInput ' + cssClass + '"><label id="textDetailText">' + form.prompt + '</label><textarea ' + placeholderString + ' class="edit" data-responseBoxClass="' + dataEntry.comboID(id, "responseBoxClass") + '" data-responseBoxTeam="' + dataEntry.comboID(id, "responseBoxTeam") + '" data-responseBoxPrivate="' + dataEntry.comboID(id, "responseBoxPrivate") + '" data-responseBoxOfficial="' + dataEntry.comboID(id, "responseBoxOfficial") + '" data-responseBox="' + dataEntry.comboID(id, "responseBox") + '" data-prompt="' + form.prompt + '" ' + requiredString +  ' oninvalid="globalPebl.extension.dataEntry.invalidForm();" id="' + id + '"></textarea></div>');
-    var text = $('<div class="textBox"></div>');
+    var textResponses = jQuery('<div id="' + dataEntry.comboID(id, "responseBox") + '" class="textResponses unofficialView"><p class="dataEntryTextResponseNoData">Nothing has been submitted yet.</p></div>');
+    var textOfficialResponses = jQuery('<div id="' + dataEntry.comboID(id, "responseBoxOfficial") + '" class="textResponses officialView"><p class="dataEntryTextResponseNoData">Nothing has been submitted yet.</p></div>');
+    var textPrivateResponses = jQuery('<div id="' + dataEntry.comboID(id, "responseBoxPrivate") + '" class="textResponses privateView"><p class="dataEntryTextResponseNoData">Nothing has been submitted yet.</p></div>');
+    var textTeamResponses = jQuery('<div id="' + dataEntry.comboID(id, "responseBoxTeam") + '" class="textResponses teamView"><p class="dataEntryTextResponseNoData">Nothing has been submitted yet.</p></div>');
+    var textClassResponses = jQuery('<div id="' + dataEntry.comboID(id, "responseBoxClass") + '" class="textResponses classView"><p class="dataEntryTextResponseNoData">Nothing has been submitted yet.</p></div>');
+    var textInput = jQuery('<div class="textInput ' + cssClass + '"><label id="textDetailText">' + form.prompt + '</label><textarea ' + placeholderString + ' class="edit" data-responseBoxClass="' + dataEntry.comboID(id, "responseBoxClass") + '" data-responseBoxTeam="' + dataEntry.comboID(id, "responseBoxTeam") + '" data-responseBoxPrivate="' + dataEntry.comboID(id, "responseBoxPrivate") + '" data-responseBoxOfficial="' + dataEntry.comboID(id, "responseBoxOfficial") + '" data-responseBox="' + dataEntry.comboID(id, "responseBox") + '" data-prompt="' + form.prompt + '" ' + requiredString +  ' oninvalid="globalPebl.extension.dataEntry.invalidForm();" id="' + id + '"></textarea></div>');
+    var text = jQuery('<div class="textBox"></div>');
     text.append(textInput);
     text.append(textResponses);
     text.append(textOfficialResponses);
@@ -577,13 +577,13 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
 
             for (var j = 0; j < form.subForms.length; j++) {
                 if (form.subForms[j].type === 'text') {
-                    var textResponses = $('<div id="' + dataEntry.comboID(id, 'subForm', j, "responseBox") + '" class="textResponses unofficialView"><div><!--<a class="showMore">Show more...</a>--></div></div>');
-                    var textInput = $('<div class="textInput"><label id="textDetailText">' + form.subForms[j].prompt + '</label><textarea class="edit" data-responseBox="' + dataEntry.comboID(id, 'subForm', j, "responseBox") + '" data-prompt="' + form.subForms[j].prompt + '" required="required" oninvalid="globalPebl.extension.dataEntry.invalidForm();" id="' + dataEntry.comboID(id, 'subForm', j) + '"></textarea></div>');
-                    var text = $('<div class="textBox"></div>');
+                    var textResponses = jQuery('<div id="' + dataEntry.comboID(id, 'subForm', j, "responseBox") + '" class="textResponses unofficialView"><div><!--<a class="showMore">Show more...</a>--></div></div>');
+                    var textInput = jQuery('<div class="textInput"><label id="textDetailText">' + form.subForms[j].prompt + '</label><textarea class="edit" data-responseBox="' + dataEntry.comboID(id, 'subForm', j, "responseBox") + '" data-prompt="' + form.subForms[j].prompt + '" required="required" oninvalid="globalPebl.extension.dataEntry.invalidForm();" id="' + dataEntry.comboID(id, 'subForm', j) + '"></textarea></div>');
+                    var text = jQuery('<div class="textBox"></div>');
                     text.append(textInput);
                     text.append(textResponses);
                     
-                    $(subFormElement).append(text);
+                    jQuery(subFormElement).append(text);
                     textInput.slideDown();
 
                     newSubFormDataEntry.textareas.add(dataEntry.comboID(id, 'subForm', j));
@@ -592,24 +592,24 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
             //toggle viewMode for this dataEntry
             newSubFormDataEntry.viewMode = function() {
                 dataEntry.handleResize(function() {
-                    $(subFormContainer).find('.edit').each(function() {
-                        $(this).hide();
+                    jQuery(subFormContainer).find('.edit').each(function() {
+                        jQuery(this).hide();
                     });
 
-                    $(subFormContainer).find('.unofficialView').each(function() {
-                        $(this).show();
+                    jQuery(subFormContainer).find('.unofficialView').each(function() {
+                        jQuery(this).show();
                     });
 
-                    $(subFormContainer).find('.officialView').each(function() {
-                        $(this).hide();
+                    jQuery(subFormContainer).find('.officialView').each(function() {
+                        jQuery(this).hide();
                     });
 
-                    $(subFormContainer).find('.dataEntryViewModeButton').each(function() {
-                        $(this).addClass('active');
+                    jQuery(subFormContainer).find('.dataEntryViewModeButton').each(function() {
+                        jQuery(this).addClass('active');
                     });
 
-                    $(subFormContainer).find('.dataEntryEditModeButton').each(function() {
-                        $(this).removeClass('active');
+                    jQuery(subFormContainer).find('.dataEntryEditModeButton').each(function() {
+                        jQuery(this).removeClass('active');
                     });
                 });
             }
@@ -617,24 +617,24 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
             //toggle editMode for this dataEntry
             newSubFormDataEntry.editMode = function() {
                 dataEntry.handleResize(function() {
-                    $(subFormContainer).find('.edit').each(function() {
-                        $(this).show();
+                    jQuery(subFormContainer).find('.edit').each(function() {
+                        jQuery(this).show();
                     });
 
-                    $(subFormContainer).find('.unofficialView').each(function() {
-                        $(this).hide();
+                    jQuery(subFormContainer).find('.unofficialView').each(function() {
+                        jQuery(this).hide();
                     });
 
-                    $(subFormContainer).find('.officialView').each(function() {
-                        $(this).hide();
+                    jQuery(subFormContainer).find('.officialView').each(function() {
+                        jQuery(this).hide();
                     });
 
-                    $(subFormContainer).find('.dataEntryViewModeButton').each(function() {
-                        $(this).removeClass('active');
+                    jQuery(subFormContainer).find('.dataEntryViewModeButton').each(function() {
+                        jQuery(this).removeClass('active');
                     });
 
-                    $(subFormContainer).find('.dataEntryEditModeButton').each(function() {
-                        $(this).addClass('active');
+                    jQuery(subFormContainer).find('.dataEntryEditModeButton').each(function() {
+                        jQuery(this).addClass('active');
                     });
                 });
             }
@@ -664,7 +664,7 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
             var closeButton = document.createElement('div');
             closeButton.classList.add('dataEntryCloseButton');
             closeButton.addEventListener('click', function() {
-                $(document.getElementById(dataEntry.comboID(id, 'subForm'))).hide();
+                jQuery(document.getElementById(dataEntry.comboID(id, 'subForm'))).hide();
             });
 
             var closeButtonIcon = document.createElement('i');
@@ -684,7 +684,7 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
             var formFooter = document.createElement('div');
             formFooter.classList.add('dataEntryFooter');
 
-            var subFormSubmit = $('<button class="dataEntryFormSubmit">Submit</button>');
+            var subFormSubmit = jQuery('<button class="dataEntryFormSubmit">Submit</button>');
             subFormSubmit.on('click', function() {
                 dataEntry.invalidFormActive = false;
                 var validForm = subFormElement.reportValidity();
@@ -722,14 +722,14 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
                 }
             });
 
-            $(formFooter).append(subFormSubmit);
+            jQuery(formFooter).append(subFormSubmit);
 
             subFormElement.appendChild(formFooter);
 
             checkbox.addEventListener('click', function(evt) {
                 if (evt.currentTarget.checked === true) {
                     console.log('checked');
-                    $(document.getElementById(dataEntry.comboID(id, 'subForm'))).show();
+                    jQuery(document.getElementById(dataEntry.comboID(id, 'subForm'))).show();
                 } else {
                     console.log('not checked');
                 }
@@ -854,7 +854,7 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
             var subID = dataEntry.comboID(dataEntryID, i);
             //Create textarea fields
             if (forms[i].type === 'text') {
-                $(formElement).append(dataEntry.createTextEntry(subID, forms[i], newDataEntry));
+                jQuery(formElement).append(dataEntry.createTextEntry(subID, forms[i], newDataEntry));
             } else if (forms[i].type === 'table') {
                 //Create table fields
                 formElement.appendChild(dataEntry.createRadioEntry(subID, forms[i], newDataEntry));
@@ -875,7 +875,7 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
         formFooter.classList.add('dataEntryFooter');
 
         //Submit the marked responses as the official submission, only visible to team leader in view tab.
-        var submitMarkedResponsesOfficial = $('<button class="dataEntryFormSubmitOfficial unofficialView">Make it Official</button>');
+        var submitMarkedResponsesOfficial = jQuery('<button class="dataEntryFormSubmitOfficial unofficialView">Make it Official</button>');
         submitMarkedResponsesOfficial.on('click', function() {
             var message = dataEntry.getFormData(formElement, newDataEntry, 'Official', true);
 
@@ -921,7 +921,7 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
             }
         });
 
-        var formSubmitOfficial = $('<button class="dataEntryFormSubmitOfficial edit">Make it Official</button>');
+        var formSubmitOfficial = jQuery('<button class="dataEntryFormSubmitOfficial edit">Make it Official</button>');
         formSubmitOfficial.on('click', function() {
             var message = dataEntry.getFormData(formElement, newDataEntry, 'Official');
 
@@ -967,7 +967,7 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
             }
         });
 
-        var formSubmit = $('<button class="dataEntryFormSubmit edit">Submit</button>');
+        var formSubmit = jQuery('<button class="dataEntryFormSubmit edit">Submit</button>');
         formSubmit.on('click', function() {
             globalPebl.user.isLoggedIn(function(isLoggedIn) {
                 if (!isLoggedIn) {
@@ -1001,7 +1001,7 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
             });
         });
 
-        var variableFormSubmitPrivate = $('<button class="edit">Submit Privately</button>');
+        var variableFormSubmitPrivate = jQuery('<button class="edit">Submit Privately</button>');
         variableFormSubmitPrivate.on('click', function() {
             var message = dataEntry.getFormData(formElement, newDataEntry, 'Private');
 
@@ -1019,7 +1019,7 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
             }
         });
 
-        var variableFormSubmitTeam = $('<button class="edit">Submit to Team</button>');
+        var variableFormSubmitTeam = jQuery('<button class="edit">Submit to Team</button>');
         variableFormSubmitTeam.on('click', function() {
             var message = dataEntry.getFormData(formElement, newDataEntry, 'Team');
 
@@ -1037,7 +1037,7 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
             }
         });
 
-        var variableFormSubmitClass = $('<button class="edit">Submit to Class</button>');
+        var variableFormSubmitClass = jQuery('<button class="edit">Submit to Class</button>');
         variableFormSubmitClass.on('click', function() {
             var message = dataEntry.getFormData(formElement, newDataEntry, 'Class');
 
@@ -1057,66 +1057,66 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
 
         newDataEntry.privateViewMode = function() {
             dataEntry.handleResize(function() {
-                $(calloutDiv).addClass('privateViewMode');
-                $(calloutDiv).removeClass('teamViewMode');
-                $(calloutDiv).removeClass('classViewMode');
-                $(calloutDiv).removeClass('editMode');
+                jQuery(calloutDiv).addClass('privateViewMode');
+                jQuery(calloutDiv).removeClass('teamViewMode');
+                jQuery(calloutDiv).removeClass('classViewMode');
+                jQuery(calloutDiv).removeClass('editMode');
             });
         }
 
         newDataEntry.teamViewMode = function() {
             dataEntry.handleResize(function() {
-                $(calloutDiv).addClass('teamViewMode');
-                $(calloutDiv).removeClass('privateViewMode');
-                $(calloutDiv).removeClass('classViewMode');
-                $(calloutDiv).removeClass('editMode');
+                jQuery(calloutDiv).addClass('teamViewMode');
+                jQuery(calloutDiv).removeClass('privateViewMode');
+                jQuery(calloutDiv).removeClass('classViewMode');
+                jQuery(calloutDiv).removeClass('editMode');
             });
         }
 
         newDataEntry.classViewMode = function() {
             dataEntry.handleResize(function() {
-                $(calloutDiv).addClass('classViewMode');
-                $(calloutDiv).removeClass('teamViewMode');
-                $(calloutDiv).removeClass('privateViewMode');
-                $(calloutDiv).removeClass('editMode');
+                jQuery(calloutDiv).addClass('classViewMode');
+                jQuery(calloutDiv).removeClass('teamViewMode');
+                jQuery(calloutDiv).removeClass('privateViewMode');
+                jQuery(calloutDiv).removeClass('editMode');
             });
         }
 
         newDataEntry.officialMode = function() {
             dataEntry.handleResize(function() {
-                $(calloutDiv).addClass('officialViewMode');
-                $(calloutDiv).removeClass('unofficialViewMode');
-                $(calloutDiv).removeClass('editMode');
+                jQuery(calloutDiv).addClass('officialViewMode');
+                jQuery(calloutDiv).removeClass('unofficialViewMode');
+                jQuery(calloutDiv).removeClass('editMode');
             });
         }
 
         //toggle viewMode for this dataEntry
         newDataEntry.viewMode = function() {
             dataEntry.handleResize(function() {
-                $(calloutDiv).removeClass('officialViewMode');
-                $(calloutDiv).addClass('unofficialViewMode');
-                $(calloutDiv).removeClass('editMode');
+                jQuery(calloutDiv).removeClass('officialViewMode');
+                jQuery(calloutDiv).addClass('unofficialViewMode');
+                jQuery(calloutDiv).removeClass('editMode');
             });
         }
 
         //toggle editMode for this dataEntry
         newDataEntry.editMode = function() {
             dataEntry.handleResize(function() {
-                $(calloutDiv).removeClass('officialViewMode');
-                $(calloutDiv).removeClass('unofficialViewMode');
-                $(calloutDiv).removeClass('privateViewMode');
-                $(calloutDiv).removeClass('teamViewMode');
-                $(calloutDiv).removeClass('classViewMode');
-                $(calloutDiv).addClass('editMode');
+                jQuery(calloutDiv).removeClass('officialViewMode');
+                jQuery(calloutDiv).removeClass('unofficialViewMode');
+                jQuery(calloutDiv).removeClass('privateViewMode');
+                jQuery(calloutDiv).removeClass('teamViewMode');
+                jQuery(calloutDiv).removeClass('classViewMode');
+                jQuery(calloutDiv).addClass('editMode');
             });
         }
 
         // Poll and set the view of the data entry widget, only if its out of view of the user, otherwise it would be annoying having it switch views while using it
         // newDataEntry.setInitialView = setInterval(function() {
         //     if (!dataEntry.isElementInViewport(calloutDiv)) {
-        //         if ((sharing === 'team' && group) && $(calloutDiv).find('.officialView').children().not('.placeholder').not('.dataEntryTextResponseNoData').length > 0)
+        //         if ((sharing === 'team' && group) && jQuery(calloutDiv).find('.officialView').children().not('.placeholder').not('.dataEntryTextResponseNoData').length > 0)
         //             newDataEntry.officialMode();
-        //         else if ($(calloutDiv).find('.unofficialView').children('[data-user="' + userProfile.identity + '"]').not('.placeholder').length > 0)
+        //         else if (jQuery(calloutDiv).find('.unofficialView').children('[data-user="' + userProfile.identity + '"]').not('.placeholder').length > 0)
         //             newDataEntry.viewMode();
         //         else if (!displayMode || displayMode !== 'viewOnly')
         //             newDataEntry.editMode();
@@ -1126,7 +1126,7 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
         var closeButton = document.createElement('div');
         closeButton.classList.add('dataEntryCloseButton');
         closeButton.addEventListener('click', function() {
-            $(calloutDiv).parent().remove();
+            jQuery(calloutDiv).parent().remove();
             clearInterval(window.updatePollingCount);
         });
 
@@ -1213,12 +1213,12 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
             if (userProfile.currentClass)
                 header.appendChild(classViewModeButton);
 
-            //$(formFooter).append(variableFormSubmitPrivate);
+            //jQuery(formFooter).append(variableFormSubmitPrivate);
             if (userProfile.currentTeam)
-                $(formFooter).append(variableFormSubmitTeam);
+                jQuery(formFooter).append(variableFormSubmitTeam);
 
             if (userProfile.currentClass)
-                $(formFooter).append(variableFormSubmitClass);
+                jQuery(formFooter).append(variableFormSubmitClass);
 
             // var privateMessageHandle = dataEntry.dataMessageHandler(dataEntry.comboID(userProfile.identity, dataEntryID));
             // globalPebl.subscribeThread(dataEntry.comboID(userProfile.identity, dataEntryID), false, privateMessageHandle);
@@ -1237,7 +1237,7 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
         } else {
             header.appendChild(viewModeButton);
 
-            $(formFooter).append(formSubmit);
+            jQuery(formFooter).append(formSubmit);
 
             var messageHandle = dataEntry.dataMessageHandler(dataEntryID);
             if (globalPebl)
@@ -1255,11 +1255,11 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
             header.appendChild(officialModeButton);
             //TODO: Use the specific permission that lets you make official submissions
             if (group.role === 'owner') {
-                $(formFooter).append(formSubmitOfficial);
+                jQuery(formFooter).append(formSubmitOfficial);
                 // Don't show the inline make official in viewOnly mode
                 if (!displayMode || displayMode !== 'viewOnly') {
-                    $(formFooter).append(submitMarkedResponsesOfficial);
-                    $(formElement).addClass('showInlineMakeOfficial');
+                    jQuery(formFooter).append(submitMarkedResponsesOfficial);
+                    jQuery(formElement).addClass('showInlineMakeOfficial');
                 }
             }
         }
@@ -1316,20 +1316,20 @@ dataEntry.multiChoiceMessageHandler = function(message, userProfile) {
     hiddenPlaceholder.classList.add('dataEntryMultiChoicePlaceholder');
 
     var responseBox = document.getElementById(message.responseBox);
-    var specificResponseBox = $(responseBox).find('div[data-index="' + message.index + '"]')[0];
+    var specificResponseBox = jQuery(responseBox).find('div[data-index="' + message.index + '"]')[0];
 
     var existingMessage = responseBox.querySelector('[id="' + dataEntry.comboID(message.name, message.thread) + '"]');
     if (existingMessage) {
         var newTimestamp = new Date(message.timestamp);
         var oldTimestamp = new Date(existingMessage.getAttribute('data-timestamp'));
         if (newTimestamp > oldTimestamp) {
-            $(existingMessage).remove();
-            $(specificResponseBox).prepend(hiddenPlaceholder);
+            jQuery(existingMessage).remove();
+            jQuery(specificResponseBox).prepend(hiddenPlaceholder);
         } else {
             //Don't add it
         }
     } else {
-        $(specificResponseBox).prepend(hiddenPlaceholder);
+        jQuery(specificResponseBox).prepend(hiddenPlaceholder);
     }
 }
 
@@ -1338,16 +1338,16 @@ dataEntry.messageHandler = function(message, userProfile) {
     var mine = userProfile.name == message.name;
     var userIcon = document.createElement('i');
     userIcon.classList.add('fa', 'fa-user');
-    var userIdBox = $('<span class="userId"></span>');
+    var userIdBox = jQuery('<span class="userId"></span>');
     var userName = message.name;
     if (message.originalUser)
         userName += ' via ' + message.originalUser;
     userIdBox.text(userName);
-    var timestampBox = $('<span class="timestamp"></span>');
+    var timestampBox = jQuery('<span class="timestamp"></span>');
     timestampBox.text(new Date(message.timestamp).toLocaleString());
-    var textBox = $('<p class="message"></p>');
+    var textBox = jQuery('<p class="message"></p>');
     textBox.text(message.text);
-    var messageContainer = $('<div data-user="' + message.name + '" data-timestamp="' + message.timestamp + '" id="' + dataEntry.comboID(message.name, message.thread) + '" class="' + (mine?"your ":"") + 'response"></div>');
+    var messageContainer = jQuery('<div data-user="' + message.name + '" data-timestamp="' + message.timestamp + '" id="' + dataEntry.comboID(message.name, message.thread) + '" class="' + (mine?"your ":"") + 'response"></div>');
     if (message.text === '') {
         messageContainer.css('display', 'none');
         messageContainer[0].classList.add('placeholder');
@@ -1375,7 +1375,7 @@ dataEntry.messageHandler = function(message, userProfile) {
 
     makeOfficialWrapper.appendChild(makeOfficialContainer);
 
-    messageContainer.append($(userIcon));
+    messageContainer.append(jQuery(userIcon));
     messageContainer.append(userIdBox);
     messageContainer.append(timestampBox);
     messageContainer.append(textBox);
@@ -1391,13 +1391,13 @@ dataEntry.messageHandler = function(message, userProfile) {
             var oldTimestamp = new Date(existingMessage.getAttribute('data-timestamp'));
             //Replace the existing message with the newer one
             if (newTimestamp > oldTimestamp) {
-                $(existingMessage).remove();
-                $(responseBox).prepend(messageContainer);
+                jQuery(existingMessage).remove();
+                jQuery(responseBox).prepend(messageContainer);
             } else {
                 //Don't add it
             }
         } else {
-            $(responseBox).prepend(messageContainer);
+            jQuery(responseBox).prepend(messageContainer);
         }
     }
 }
@@ -1446,15 +1446,15 @@ dataEntry.checkboxMessageHandler = function(message, userProfile) {
 
     var userIcon = document.createElement('i');
     userIcon.classList.add('fa', 'fa-user');
-    var userIdBox = $('<span class="userId"></span>');
+    var userIdBox = jQuery('<span class="userId"></span>');
     var userName = message.name;
     if (message.originalUser)
         userName += ' via ' + message.originalUser;
     userIdBox.text(userName);
-    var timestampBox = $('<span class="timestamp"></span>');
+    var timestampBox = jQuery('<span class="timestamp"></span>');
     timestampBox.text(new Date(message.timestamp).toLocaleString());
-    var textBox = $('<p class="message"></p>');
-    var messageContainer = $('<div data-user="' + message.name + '" data-timestamp="' + message.timestamp + '" id="' + dataEntry.comboID(message.thread, message.name) + '" class="' + (mine?"your ":"") + 'response"></div>');
+    var textBox = jQuery('<p class="message"></p>');
+    var messageContainer = jQuery('<div data-user="' + message.name + '" data-timestamp="' + message.timestamp + '" id="' + dataEntry.comboID(message.thread, message.name) + '" class="' + (mine?"your ":"") + 'response"></div>');
 
     var makeOfficialWrapper = document.createElement('div');
     makeOfficialWrapper.classList.add('unofficialView');
@@ -1481,7 +1481,7 @@ dataEntry.checkboxMessageHandler = function(message, userProfile) {
     if (temp.length > 0)
         textBox.text(temp);
 
-    messageContainer.append($(userIcon));
+    messageContainer.append(jQuery(userIcon));
     messageContainer.append(userIdBox);
     messageContainer.append(timestampBox);
     messageContainer.append(textBox);
@@ -1494,12 +1494,12 @@ dataEntry.checkboxMessageHandler = function(message, userProfile) {
         var newTimestamp = message.timestamp;
         if (new Date(newTimestamp) > new Date(oldTimestamp)) {
             //This is more recent, remove the old one
-            $(elem).remove();
+            jQuery(elem).remove();
             if (text === '') {
                 messageContainer.css('display', 'none');
                 messageContainer[0].classList.add('placeholder');
             }
-            $(responseBox).append(messageContainer);
+            jQuery(responseBox).append(messageContainer);
         } else {
             //This is an old message, do nothing
         } 
@@ -1508,7 +1508,7 @@ dataEntry.checkboxMessageHandler = function(message, userProfile) {
             messageContainer.css('display', 'none');
             messageContainer[0].classList.add('placeholder');
         }
-        $(responseBox).append(messageContainer);
+        jQuery(responseBox).append(messageContainer);
     }
 }
 
@@ -1557,13 +1557,13 @@ dataEntry.radioMessageHandler = function(message, userProfile) {
         var oldTimestamp = elem.getAttribute('data-timestamp');
         var newTimestamp = message.timestamp;
         if (new Date(newTimestamp) > new Date(oldTimestamp)) {
-            $(elem).remove();
-            $(responseBox).append(messageContainer);
+            jQuery(elem).remove();
+            jQuery(responseBox).append(messageContainer);
         } else {
             //don't add it
         }
     } else {
-        $(responseBox).append(messageContainer);
+        jQuery(responseBox).append(messageContainer);
     }
 }
 
@@ -1609,7 +1609,7 @@ dataEntry.getFormData = function(formElement, newDataEntry, responseType, getMar
     if (getMarkedResponses) {
         var messages = [];
 
-        $(formElement).find('.inlineMakeOfficialContainer input[type="radio"]:checked').each(function() {
+        jQuery(formElement).find('.inlineMakeOfficialContainer input[type="radio"]:checked').each(function() {
             var type = this.getAttribute('data-type');
             if (type === 'text') {
                 var val = this.getAttribute('data-message');
@@ -1677,7 +1677,7 @@ dataEntry.getFormData = function(formElement, newDataEntry, responseType, getMar
             if (newDataEntry.dropdowns.size > 0) {
                 var dropdownArray = Array.from(newDataEntry.dropdowns);
                 for (var i = 0; i < dropdownArray.length; i++) {
-                    var elem = $('#' + dropdownArray[i]);
+                    var elem = jQuery('#' + dropdownArray[i]);
                     var val = elem.val();
                     var prompt = elem.attr('data-prompt');
                     var responseBox = elem.attr('data-responseBox' + responseType);
@@ -1695,7 +1695,7 @@ dataEntry.getFormData = function(formElement, newDataEntry, responseType, getMar
             if (newDataEntry.multiChoices.size > 0) {
                 var multiChoiceArray = Array.from(newDataEntry.multiChoices);
                 for (var i = 0; i < multiChoiceArray.length; i++) {
-                    var elem = $('#' + multiChoiceArray[i]).find('button.active').first()[0];
+                    var elem = jQuery('#' + multiChoiceArray[i]).find('button.active').first()[0];
                     var val = elem.textContent;
                     var useGraphView = elem.getAttribute('data-useGraphView');
                     var graph = '';
@@ -1741,10 +1741,10 @@ dataEntry.getFormData = function(formElement, newDataEntry, responseType, getMar
             if (newDataEntry.radios.size > 0) {
                 var radioArray = Array.from(newDataEntry.radios);
                 for (var j = 0; j < radioArray.length; j++) {
-                    var val = $('input[name="' + radioArray[j] + '"]:checked').val();
-                    var title = $('input[name="' + radioArray[j] + '"]:checked').attr('data-title');
-                    var prompt = $('input[name="' + radioArray[j] + '"]:checked').attr('prompt');
-                    var responseBox = $('input[name="' + radioArray[j] + '"]:checked').attr('data-responseBox' + responseType);
+                    var val = jQuery('input[name="' + radioArray[j] + '"]:checked').val();
+                    var title = jQuery('input[name="' + radioArray[j] + '"]:checked').attr('data-title');
+                    var prompt = jQuery('input[name="' + radioArray[j] + '"]:checked').attr('prompt');
+                    var responseBox = jQuery('input[name="' + radioArray[j] + '"]:checked').attr('data-responseBox' + responseType);
                     //Content of the message is the value of the radio button
                     var message = {
                         "prompt" : prompt,
@@ -1832,7 +1832,7 @@ dataEntry.getLearnlet = function(string) {
 }
 
 dataEntry.getLearnletTitle = function() {
-    return $('.chapterTitle')[0].textContent;
+    return jQuery('.chapterTitle')[0].textContent;
 }
 
 //From https://stackoverflow.com/a/7557433
@@ -1847,7 +1847,7 @@ dataEntry.isElementInViewport = function(el) {
     return (
         rect.top >= 0 &&
         rect.left >= 0 &&
-        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /*or $(window).height() */
-        rect.right <= (window.innerWidth || document.documentElement.clientWidth) /*or $(window).width() */
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /*or jQuery(window).height() */
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth) /*or jQuery(window).width() */
     );
 }
