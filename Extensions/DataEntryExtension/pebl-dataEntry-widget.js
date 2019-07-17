@@ -6,6 +6,16 @@ if (globalPebl)
     globalPebl.extension.dataEntry = dataEntry;
 
 $(document).ready(function() {    
+    dataEntry.insertExtensions();
+});
+
+//Prevents invalid form alert from appearing multiple times on a single submit
+dataEntry.invalidFormActive = false;
+
+//Each data entry has its own state variables and functions
+dataEntry.activeEntries = {};
+
+dataEntry.insertExtensions = function() {
     $('.dataEntryExtension, .peblExtension[data-peblextension="dataentry"]').each(function() {
         var prompt = $(this)[0].getAttribute('data-prompt');
         var id = $(this)[0].getAttribute('data-id');
@@ -17,13 +27,7 @@ $(document).ready(function() {
         var useConfig = $(this)[0].hasAttribute('data-useConfig') ? $(this)[0].getAttribute('data-useConfig') : 'false';
         dataEntry.createDataEntry(insertID, prompt, id, forms, sharing, displayMode, polling, useConfig);
     });
-});
-
-//Prevents invalid form alert from appearing multiple times on a single submit
-dataEntry.invalidFormActive = false;
-
-//Each data entry has its own state variables and functions
-dataEntry.activeEntries = {};
+}
 
 dataEntry.createHeader = function(id, form, activeEntry) {
     var cssClass = '';
