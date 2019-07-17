@@ -824,7 +824,6 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
 
 
         var questionParagraph = document.createElement('p');
-        questionParagraph.classList.add('edit');
         questionParagraph.innerHTML = question;
         if (!question) {
             questionParagraph.style.display = 'none';
