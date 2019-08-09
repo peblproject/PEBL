@@ -5,11 +5,22 @@
     border: 3px solid #077ebc;
     box-sizing: border-box;
     clear: both;
+    display: none;
     /*    position: relative;*/
 }
 
+.adjustable-content.active {
+    display: block;
+}
+
+.adjustable-content .level1,
 .adjustable-content .level2,
-.adjustable-content .level3 {
+.adjustable-content .level3,
+.adjustable-content .level4,
+.adjustable-content .level5,
+.adjustable-content .level6,
+.adjustable-content .level7,
+.adjustable-content .level8 {
     display: none;
 }
 
