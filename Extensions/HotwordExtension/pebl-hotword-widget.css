@@ -1,7 +1,7 @@
 .tooltip {
     position: relative;
     display: inline-block;
-    border-bottom: 1px dotted black;
+    border-bottom: 2px solid var(--primary-color-dark);
     text-indent: 0px;
     cursor: help;
 }
@@ -10,9 +10,9 @@
     /*    visibility: hidden;*/
     display: none;
     cursor: pointer;
-    width: 300px;
-    background-color: #555;
-    color: #fff;
+    width: 200px;
+    background-color:var(--primary-color-light);
+    color: var(--dark--font);
     text-align: left;
     border-radius: 6px;
     padding: 0.5em;
@@ -35,18 +35,17 @@
     margin-left: -8px;
     width: 0;
     height: 0;
-    border-top: 8px solid #555;
+    border-top: 8px solid var(--primary-color-light);
     border-right: 8px solid transparent;
     border-left: 8px solid transparent;
 }
 
 .tooltip.active {
-    background-color: lightyellow;
+    font-weight: 500;
     border-color: transparent;
 }
 
 .tooltip.active .tooltiptext {
     display: block;
     opacity: 1;
-	word-break: break-word;
 }

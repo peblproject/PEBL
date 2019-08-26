@@ -2,7 +2,84 @@
     max-height: calc(70vh - 105px);
     break-inside: avoid-column;
     -webkit-column-break-inside: avoid;
+    
 }
+/* check box styles */
+.dataEntryCheckboxWrapper {
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    padding-top: .25rem;
+    margin-bottom: .5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    width: 100%;
+}
+.dataEntryCheckboxWrapper input[type='checkbox'] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+.dataEntryCheckboxWrapper input[type='text'] {
+    height: 1.25rem;
+    border: none;
+    outline: none;
+    padding: .25rem;
+    margin: .25rem 0rem;
+    width: calc(100% - 1rem);
+    border-radius: 5px;
+}
+
+.dataEntryCheckboxWrapper .checkmark {
+    position: absolute;
+    top: .5rem;
+    left: 0;
+    height: 25px;
+    width: 25px;
+    border: solid 2px var(--primary-color-dark);
+    border-radius: 5px;
+    background-color: var(--primary-color-light);
+}
+.dataEntryCheckboxWrapper:hover input[type='checkbox'] ~ .checkmark {
+    background-color: var(--primary-color-light);
+}
+
+.dataEntryCheckboxWrapper input[type='checkbox']:checked ~ .checkmark {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+.dataEntryCheckboxWrapper .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+
+.dataEntryCheckboxWrapper input[type='checkbox']:checked ~ .checkmark:after {
+content: '';
+display: inline-block;
+  font-style: normal;
+  color: #fff;
+  font-variant: normal;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  content: "\f00c";
+}
+.dataEntryCheckboxWrapper .checkmark:after {
+    left: 5px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+  }
 
 .dataEntryCfiPlaceholder {
     margin: 0 !important;
@@ -11,16 +88,78 @@
     font-size: 1px !important;
     line-height: 0 !important;
 }
+/* end checkbox styles */
 
-.dataEntryCallout, .dataEntrySubFormCallout {
-    background-color: white;
-    border-left: 1px solid #ccc;
-    border-right: 1px solid #ccc;
+/* dropdown styles */
+
+.dropdownWrapper select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
+    appearance: none;
+    outline: 0;
+    box-shadow: none;
+    border: 0 !important;
+    background: var(--dark-background);
+    background-image: none;
+}
+.dropdownWrapper select::-ms-expand {
+    display: none;
+}
+.dropdownWrapper {
+    position: relative;
+    display: flex;
+    width: calc(100% - .25rem);
+    height: 2em;
+    line-height: 2;
+    background: var(--dark-background);
+    overflow: hidden;
+    border-radius: .25em;
+
+}
+
+.dropdownWrapper select {
+    flex: 1;
+    padding: 0 .5em;
+    color: #fff;
+    cursor: pointer;
+  }
+  /* Arrow */
+  .dropdownWrapper::after {
+    content: '\f0dd';
+    font-weight: 900;
+    top: 0;
+    right: 0;
+    padding: 0 .75em;
+    line-height: 1.5rem;
+    background: var(--primary-color-light);
+    cursor: pointer;
+    pointer-events: none;
+    -webkit-transition: .25s all ease;
+    -o-transition: .25s all ease;
+    transition: .25s all ease;
+    display: inline-block;
+    font-style: normal;
+    font-family: "Font Awesome 5 Free";
+    font-variant: normal;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* Transition */
+  .dropdownWrapper:hover::after {
+    color: #ffffff;
+  }
+  
+
+.dataEntryCallout,
+.dataEntrySubFormCallout {
+    background-color: var(--light-background);
     width: calc(100% - 2px);
     margin: 0;
     clear: both;
     /*max-height: calc(70vh - 105px);*/
-    overflow: hidden; /* fix for Firefox */
+    overflow: hidden;
+    /* fix for Firefox */
     break-inside: avoid-column;
     -webkit-column-break-inside: avoid;
     display: flex;
@@ -36,8 +175,8 @@
     -moz-appearance: none;
     appearance: none;
     position: relative;
-    background-color: #c4c4c4;
-    color: #fff;
+    background-color: var(--dark-background);
+    color: var(--light-font);
     height: 2em;
     width: 2em;
     border: 0;
@@ -48,11 +187,11 @@
 }
 
 .dataEntryCallout input[type="radio"]:hover {
-    background-color: #f2c977;
+    background-color: var(--primary-color-dark);
 }
 
 .dataEntryCallout input[type="radio"]:checked {
-    background-color: #328d4e;
+    background-color: var(--primary-color);
 }
 
 .dataEntryCallout input[type="radio"]:checked::before {
@@ -76,6 +215,23 @@
     display: block;
     height: 0;
     clear: both;
+}
+
+/* hide stylized dropdown on team and class mode */
+.classViewMode .dropdownWrapper,
+.teamViewMode .dropdownWrapper {
+    display: none;
+}
+/* hide stylized checkbox and remove wrapper padding
+  when in class or team view */
+.classViewMode .dataEntryCheckboxWrapper .checkmark,
+.teamViewMode .dataEntryCheckboxWrapper .checkmark {
+    display: none;
+}
+.classViewMode .dataEntryCheckboxWrapper,
+.teamViewMode .dataEntryCheckboxWrapper {
+    padding-left: 0px;
+    padding-top: 0px;
 }
 
 .dataEntryCallout .unofficialView,
@@ -102,45 +258,48 @@
 .dataEntryCallout.privateViewMode .dataEntryPrivateViewModeButton,
 .dataEntryCallout.teamViewMode .dataEntryTeamViewModeButton,
 .dataEntryCallout.classViewMode .dataEntryClassViewModeButton {
-    background: white;
-    color: #000000;
-    border-top: 1px solid #ccc;
-    border-bottom: 1px solid #eee;
+    background: var(--primary-color-dark);
+    color: var(--light-font);
     font-weight: bold;
 }
 
 .dataEntryCallout p {
-    font-weight: bolder;
-    font-style: italic;
+    font-weight: 600;
+    font-size: 1.1em;
     margin: 0;
     padding: 0;
 }
 
 .dataEntryHeader {
-	background: rgb(0, 168, 142);
+    background: var(--primary-color-light);
     display: flex;
     justify-content: space-around;
     align-items: center;
-    color: white;
+    color: var(--dark-font);
     order: 1;
 }
 
-.dataEntryHeader > div {
-	width: 100%;
-	text-align: center;
-	cursor: pointer;
+.dataEntryHeader>div {
+    width: 100%;
+    text-align: center;
+    cursor: pointer;
 }
 
-.dataEntryHeader > div:hover,
-.dataEntryHeader > div.active,
-.dataEntryFooter > button:hover {
-	background: #5ac1b0;
+.dataEntryHeader>div:hover,
+.dataEntryHeader>div.active {
+    background: var(--primary-color-dark);
+    color: var(--light-font);
+}
+
+
+.dataEntryFooter>button:hover {
+    background: var(--primary-color-dark);
+    color: #fff;
 }
 
 .dataEntryCallout form {
     max-height: calc(70vh - 192px);
     overflow: auto;
-    -webkit-overflow-scrolling: touch;
     order: 2;
 }
 
@@ -149,40 +308,53 @@
     will-change: transform;
 }
 
-.dataEntryCallout textarea {
+.dataEntryCallout textarea,
+.dataEntryCallout textarea:active {
+    background-color: var(--light-background);
     overflow: auto;
+    outline: none;
+    border: none;
+    font-size: .9em;
+    font-weight: 300;
 }
 
-.dataEntryCallout form > .textBox,
-.dataEntryCallout form > .dataEntryTableContainer,
-.dataEntrySubFormCallout form > .textBox,
-.dataEntryCallout form > .dataEntryHeaderEntry,
-.dataEntryCallout form > .dataEntryCheckboxContainer {
-    padding-right: 1em;
-    padding-left: 1em;
-    margin-bottom: 1em;
+.dataEntryCallout form>.textBox,
+.dataEntryCallout form>.dataEntryDropdownContainer,
+.dataEntryCallout form>.dataEntryMultiChoiceContainer,
+.dataEntryCallout form>.dataEntryTableContainer,
+.dataEntrySubFormCallout form>.textBox,
+.dataEntryCallout form>.dataEntryHeaderEntry,
+.dataEntryCallout form>.dataEntryCheckboxContainer {
+    padding: .5rem;
+    border-bottom: 1px solid var(--secondary-grey);
+
+
 }
 
-.dataEntryCallout form > p,
-.dataEntrySubFormCallout form > p {
-    padding: 1em;
+.dataEntryCallout form>p,
+.dataEntrySubFormCallout form>p {
+    padding: .5em;
 }
 
 .dataEntryFooter {
-    background-color: rgb(0, 168, 142);
+    background-color: #fff;
     display: flex;
     align-items: center;
     justify-content: space-around;
     width: 100%;
+    padding: .25rem 0rem;
     min-height: 10px;
     order: 3;
 }
 
-.dataEntryFooter > button {
+.dataEntryFooter>button {
     width: 100%;
-    color: white;
+    color: var(--dark-font);
     background: transparent;
-    padding: 0.5em;
+    padding: 0rem 0.25rem;
+    height: 2rem;
+    background-color: var(--primary-color-light);
+
     border: none;
     font-size: 1em;
     cursor: pointer;
@@ -191,12 +363,15 @@
 .textInput label {
     display: block;
     margin: 1em 0 0 0;
+    font-weight: 400;
 }
 
 .textInput textarea {
     margin: .5em 0;
-    width: 100%;
-    height: 5em;
+    width: calc(100% - .25rem);
+    height: 3em;
+    background-color: white;
+    border-radius: 5px;
     display: inline-block;
 }
 
@@ -210,12 +385,10 @@
     margin-right: -1em;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
-    font-family: "Helvetica Neue", sans-serif;
+    font-family: var(--primary-font-family);
     font-style: normal;
     font-weight: normal;
     font-size: 14px;
-    border-top: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
     clear: both;
 }
 
@@ -225,7 +398,7 @@
     margin-bottom: 1em !important;
 }
 
-.textResponses > .response:not([style*="display: none"]) ~ .dataEntryTextResponseNoData {
+.textResponses>.response:not([style*="display: none"])~.dataEntryTextResponseNoData {
     display: none;
 }
 
@@ -235,11 +408,10 @@
     padding: .8em 1em .5em 3em;
     margin: 0;
     background: #eee;
-    border-bottom: 1px solid #ddd;
 }
 
-.textResponses .response > i,
-.dataEntryCheckboxContainer .response > i {
+.textResponses .response>i,
+.dataEntryCheckboxContainer .response>i {
     position: absolute;
     left: 0.5em;
     font-size: 1.5em;
@@ -255,7 +427,7 @@
 
 .textResponses .your.response,
 .dataEntryCheckboxContainer .your.response {
-    background-color: #fff;
+    background-color: var(--light-background);
 }
 
 .textResponses .response .userId,
@@ -281,25 +453,23 @@
 .dataEntryCheckboxContainer {
     display: flex;
     align-items: center;
-    border-top: 1px solid #ddd;
     border-bottom: 1px solid #ddd;
     justify-content: space-between;
-/*    background: rgba(0, 168, 142, 0.2);*/
-/*    margin-bottom: 5px;*/
+    /*    background: rgba(0, 168, 142, 0.2);*/
+    /*    margin-bottom: 5px;*/
 }
 
-.dataEntryCheckboxContainer > span {
+.dataEntryCheckboxContainer>span {
     padding: 0.5em;
     width: 100%;
 }
 
-.dataEntryCheckboxContainer > input[type="checkbox"] {
-/*    will-change: transform;
+.dataEntryCheckboxContainer>input[type="checkbox"] {
+    will-change: transform;
     -ms-transform: scale(1.5);
     -moz-transform: scale(1.5);
     -webkit-transform: scale(1.5);
-    -o-transform: scale(1.5);*/
-    zoom: 1.5;
+    -o-transform: scale(1.5);
     padding: 10px;
     margin: 1em;
 }
@@ -314,19 +484,18 @@
     flex-shrink: 0;
 }
 
-.dataEntryCheckboxResponseContainer > span {
+.dataEntryCheckboxResponseContainer>span {
     display: block;
 }
 
 .dataEntryDropdownContainer {
-    padding-left: 1em;
-    padding-right: 1em;
-    margin-bottom: 1em;
+    padding: 1rem;
+    border-bottom: 1px solid #ddd;
 }
 
 .dataEntryDropdownContainer select {
     max-width: 90%;
-    margin-left: 1em;
+    margin: 0rem 1em;
 }
 
 .dataEntryDropdownContainer .textResponses {
@@ -336,6 +505,7 @@
 .dataEntrySubFormCallout {
     display: none;
     position: fixed;
+    background-color: var(--light-background);
     top: 60px;
     left: 0;
     max-height: calc(100% - 70px);
@@ -343,8 +513,7 @@
 }
 
 .dataEntryMultiChoiceContainer {
-    padding-left: 1em;
-    padding-right: 1em;
+    padding: 1em;
 }
 
 .dataEntryMultiChoiceButtonsContainer {
@@ -352,16 +521,23 @@
     flex-direction: column;
 }
 
+
 .dataEntryMultiChoiceButton {
     padding: 2em;
     cursor: pointer;
+    outline: none;
     margin: 0.5em;
-    background: #b5bcac;
+    -webkit-appearance: none;
+    background: var(--dark-background);
 }
 
-.dataEntryMultiChoiceButton:hover,
 .dataEntryMultiChoiceButton.active {
-    background: #4b5e26;
+    background: var(--primary-color);
+    color: white;
+}
+
+.dataEntryMultiChoiceButton:hover {
+    background: var(--primary-color);
     color: white;
 }
 
@@ -389,7 +565,7 @@
 }
 
 .dataEntryMultiChoiceResponseGraphFillBar {
-    background: #4b5e26;
+    background: var(--primary-color);
     height: 100%;
     width: 0;
     transition: width 0.5s ease;
@@ -400,7 +576,7 @@
 }
 
 .pollingWindow {
-    background: white;
+    background: var(--light-background);
     position: fixed;
     top: 0;
     left: 0;
@@ -409,14 +585,14 @@
     z-index: 9999;
     display: flex;
     justify-content: center;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 }
 
-.pollingWindow > .dataEntryCallout {
+.pollingWindow>.dataEntryCallout {
     width: 100% !important;
 }
 
-.pollingWindow form > p {
+.pollingWindow form>p {
     font-weight: bold;
     font-size: 1.2em;
 }
@@ -434,6 +610,7 @@
 
 .pollingWindow .dataEntryMultiChoicePrompt {
     font-size: 1.2em;
+    border-bottom: solid .5px var(--dark-background);
 }
 
 .pollingWindow .dataEntryCallout {
@@ -452,15 +629,21 @@
     display: none;
     color: #08a88e;
 }
-
+.dataEntryTableContainer {
+    border-bottom: 1px solid #ddd;
+    padding-top: 1rem;
+}
 .dataEntryTableContainer table th {
+    font-weight: 500;
+    font-family: var(--primary-font-family);
+    font-size: .9em;
+    color: var(--dark-background);
     text-align: center;
     padding: 0.5em;
 }
 
 .dataEntryTableContainer table td {
-    background: white;
+    background: var(--light-background);
     text-align: center;
     padding: 0.5em;
-    border: 1px solid #ccc;
 }

@@ -5,13 +5,13 @@ var figure = {};
 if (globalPebl)
 	globalPebl.extension.figure = figure;
 
-$(document).ready(function() {
-	$('.figure_figureExtension, .peblExtension[data-peblextension="figure"]').each(function() {
-		var insertID = $(this)[0].getAttribute('id');
-		var img = JSON.parse($(this)[0].getAttribute('data-img'));
-		var title = $(this)[0].getAttribute('data-title');
-		var caption = $(this)[0].getAttribute('data-caption');
-		var zoomable = $(this)[0].hasAttribute('data-zoomable') ? $(this)[0].getAttribute('data-zoomable') : null;
+jQuery(document).ready(function() {
+	jQuery('.figure_figureExtension, .peblExtension[data-peblextension="figure"]').each(function() {
+		var insertID = jQuery(this)[0].getAttribute('id');
+		var img = JSON.parse(jQuery(this)[0].getAttribute('data-img'));
+		var title = jQuery(this)[0].getAttribute('data-title');
+		var caption = jQuery(this)[0].getAttribute('data-caption');
+		var zoomable = jQuery(this)[0].hasAttribute('data-zoomable') ? jQuery(this)[0].getAttribute('data-zoomable') : null;
 		figure.createFigure(insertID, img, title, caption, zoomable);
 	});
 });
@@ -32,17 +32,17 @@ figure.createFigure = function(insertID, img, title, caption, zoomable) {
 		for (image in img) {
 			imageElement = document.createElement('img');
 			imageElement.src = img[image];
-			if (zoomable && zoomable === 'true') {
-				imageElement.classList.add('zoomable');
+			if (zoomable && zoomable === 'true') {		
+				imageElement.classList.add('zoomable');		
 			}
 			figure.appendChild(imageElement);
 		}
 	} else {
 		imageElement = document.createElement('img');
 		imageElement.src = img;
-		if (zoomable && zoomable === 'true') {
-			imageElement.classList.add('zoomable');
-		}
+		if (zoomable && zoomable === 'true') {		
+				imageElement.classList.add('zoomable');		
+			}
 		figure.appendChild(imageElement);
 	}
 

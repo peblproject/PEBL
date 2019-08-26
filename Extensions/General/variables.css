@@ -1,0 +1,74 @@
+:root {
+    --primary-color: var(--pebl-primary-color);
+    --primary-color-light: var(--pebl-primary-color-light);
+    --primary-color-dark: var(--pebl-primary-color-dark);
+    --secondary-color: var(--pebl-secondary-color);
+    --secondary-color-light: var(--pebl-secondary-color-light);
+    --secondary-color-dark: var(--pebl-secondary-color-dark);
+    --success-color: var(--pebl-primary-color);
+    --unselected-color: var(--pebl-light-background);
+    --dark-background: var(--pebl-dark-background);
+    --dark-font: #424242;
+    --light-font: #FFFFFF;
+    --light-background: var(--pebl-lightest-background);
+    --primary-font-family: var(--pebl-font-family-primary);
+    --secondary-font-family: var(--pebl-font-family-secondary);
+    --logo-size: 24px;
+    --small-radius:var(--pebl-small-border-radius);
+    --medium-radius:var(--pebl-medium-border-radius);
+    --large-radius:var(--pebl-large-border-radius);
+
+    --secondary-grey: var(--pebl-light-background);
+    --header-size: 2.5rem;
+    --subheader-size: 2rem;
+    --side-border-size: 6px;
+    --border-radius: 0px;
+    --elevated-1: 0 1px 1px 0 rgba(0, 0, 0, 0.14),
+        0 2px 1px -1px rgba(0, 0, 0, 0.12),
+        0 1px 3px 0 rgba(0, 0, 0, 0.20);
+    --elevated-2: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+        0 3px 1px -2px rgba(0, 0, 0, 0.12),
+        0 1px 5px 0 rgba(0, 0, 0, 0.20);
+
+    --elevated-3: 0 3px 4px 0 rgba(0, 0, 0, 0.14),
+        0 3px 3px -2px rgba(0, 0, 0, 0.12),
+        0 1px 8px 0 rgba(0, 0, 0, 0.20);
+}
+
+html,
+body {
+    font-size: 1rem;
+    line-height: 1.5rem;
+}
+
+body {
+    margin: 0px 8px;
+}
+
+.title-1 {
+    font-family: var(--secondary-font-family);
+    font-size: 2.5rem;
+    color: var(--dark-background);
+}
+
+.title-2 {
+    font-family: var(--secondary-font-family);
+    font-size: 1.8rem;
+    line-height: 2rem;
+    color: var(--dark-background);
+}
+
+.title-3 {
+    font-family: var(--primary-font-family);
+    font-size: 1.2rem;
+    color: var(--dark-font);
+
+}
+
+.title-4 {
+    font-family: var(--primary-font-family);
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--dark-font);
+
+}

@@ -1,11 +1,14 @@
-.quiz {
-    
+.pebl__quiz {
+    border-left: var(--primary-color) solid var(--side-border-size);
+    background-color: var(--light-background);
+    padding: .5em .5em .5em 2em;
 }
 
-.quiz > li {
-    font-weight: bold;
+.pebl__quiz>li {
+    font-family: var(--secondary-font-family);
+    color: var(--dark-font);
+    border-bottom: var(--dark-background) solid 1px;
     padding: .5em 0;
-    border-bottom: 1px solid #aaa;
     display: list-item;
     break-inside: avoid-column;
     -webkit-column-break-inside: avoid;
@@ -13,39 +16,45 @@
     width: 100%;
 }
 
-.quiz .choices {
-    font-family: "Helvetica Neue", sans-serif;
+.pebl__quiz .pebl__quiz--choices {
+    font-family: var(--primary-font-family);
     margin: 1em 1em 0 -1em;
     list-style-type: none;
     padding: 0;
     font-weight: normal;
 }
 
-.quiz .choices li {
+.pebl__quiz .pebl__quiz--choices li {
     cursor: pointer;
-    padding: .5em 1em;
-    border-radius: 4px;
+    padding: .25em 1em;
+    margin: .25em 0em;
+    border-radius: var(--border-radius);
 }
 
-.quiz .choices li:hover {
-    background-color: #ddd;
+.pebl__quiz .pebl__quiz--choices li:hover {
+    background-color: var(--dark-background);
+    color: var(--light-font);
+    box-shadow: var(--elevated-2);
 }
 
-.quiz .choices.reveal li.correct {
-    background-color: palegreen;
-}
-.quiz .choices.reveal.secondary li.correct {
-    background-color: transparent;
-    color: #009f1e;
-}
-.quiz .choices li.wrong {
-    background-color: #f49696;
+.pebl__quiz .pebl__quiz--choices.reveal li.pebl__quiz--correct {
+    background-color: var(--primary-color);
+    color: var(--light-font);
 }
 
-.quiz .feedback {
-    font-weight: bold;
+.pebl__quiz .pebl__quiz--choices.reveal.secondary li.pebl__quiz--correct {
+    background-color: var(--primary-color) !important;
+    color: var(--light-font);
+}
+
+.pebl__quiz .pebl__quiz--choices li.pebl__quiz--wrong {
+    font-family: var(--primary-font-family);
+    background-color: var(--secondary-color-light);
+}
+
+.pebl__quiz .pebl__quiz--feedback {
+    font-family: var(--primary-font-family);
     margin-top: 1em;
-    color: darkorange;
 }
 
 .questionPromptContainer {
@@ -55,4 +64,9 @@
 .questionNumberSpan {
     position: absolute;
     left: -25px;
+}
+
+.quizScore {
+    font-family: var(--primary-font-family);
+    color: var(--dark-font);
 }

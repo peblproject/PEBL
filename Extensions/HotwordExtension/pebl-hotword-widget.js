@@ -5,10 +5,10 @@ var hotword = {};
 if (globalPebl)
     globalPebl.extension.hotword = hotword;
 
-$(document).ready(function() {
+jQuery(document).ready(function() {
     //Find inDesign shortcodes and replace with actual pebl shortcodes
-    // $("body").children().each(function () {
-    //     $(this).html( $(this).html().replace(/\[\[\[(type=”hotword”) (word=”.*?”) (description=”.*?”)]]]/g, function(x) {
+    // jQuery("body").children().each(function () {
+    //     jQuery(this).html( jQuery(this).html().replace(/\[\[\[(type=”hotword”) (word=”.*?”) (description=”.*?”)]]]/g, function(x) {
     //         var hotword = x.match(/word=”(.*?)”/);
     //         var description = x.match(/description=”(.*?)”/);
 
@@ -16,13 +16,13 @@ $(document).ready(function() {
     //         return widgetCode;
     //     }) );
     // });
-    $(document.body).on('click', '.tooltip', function(event) {
+    jQuery(document.body).on('click', '.tooltip', function(event) {
         hotword.handleTooltipClick(event);
     });
-    $('.hotword_hotwordExtension, .peblExtension[data-peblextension="hotword"]').each(function() {
-        var insertID = $(this)[0].getAttribute('id');
-        var hotwordMain = $(this)[0].getAttribute('data-hotword');
-        var hotwordText = $(this)[0].getAttribute('data-hotwordText') || $(this)[0].getAttribute('data-hotwordtext');
+    jQuery('.hotword_hotwordExtension, .peblExtension[data-peblextension="hotword"]').each(function() {
+        var insertID = jQuery(this)[0].getAttribute('id');
+        var hotwordMain = jQuery(this)[0].getAttribute('data-hotword');
+        var hotwordText = jQuery(this)[0].getAttribute('data-hotwordText') || jQuery(this)[0].getAttribute('data-hotwordtext');
         hotword.createHotword(insertID, hotwordMain, hotwordText);
     });
 });
@@ -72,7 +72,7 @@ hotword.offsetRight = function(elem, adjustTop, topStyleString) {
     var rightStyleString = null;
 
     var rect = elem[0].getBoundingClientRect();
-    var w = $(window).width();
+    var w = jQuery(window).width();
     var marginLeft = parseInt(elem.css('marginLeft'));
 
     if (rect.right > w) {
@@ -93,8 +93,8 @@ hotword.offsetLeft = function(elem, adjustTop, topStyleString, adjustRight, righ
     var leftStyleString = null;
 
     var rect = elem[0].getBoundingClientRect();
-    var w = $(window).width();
-    var h = $(window).height();
+    var w = jQuery(window).width();
+    var h = jQuery(window).height();
     var originalLeft = elem.css('left');
 
     var isPortrait = h > w ? true : false;
@@ -115,17 +115,17 @@ hotword.offsetLeft = function(elem, adjustTop, topStyleString, adjustRight, righ
 
 hotword.offsetArrow = function(elem, adjustTop, topStyleString, adjustRight, rightStyleString, adjustLeft, leftStyleString) {
 
-    var arrowElement = $('<div id="tooltipArrow" class="tooltipArrow"></div>');
+    var arrowElement = jQuery('<div id="tooltipArrow" class="tooltipArrow"></div>');
     if (adjustTop && adjustLeft) {
-        arrowElement = $('<div id="tooltipArrow" class="tooltipArrow" style="' + leftStyleString + topStyleString + '"></div>');
+        arrowElement = jQuery('<div id="tooltipArrow" class="tooltipArrow" style="' + leftStyleString + topStyleString + '"></div>');
     } else if (adjustTop && adjustRight) {
-        arrowElement = $('<div id="tooltipArrow" class="tooltipArrow" style="' + rightStyleString + topStyleString + '"></div>');
+        arrowElement = jQuery('<div id="tooltipArrow" class="tooltipArrow" style="' + rightStyleString + topStyleString + '"></div>');
     } else if (adjustTop) {
-        arrowElement = $('<div id="tooltipArrow" class="tooltipArrow" style="' + topStyleString + '"></div>');
+        arrowElement = jQuery('<div id="tooltipArrow" class="tooltipArrow" style="' + topStyleString + '"></div>');
     } else if (adjustLeft) {
-        arrowElement = $('<div id="tooltipArrow" class="tooltipArrow" style="' + leftStyleString + '"></div>');
+        arrowElement = jQuery('<div id="tooltipArrow" class="tooltipArrow" style="' + leftStyleString + '"></div>');
     } else if (adjustRight) {
-        arrowElement = $('<div id="tooltipArrow" class="tooltipArrow" style="' + rightStyleString + '"></div>');
+        arrowElement = jQuery('<div id="tooltipArrow" class="tooltipArrow" style="' + rightStyleString + '"></div>');
     }
     elem.append(arrowElement);
 }
@@ -133,13 +133,13 @@ hotword.offsetArrow = function(elem, adjustTop, topStyleString, adjustRight, rig
 
 
 // hide tooltips when clicking other areas
-$(document).mouseup(function (e) {
-    var container = $('.tooltip');
+jQuery(document).mouseup(function (e) {
+    var container = jQuery('.tooltip');
     if (!container.is(e.target) // if the target of the click isn't the container...
         &&
         container.has(e.target).length === 0) // ... nor a descendant of the container
     {
-        $(".tooltip").removeClass('active');
+        jQuery(".tooltip").removeClass('active');
     }
 });
 
@@ -165,24 +165,24 @@ hotword.handleTooltipClick = function(event) {
         adjustRight = false,
         adjustTop = false;
 
-    if ($(elem).hasClass('active')) {
-        $(elem).removeClass('active');
-        $(elem).children('.tooltiptext').remove();
+    if (jQuery(elem).hasClass('active')) {
+        jQuery(elem).removeClass('active');
+        jQuery(elem).children('.tooltiptext').remove();
     } else {
-        $(elem).removeClass('active');
-        $(elem).addClass('active');
+        jQuery(elem).removeClass('active');
+        jQuery(elem).addClass('active');
 
         var tooltipTextSpan = document.createElement('span');
         tooltipTextSpan.classList.add('tooltiptext');
-	    var textBody = $(elem).attr('definition');
+	    var textBody = jQuery(elem).attr('definition');
         tooltipTextSpan.textContent = textBody;
 
-        $(elem).append(tooltipTextSpan);
+        jQuery(elem).append(tooltipTextSpan);
 
-        hotword.offsetTop($(tooltipTextSpan));
+        hotword.offsetTop(jQuery(tooltipTextSpan));
 
 	globalPebl.emitEvent(globalPebl.events.eventPreferred, {
-	    name: $(elem).text(),
+	    name: jQuery(elem).text(),
 	    type: "hotword",
 	    description: textBody
 	});

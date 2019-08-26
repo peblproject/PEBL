@@ -5,7 +5,7 @@ var dataEntry = {};
 if (globalPebl)
     globalPebl.extension.dataEntry = dataEntry;
 
-jQuery(document).ready(function() {    
+jQuery(document).ready(function () {
     dataEntry.insertExtensions();
 });
 
@@ -16,20 +16,20 @@ dataEntry.invalidFormActive = false;
 dataEntry.activeEntries = {};
 
 dataEntry.insertExtensions = function() {
-    jQuery('.dataEntryExtension, .peblExtension[data-peblextension="dataentry"]').each(function() {
-        var prompt = jQuery(this)[0].getAttribute('data-prompt');
-        var id = jQuery(this)[0].getAttribute('data-id');
-        var insertID = jQuery(this)[0].getAttribute('id');
-        var forms = JSON.parse(jQuery(this)[0].getAttribute('data-forms'));
-        var sharing = jQuery(this)[0].getAttribute('data-sharing');
-        var displayMode = jQuery(this)[0].getAttribute('data-displayMode') || jQuery(this)[0].getAttribute('data-displaymode');
-        var polling = jQuery(this)[0].hasAttribute('data-polling') ? jQuery(this)[0].getAttribute('data-polling') : 'false';
-        var useConfig = jQuery(this)[0].hasAttribute('data-useConfig') ? jQuery(this)[0].getAttribute('data-useConfig') : 'false';
-        dataEntry.createDataEntry(insertID, prompt, id, forms, sharing, displayMode, polling, useConfig);
-    });
+    jQuery('.dataEntryExtension, .peblExtension[data-peblextension="dataentry"]').each(function() {        
+        var prompt = jQuery(this)[0].getAttribute('data-prompt');        
+        var id = jQuery(this)[0].getAttribute('data-id');        
+        var insertID = jQuery(this)[0].getAttribute('id');        
+        var forms = JSON.parse(jQuery(this)[0].getAttribute('data-forms'));        
+        var sharing = jQuery(this)[0].getAttribute('data-sharing');        
+        var displayMode = jQuery(this)[0].getAttribute('data-displayMode') || jQuery(this)[0].getAttribute('data-displaymode');        
+        var polling = jQuery(this)[0].hasAttribute('data-polling') ? jQuery(this)[0].getAttribute('data-polling') : 'false';        
+        var useConfig = jQuery(this)[0].hasAttribute('data-useConfig') ? jQuery(this)[0].getAttribute('data-useConfig') : 'false';        
+        dataEntry.createDataEntry(insertID, prompt, id, forms, sharing, displayMode, polling, useConfig);        
+    });        
 }
 
-dataEntry.createHeader = function(id, form, activeEntry) {
+dataEntry.createHeader = function (id, form, activeEntry) {
     var cssClass = '';
     if (form.cssClass) {
         cssClass = form.cssClass;
@@ -40,7 +40,7 @@ dataEntry.createHeader = function(id, form, activeEntry) {
     if (cssClass.length > 1)
         header.classList.add(cssClass);
 
-    var headerText = document.createElement('span');
+    var headerText = document.createElement('div');
 
     headerText.innerHTML = form.prompt;
     header.appendChild(headerText);
@@ -48,7 +48,7 @@ dataEntry.createHeader = function(id, form, activeEntry) {
     return header;
 }
 
-dataEntry.createDropdownEntry = function(id, form, activeEntry) {
+dataEntry.createDropdownEntry = function (id, form, activeEntry) {
     var dropdownContainer = document.createElement('div');
     dropdownContainer.classList.add('dataEntryDropdownContainer');
 
@@ -57,6 +57,10 @@ dataEntry.createDropdownEntry = function(id, form, activeEntry) {
     dropdownPrompt.innerHTML = form.prompt;
 
     dropdownContainer.appendChild(dropdownPrompt);
+
+    var dropdownWrapper = document.createElement('div');
+    dropdownWrapper.classList.add('dropdownWrapper');
+    dropdownContainer.appendChild(dropdownWrapper);
 
     var dropdownInput = document.createElement('select');
     dropdownInput.classList.add('edit');
@@ -76,7 +80,7 @@ dataEntry.createDropdownEntry = function(id, form, activeEntry) {
         dropdownInput.appendChild(optionElem);
     }
 
-    dropdownContainer.appendChild(dropdownInput);
+    dropdownWrapper.appendChild(dropdownInput);
 
     var dropdownResponses = document.createElement('div');
     dropdownResponses.classList.add('textResponses', 'unofficialView');
@@ -109,11 +113,11 @@ dataEntry.createDropdownEntry = function(id, form, activeEntry) {
     return dropdownContainer;
 }
 
-dataEntry.createMultipleChoiceEntry = function(id, form, activeEntry, useGraphView) {
+dataEntry.createMultipleChoiceEntry = function (id, form, activeEntry, useGraphView) {
     var multiChoiceContainer = document.createElement('div');
     multiChoiceContainer.classList.add('dataEntryMultiChoiceContainer');
 
-    var multiChoicePrompt = document.createElement('span');
+    var multiChoicePrompt = document.createElement('div');
     multiChoicePrompt.classList.add('dataEntryMultiChoicePrompt');
     multiChoicePrompt.innerHTML = form.prompt;
 
@@ -127,8 +131,8 @@ dataEntry.createMultipleChoiceEntry = function(id, form, activeEntry, useGraphVi
     multiChoiceResponseContainer.classList.add('dataEntryMultiChoiceResponseContainer');
     multiChoiceResponseContainer.id = dataEntry.comboID(id, 'responseBox');
 
-    var multiChoiceResponseContainerGraph = document.createElement('div');
-    multiChoiceResponseContainerGraph.classList.add('dataEntryMultiChoiceResponseContainer');
+    var multiChoiceResponseContainerGraph = document.createElement('div');        
+    multiChoiceResponseContainerGraph.classList.add('dataEntryMultiChoiceResponseContainer');        
     multiChoiceResponseContainerGraph.id = dataEntry.comboID(id, 'responseBox', 'graph');
 
     var multiChoiceTeamResponseContainerGraph = document.createElement('div');
@@ -164,8 +168,8 @@ dataEntry.createMultipleChoiceEntry = function(id, form, activeEntry, useGraphVi
         } else {
             multiChoiceButton.setAttribute('data-useGraphView', 'false');
         }
-        multiChoiceButton.addEventListener('click', function() {
-            jQuery(multiChoiceButtonsContainer).find('.dataEntryMultiChoiceButton').each(function() {
+        multiChoiceButton.addEventListener('click', function () {
+            jQuery(multiChoiceButtonsContainer).find('.dataEntryMultiChoiceButton').each(function () {
                 jQuery(this).removeClass('active');
             });
             jQuery(this).addClass('active')
@@ -174,45 +178,32 @@ dataEntry.createMultipleChoiceEntry = function(id, form, activeEntry, useGraphVi
         multiChoiceButtonsContainer.appendChild(multiChoiceButton);
 
         if (useGraphView && useGraphView === 'true') {
-            var multiChoiceResponse = document.createElement('div');
-            multiChoiceResponse.classList.add('unofficialView', 'dataEntryMultiChoiceResponse');
-            multiChoiceResponse.setAttribute('data-index', i);
-
-            var multiChoiceResponseContent = document.createElement('div');
-            multiChoiceResponseContent.classList.add('dataEntryMultiChoiceResponseContent');
-
-            var multiChoiceResponseTextContainer = document.createElement('div');
-            multiChoiceResponseTextContainer.classList.add('dataEntryMultiChoiceResponseTextContainer');
-
-            var multiChoiceResponseText = document.createElement('span');
-            multiChoiceResponseText.textContent = form.responses[i];
-
-            multiChoiceResponseTextContainer.appendChild(multiChoiceResponseText);
-
-            var multiChoiceResponseGraphContainer = document.createElement('div');
-            multiChoiceResponseGraphContainer.classList.add('dataEntryMultiChoiceResponseGraphContainer');
-
-            var multiChoiceResponseGraphParentBar = document.createElement('div');
-            multiChoiceResponseGraphParentBar.classList.add('dataEntryMultiChoiceResponseGraphParentBar');
-
-            var multiChoiceResponseGraphFillBar = document.createElement('div');
-            multiChoiceResponseGraphFillBar.classList.add('dataEntryMultiChoiceResponseGraphFillBar');
-
-            multiChoiceResponseGraphParentBar.appendChild(multiChoiceResponseGraphFillBar);
-
-            multiChoiceResponseGraphContainer.appendChild(multiChoiceResponseGraphParentBar);
-
-
-            var multiChoiceResponseCount = document.createElement('span');
-            multiChoiceResponseCount.classList.add('dataEntryMultiChoiceResponseCount');
-        
-            multiChoiceResponseContent.appendChild(multiChoiceResponseTextContainer);
-            multiChoiceResponseContent.appendChild(multiChoiceResponseGraphContainer);
-            multiChoiceResponseContent.appendChild(multiChoiceResponseCount);
-
-            multiChoiceResponse.appendChild(multiChoiceResponseContent);
-
-            multiChoiceResponseContainerGraph.appendChild(multiChoiceResponse);
+            var multiChoiceResponse = document.createElement('div');        
+            multiChoiceResponse.classList.add('unofficialView', 'dataEntryMultiChoiceResponse');        
+            multiChoiceResponse.setAttribute('data-index', i);        
+            var multiChoiceResponseContent = document.createElement('div');        
+            multiChoiceResponseContent.classList.add('dataEntryMultiChoiceResponseContent');        
+            var multiChoiceResponseTextContainer = document.createElement('div');        
+            multiChoiceResponseTextContainer.classList.add('dataEntryMultiChoiceResponseTextContainer');        
+            var multiChoiceResponseText = document.createElement('span');        
+            multiChoiceResponseText.textContent = form.responses[i];        
+            multiChoiceResponseTextContainer.appendChild(multiChoiceResponseText);        
+            var multiChoiceResponseGraphContainer = document.createElement('div');        
+            multiChoiceResponseGraphContainer.classList.add('dataEntryMultiChoiceResponseGraphContainer');        
+            var multiChoiceResponseGraphParentBar = document.createElement('div');        
+            multiChoiceResponseGraphParentBar.classList.add('dataEntryMultiChoiceResponseGraphParentBar');        
+            var multiChoiceResponseGraphFillBar = document.createElement('div');        
+            multiChoiceResponseGraphFillBar.classList.add('dataEntryMultiChoiceResponseGraphFillBar');        
+            multiChoiceResponseGraphParentBar.appendChild(multiChoiceResponseGraphFillBar);        
+            multiChoiceResponseGraphContainer.appendChild(multiChoiceResponseGraphParentBar);        
+            var multiChoiceResponseCount = document.createElement('span');        
+            multiChoiceResponseCount.classList.add('dataEntryMultiChoiceResponseCount');        
+                
+            multiChoiceResponseContent.appendChild(multiChoiceResponseTextContainer);        
+            multiChoiceResponseContent.appendChild(multiChoiceResponseGraphContainer);        
+            multiChoiceResponseContent.appendChild(multiChoiceResponseCount);        
+            multiChoiceResponse.appendChild(multiChoiceResponseContent);        
+            multiChoiceResponseContainerGraph.appendChild(multiChoiceResponse);        
 
             // ---------------------------------
 
@@ -247,7 +238,7 @@ dataEntry.createMultipleChoiceEntry = function(id, form, activeEntry, useGraphVi
 
             var multiChoiceResponseCountTeam = document.createElement('span');
             multiChoiceResponseCountTeam.classList.add('dataEntryMultiChoiceResponseCount');
-        
+
             multiChoiceResponseContentTeam.appendChild(multiChoiceResponseTextContainerTeam);
             multiChoiceResponseContentTeam.appendChild(multiChoiceResponseGraphContainerTeam);
             multiChoiceResponseContentTeam.appendChild(multiChoiceResponseCountTeam);
@@ -289,7 +280,7 @@ dataEntry.createMultipleChoiceEntry = function(id, form, activeEntry, useGraphVi
 
             var multiChoiceResponseCountClass = document.createElement('span');
             multiChoiceResponseCountClass.classList.add('dataEntryMultiChoiceResponseCount');
-        
+
             multiChoiceResponseContentClass.appendChild(multiChoiceResponseTextContainerClass);
             multiChoiceResponseContentClass.appendChild(multiChoiceResponseGraphContainerClass);
             multiChoiceResponseContentClass.appendChild(multiChoiceResponseCountClass);
@@ -302,28 +293,28 @@ dataEntry.createMultipleChoiceEntry = function(id, form, activeEntry, useGraphVi
 
     multiChoiceContainer.appendChild(multiChoicePrompt);
     multiChoiceContainer.appendChild(multiChoiceButtonsContainer);
+    multiChoiceContainer.appendChild(multiChoiceResponseContainer);
     multiChoiceContainer.appendChild(multiChoiceResponseContainerGraph);
     multiChoiceContainer.appendChild(multiChoiceTeamResponseContainerGraph);
     multiChoiceContainer.appendChild(multiChoiceClassResponseContainerGraph);
-    multiChoiceContainer.appendChild(multiChoiceResponseContainer);
     multiChoiceContainer.appendChild(multiChoiceTeamResponseContainer);
     multiChoiceContainer.appendChild(multiChoiceClassResponseContainer);
 
     activeEntry.multiChoices.add(id);
 
     if (useGraphView && useGraphView === 'true') {
-        var pollingInterval = function() {
+        var pollingInterval = function () {
             console.log('updating count');
             var totalCount = jQuery(multiChoiceResponseContainerGraph).find('.dataEntryMultiChoicePlaceholder').length;
-            jQuery(multiChoiceResponseContainerGraph).children().each(function() {
+            jQuery(multiChoiceResponseContainerGraph).children().each(function() {    
                 var count = jQuery(this).children('.dataEntryMultiChoicePlaceholder').length;
                 jQuery(this).find('.dataEntryMultiChoiceResponseCount').first().text(count);
                 var width = count > 0 ? (count / totalCount) * 100 + '%' : '0%';
-                jQuery(this).find('.dataEntryMultiChoiceResponseGraphFillBar').first().css('width', width);
+                jQuery(this).find('.dataEntryMultiChoiceResponseGraphFillBar').first().css('width', width);    
             });
 
             var totalCountTeam = jQuery(multiChoiceTeamResponseContainerGraph).find('.dataEntryMultiChoicePlaceholder').length;
-            jQuery(multiChoiceTeamResponseContainerGraph).children().each(function() {
+            jQuery(multiChoiceTeamResponseContainerGraph).children().each(function () {
                 var count = jQuery(this).children('.dataEntryMultiChoicePlaceholder').length;
                 jQuery(this).find('.dataEntryMultiChoiceResponseCount').first().text(count);
                 var width = count > 0 ? (count / totalCountTeam) * 100 + '%' : '0%';
@@ -331,7 +322,7 @@ dataEntry.createMultipleChoiceEntry = function(id, form, activeEntry, useGraphVi
             });
 
             var totalCountClass = jQuery(multiChoiceClassResponseContainerGraph).find('.dataEntryMultiChoicePlaceholder').length;
-            jQuery(multiChoiceClassResponseContainerGraph).children().each(function() {
+            jQuery(multiChoiceClassResponseContainerGraph).children().each(function () {
                 var count = jQuery(this).children('.dataEntryMultiChoicePlaceholder').length;
                 jQuery(this).find('.dataEntryMultiChoiceResponseCount').first().text(count);
                 var width = count > 0 ? (count / totalCountClass) * 100 + '%' : '0%';
@@ -347,7 +338,7 @@ dataEntry.createMultipleChoiceEntry = function(id, form, activeEntry, useGraphVi
 }
 
 //Creates a textarea
-dataEntry.createTextEntry = function(id, form, activeEntry) {
+dataEntry.createTextEntry = function (id, form, activeEntry) {
     var requiredString = '';
     if (form.required && form.required === 'true') {
         requiredString = 'required="required"';
@@ -368,7 +359,7 @@ dataEntry.createTextEntry = function(id, form, activeEntry) {
     var textPrivateResponses = jQuery('<div id="' + dataEntry.comboID(id, "responseBoxPrivate") + '" class="textResponses privateView"><p class="dataEntryTextResponseNoData">Nothing has been submitted yet.</p></div>');
     var textTeamResponses = jQuery('<div id="' + dataEntry.comboID(id, "responseBoxTeam") + '" class="textResponses teamView"><p class="dataEntryTextResponseNoData">Nothing has been submitted yet.</p></div>');
     var textClassResponses = jQuery('<div id="' + dataEntry.comboID(id, "responseBoxClass") + '" class="textResponses classView"><p class="dataEntryTextResponseNoData">Nothing has been submitted yet.</p></div>');
-    var textInput = jQuery('<div class="textInput ' + cssClass + '"><label id="textDetailText">' + form.prompt + '</label><textarea ' + placeholderString + ' class="edit" data-responseBoxClass="' + dataEntry.comboID(id, "responseBoxClass") + '" data-responseBoxTeam="' + dataEntry.comboID(id, "responseBoxTeam") + '" data-responseBoxPrivate="' + dataEntry.comboID(id, "responseBoxPrivate") + '" data-responseBoxOfficial="' + dataEntry.comboID(id, "responseBoxOfficial") + '" data-responseBox="' + dataEntry.comboID(id, "responseBox") + '" data-prompt="' + form.prompt + '" ' + requiredString +  ' oninvalid="globalPebl.extension.dataEntry.invalidForm();" id="' + id + '"></textarea></div>');
+    var textInput = jQuery('<div class="textInput ' + cssClass + '"><label id="textDetailText">' + form.prompt + '</label><textarea ' + placeholderString + ' class="edit" data-responseBoxClass="' + dataEntry.comboID(id, "responseBoxClass") + '" data-responseBoxTeam="' + dataEntry.comboID(id, "responseBoxTeam") + '" data-responseBoxPrivate="' + dataEntry.comboID(id, "responseBoxPrivate") + '" data-responseBoxOfficial="' + dataEntry.comboID(id, "responseBoxOfficial") + '" data-responseBox="' + dataEntry.comboID(id, "responseBox") + '" data-prompt="' + form.prompt + '" ' + requiredString + ' oninvalid="globalPebl.extension.dataEntry.invalidForm();" id="' + id + '"></textarea></div>');
     var text = jQuery('<div class="textBox"></div>');
     text.append(textInput);
     text.append(textResponses);
@@ -384,13 +375,13 @@ dataEntry.createTextEntry = function(id, form, activeEntry) {
 }
 
 //Creates a table of radio buttons
-dataEntry.createRadioEntry = function(id, form, activeEntry) {
+dataEntry.createRadioEntry = function (id, form, activeEntry) {
     var tableContainer = document.createElement('div');
     tableContainer.classList.add('dataEntryTableContainer');
 
     //If there is a prompt, add it
     if (form.prompt) {
-        var tablePrompt = document.createElement('span');
+        var tablePrompt = document.createElement('div');
         tablePrompt.classList.add('dataEntryTablePrompt');
         tablePrompt.innerHTML = form.prompt;
 
@@ -484,9 +475,11 @@ dataEntry.createRadioEntry = function(id, form, activeEntry) {
 }
 
 //Create a checkbox field
-dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
+dataEntry.createCheckboxEntry = function (id, form, activeEntry) {
     var checkboxContainer = document.createElement('div');
+    var checkboxWrapper = document.createElement('label');
     checkboxContainer.classList.add('dataEntryCheckboxContainer');
+    checkboxWrapper.classList.add('dataEntryCheckboxWrapper');
 
     var checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
@@ -499,6 +492,8 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
     checkbox.setAttribute('data-responseBoxTeam', dataEntry.comboID(id, 'responseBoxTeam'));
     checkbox.setAttribute('data-responseBoxClass', dataEntry.comboID(id, 'responseBoxClass'));
 
+    var checkMark = document.createElement('span');
+    checkMark.classList.add('checkmark');
     //This is the viewmode container
     var checkboxResponseContainer = document.createElement('div');
     checkboxResponseContainer.classList.add('dataEntryCheckboxResponseContainer', 'unofficialView');
@@ -548,10 +543,10 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
 
     //If specified, clicking a checkbox opens a secondary form, related to that checkbox, that form is created here
     if (form.subForms) {
-        (function(id) {
+        (function (id) {
             var newSubFormDataEntry = {};
             dataEntry.activeEntries[dataEntry.comboID(id, 'subForm')] = newSubFormDataEntry;
-            
+
             var subFormContainer = document.createElement('div');
             subFormContainer.classList.add('dataEntrySubFormCallout');
             subFormContainer.id = dataEntry.comboID(id, 'subForm');
@@ -560,7 +555,7 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
             subFormHeader.classList.add('dataEntryHeader');
 
             var subFormElement = document.createElement('form');
-            subFormElement.onsubmit = function() {
+            subFormElement.onsubmit = function () {
                 return false;
             }
 
@@ -582,7 +577,7 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
                     var text = jQuery('<div class="textBox"></div>');
                     text.append(textInput);
                     text.append(textResponses);
-                    
+
                     jQuery(subFormElement).append(text);
                     textInput.slideDown();
 
@@ -590,50 +585,50 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
                 }
             }
             //toggle viewMode for this dataEntry
-            newSubFormDataEntry.viewMode = function() {
-                dataEntry.handleResize(function() {
-                    jQuery(subFormContainer).find('.edit').each(function() {
+            newSubFormDataEntry.viewMode = function () {
+                dataEntry.handleResize(function () {
+                    jQuery(subFormContainer).find('.edit').each(function () {
                         jQuery(this).hide();
                     });
 
-                    jQuery(subFormContainer).find('.unofficialView').each(function() {
+                    jQuery(subFormContainer).find('.unofficialView').each(function () {
                         jQuery(this).show();
                     });
 
-                    jQuery(subFormContainer).find('.officialView').each(function() {
+                    jQuery(subFormContainer).find('.officialView').each(function () {
                         jQuery(this).hide();
                     });
 
-                    jQuery(subFormContainer).find('.dataEntryViewModeButton').each(function() {
+                    jQuery(subFormContainer).find('.dataEntryViewModeButton').each(function () {
                         jQuery(this).addClass('active');
                     });
 
-                    jQuery(subFormContainer).find('.dataEntryEditModeButton').each(function() {
+                    jQuery(subFormContainer).find('.dataEntryEditModeButton').each(function () {
                         jQuery(this).removeClass('active');
                     });
                 });
             }
 
             //toggle editMode for this dataEntry
-            newSubFormDataEntry.editMode = function() {
-                dataEntry.handleResize(function() {
-                    jQuery(subFormContainer).find('.edit').each(function() {
+            newSubFormDataEntry.editMode = function () {
+                dataEntry.handleResize(function () {
+                    jQuery(subFormContainer).find('.edit').each(function () {
                         jQuery(this).show();
                     });
 
-                    jQuery(subFormContainer).find('.unofficialView').each(function() {
+                    jQuery(subFormContainer).find('.unofficialView').each(function () {
                         jQuery(this).hide();
                     });
 
-                    jQuery(subFormContainer).find('.officialView').each(function() {
+                    jQuery(subFormContainer).find('.officialView').each(function () {
                         jQuery(this).hide();
                     });
 
-                    jQuery(subFormContainer).find('.dataEntryViewModeButton').each(function() {
+                    jQuery(subFormContainer).find('.dataEntryViewModeButton').each(function () {
                         jQuery(this).removeClass('active');
                     });
 
-                    jQuery(subFormContainer).find('.dataEntryEditModeButton').each(function() {
+                    jQuery(subFormContainer).find('.dataEntryEditModeButton').each(function () {
                         jQuery(this).addClass('active');
                     });
                 });
@@ -641,7 +636,7 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
 
             var viewModeButton = document.createElement('div');
             viewModeButton.classList.add('dataEntryViewModeButton');
-            viewModeButton.addEventListener('click', function() {
+            viewModeButton.addEventListener('click', function () {
                 newSubFormDataEntry.viewMode();
             });
 
@@ -652,7 +647,7 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
 
             var editModeButton = document.createElement('div');
             editModeButton.classList.add('dataEntryEditModeButton', 'active');
-            editModeButton.addEventListener('click', function() {
+            editModeButton.addEventListener('click', function () {
                 newSubFormDataEntry.editMode();
             });
 
@@ -663,7 +658,7 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
 
             var closeButton = document.createElement('div');
             closeButton.classList.add('dataEntryCloseButton');
-            closeButton.addEventListener('click', function() {
+            closeButton.addEventListener('click', function () {
                 jQuery(document.getElementById(dataEntry.comboID(id, 'subForm'))).hide();
             });
 
@@ -685,7 +680,7 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
             formFooter.classList.add('dataEntryFooter');
 
             var subFormSubmit = jQuery('<button class="dataEntryFormSubmit">Submit</button>');
-            subFormSubmit.on('click', function() {
+            subFormSubmit.on('click', function () {
                 dataEntry.invalidFormActive = false;
                 var validForm = subFormElement.reportValidity();
                 if (validForm) {
@@ -726,7 +721,7 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
 
             subFormElement.appendChild(formFooter);
 
-            checkbox.addEventListener('click', function(evt) {
+            checkbox.addEventListener('click', function (evt) {
                 if (evt.currentTarget.checked === true) {
                     console.log('checked');
                     jQuery(document.getElementById(dataEntry.comboID(id, 'subForm'))).show();
@@ -737,556 +732,560 @@ dataEntry.createCheckboxEntry = function(id, form, activeEntry) {
 
             document.body.appendChild(subFormContainer);
         })(id)
-        
+
     }
 
-    checkboxContainer.appendChild(checkbox);
-    checkboxContainer.appendChild(textSpan);
-    checkboxContainer.appendChild(checkboxResponseContainer);
-    checkboxContainer.appendChild(checkboxResponseContainerOfficial);
-    checkboxContainer.appendChild(checkboxResponseContainerPrivate);
-    checkboxContainer.appendChild(checkboxResponseContainerTeam);
-    checkboxContainer.appendChild(checkboxResponseContainerClass);
+    checkboxContainer.appendChild(checkboxWrapper);
+    checkboxWrapper.appendChild(checkbox);
+    checkboxWrapper.appendChild(checkMark);
+    checkboxWrapper.appendChild(textSpan);
+    checkboxWrapper.appendChild(checkboxResponseContainer);
+    checkboxWrapper.appendChild(checkboxResponseContainerOfficial);
+    checkboxWrapper.appendChild(checkboxResponseContainerPrivate);
+    checkboxWrapper.appendChild(checkboxResponseContainerTeam);
+    checkboxWrapper.appendChild(checkboxResponseContainerClass);
 
     return checkboxContainer;
 }
 
 //Alerts the user to fill out all required fields in the form
-dataEntry.invalidForm = function() {
+dataEntry.invalidForm = function () {
     if (!dataEntry.invalidFormActive) {
         dataEntry.invalidFormActive = true;
         window.alert('Fill out the entire form');
     }
 }
 
-dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, displayMode, polling, useConfig) {
+dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, displayMode, polling, useConfig) {
     var programID = null;
     if (window.parent.extensionDashboard && window.parent.extensionDashboard.programID)
         programID = window.parent.extensionDashboard.programID;
 
     var makeDataEntry = function(insertID, question, id, forms, sharing, displayMode, polling, useConfig, userProfile, programID, group) {
         var dataEntryID;
-        var classSharing = false;
-        // var learnletLevel = dataEntry.getLearnletLevel(document.body.id);
-        // var learnlet = dataEntry.getLearnlet(document.body.id);
-        // var learnletTitle = dataEntry.getLearnletTitle();
+            var variableSharing = false;
+            // var learnletLevel = dataEntry.getLearnletLevel(document.body.id);
+            // var learnlet = dataEntry.getLearnlet(document.body.id);
+            // var learnletTitle = dataEntry.getLearnletTitle();
 
-        //Thread is either group + id, user + id, or id
-        if (sharing === 'team') {
-            if (group) {
-                dataEntryID = dataEntry.comboID(group.membershipId, id);
-            } else {
-                //User did not use the dashboard to launch the learnlet
-                dataEntryID = id;
-                window.alert('This activity requires you to be part of a team. Consider relaunching this learnlet through the dashboard.');
-            }
-        } else if (sharing === 'private') {
-            dataEntryID = dataEntry.comboID(userProfile.identity, id);
-        } else if (sharing === 'class') {
-            dataEntryID = id;
-            //Handle it later...
-            classSharing = true;
-        } else {
-            dataEntryID = id;
-        }
-
-        var newDataEntry = {};
-        dataEntry.activeEntries[id] = newDataEntry;
-
-        var dataEntryWrapper = document.createElement('div');
-        dataEntryWrapper.classList.add('dataEntryWrapper');
-
-        var dataEntryCfiPlaceholderStart = document.createElement('p');
-        dataEntryCfiPlaceholderStart.textContent = 'CFI';
-        dataEntryCfiPlaceholderStart.classList.add('dataEntryCfiPlaceholder');
-        dataEntryWrapper.appendChild(dataEntryCfiPlaceholderStart);
-
-        var calloutDiv = document.createElement('div');
-        calloutDiv.classList.add('dataEntryCallout');
-
-        dataEntryWrapper.appendChild(calloutDiv);
-
-        var dataEntryCfiPlaceholderEnd = document.createElement('p');
-        dataEntryCfiPlaceholderEnd.textContent = 'CFI';
-        dataEntryCfiPlaceholderEnd.classList.add('dataEntryCfiPlaceholder');
-        dataEntryWrapper.appendChild(dataEntryCfiPlaceholderEnd);
-
-        var header = document.createElement('div');
-        header.classList.add('dataEntryHeader');
-
-        
-
-        var formElement = document.createElement('form');
-        //Prevent default form submit
-        formElement.onsubmit = function() {
-            return false;
-        }
-
-
-        var questionParagraph = document.createElement('p');
-        questionParagraph.innerHTML = question;
-        if (!question) {
-            questionParagraph.style.display = 'none';
-        }
-
-        var teamViewParagraph = document.createElement('p');
-        teamViewParagraph.classList.add('teamView');
-        teamViewParagraph.textContent = 'View your team‘s responses below for this activity.';
-
-        var classViewParagraph = document.createElement('p');
-        classViewParagraph.classList.add('classView');
-        classViewParagraph.textContent = 'View responses from the class below for this activity.';
-
-        formElement.appendChild(questionParagraph);
-        if (classSharing) {
-            formElement.appendChild(teamViewParagraph);
-            formElement.appendChild(classViewParagraph);
-        }
-
-        //Keep track of textareas and radio buttons that get added
-        newDataEntry.textareas = new Set();
-        newDataEntry.radios = new Set();
-        newDataEntry.checkboxes = new Set();
-        newDataEntry.multiChoices = new Set();
-        newDataEntry.dropdowns = new Set();
-
-        for (var i = 0; i < forms.length; i++) {
-            var subID = dataEntry.comboID(dataEntryID, i);
-            //Create textarea fields
-            if (forms[i].type === 'text') {
-                jQuery(formElement).append(dataEntry.createTextEntry(subID, forms[i], newDataEntry));
-            } else if (forms[i].type === 'table') {
-                //Create table fields
-                formElement.appendChild(dataEntry.createRadioEntry(subID, forms[i], newDataEntry));
-            } else if (forms[i].type === 'checkbox') {
-                formElement.appendChild(dataEntry.createCheckboxEntry(subID, forms[i], newDataEntry));
-            } else if (forms[i].type === 'header') {
-                formElement.appendChild(dataEntry.createHeader(subID, forms[i], newDataEntry));
-            } else if (forms[i].type === 'multipleChoice') {
-                formElement.appendChild(dataEntry.createMultipleChoiceEntry(subID, forms[i], newDataEntry, polling));
-            } else if (forms[i].type === 'dropdown') {
-                formElement.appendChild(dataEntry.createDropdownEntry(subID, forms[i], newDataEntry));
-            }
-        }
-
-        
-
-        var formFooter = document.createElement('div');
-        formFooter.classList.add('dataEntryFooter');
-
-        //Submit the marked responses as the official submission, only visible to team leader in view tab.
-        var submitMarkedResponsesOfficial = jQuery('<button class="dataEntryFormSubmitOfficial unofficialView">Make it Official</button>');
-        submitMarkedResponsesOfficial.on('click', function() {
-            var message = dataEntry.getFormData(formElement, newDataEntry, 'Official', true);
-
-            if (message != null) {
-                //Submit the official version
-                var finalMessage = {
-                    "prompt": "DataEntryOfficial",
-                    "thread": dataEntry.comboID(dataEntryID, 'Official'),
-                    "text": JSON.stringify(message)
-                }
-                if (globalPebl)
-                    globalPebl.emitEvent(globalPebl.events.newMessage,
-                    finalMessage);
-
-                //TODO: Use a different xapi statement for this
+            //Thread is either group + id, user + id, or id
+            if (sharing === 'team') {
                 if (group) {
-                    var artifactPrompt = {
-                        "prompt": question,
-                        "learnlet": learnlet,
-                        "learnletTitle": learnletTitle
-                    }
-                    var artifactMessage = {
-                        "prompt": JSON.stringify(artifactPrompt),
-                        "thread" : dataEntry.comboID(group.membershipId, learnletLevel),
-                        "text": JSON.stringify(message)
-                    }
-                    if (globalPebl)
-                        globalPebl.emitEvent(globalPebl.events.newMessage,
-                        artifactMessage);
-                }
-
-                // If useConfig is true, call the function defined in the config
-                if (useConfig && useConfig === 'true') {
-                    if (globalPebl && globalPebl.extension.config && globalPebl.extension.config.dataEntry) {
-                        var dataEntryConfig = globalPebl.extension.config.dataEntry;
-                        if (dataEntryConfig.onSubmitOfficial && typeof dataEntryConfig.onSubmitOfficial === 'function') {
-                            dataEntryConfig.onSubmitOfficial();
-                        }
-                    }
-                }
-
-                newDataEntry.officialMode();
-            }
-        });
-
-        var formSubmitOfficial = jQuery('<button class="dataEntryFormSubmitOfficial edit">Make it Official</button>');
-        formSubmitOfficial.on('click', function() {
-            var message = dataEntry.getFormData(formElement, newDataEntry, 'Official');
-
-            if (message != null) {
-                //Submit the official version
-                var finalMessage = {
-                    "prompt": "DataEntryOfficial",
-                    "thread": dataEntry.comboID(dataEntryID, 'Official'),
-                    "text": JSON.stringify(message)
-                }
-                if (globalPebl)
-                    globalPebl.emitEvent(globalPebl.events.newMessage,
-                    finalMessage);
-
-                //TODO: Use a different xapi statement for this
-                if (group) {
-                    var artifactPrompt = {
-                        "prompt": question,
-                        "learnlet": learnlet,
-                        "learnletTitle": learnletTitle
-                    }
-                    var artifactMessage = {
-                        "prompt": JSON.stringify(artifactPrompt),
-                        "thread" : dataEntry.comboID(group.membershipId, learnletLevel),
-                        "text": JSON.stringify(message)
-                    }
-                    if (globalPebl)
-                        globalPebl.emitEvent(globalPebl.events.newMessage,
-                        artifactMessage);
-                }
-
-                // If useConfig is true, call the function defined in the config
-                if (useConfig && useConfig === 'true') {
-                    if (globalPebl && globalPebl.extension.config && globalPebl.extension.config.dataEntry) {
-                        var dataEntryConfig = globalPebl.extension.config.dataEntry;
-                        if (dataEntryConfig.onSubmitOfficial && typeof dataEntryConfig.onSubmitOfficial === 'function') {
-                            dataEntryConfig.onSubmitOfficial();
-                        }
-                    }
-                }
-
-                newDataEntry.officialMode();
-            }
-        });
-
-        var formSubmit = jQuery('<button class="dataEntryFormSubmit edit">Submit</button>');
-        formSubmit.on('click', function() {
-            globalPebl.user.isLoggedIn(function(isLoggedIn) {
-                if (!isLoggedIn) {
-                    window.alert('You need to be logged in to participate in this activity');
+                    dataEntryID = dataEntry.comboID(group.membershipId, id);
                 } else {
-                    var message = dataEntry.getFormData(formElement, newDataEntry, '');
+                    //User did not use the dashboard to launch the learnlet
+                    dataEntryID = id;
+                    window.alert('This activity requires you to be part of a team. Consider relaunching this learnlet through the dashboard.');
+                }
+            } else if (sharing === 'private') {
+                dataEntryID = dataEntry.comboID(userProfile.identity, id);
+            } else if (sharing === 'variable') {
+                dataEntryID = id;
+                //Handle it later...
+                variableSharing = true;
+            } else {
+                dataEntryID = id;
+            }
 
-                    if (message != null) {
-                        var finalMessage = {
-                            "prompt": "DataEntry",
-                            "thread": dataEntryID,
-                            "text": JSON.stringify(message)
-                        }
-                        if (globalPebl)
-                            globalPebl.emitEvent(globalPebl.events.newMessage,
+            var newDataEntry = {};
+            dataEntry.activeEntries[id] = newDataEntry;
+
+            var dataEntryWrapper = document.createElement('div');
+            dataEntryWrapper.classList.add('dataEntryWrapper');
+
+            var dataEntryCfiPlaceholderStart = document.createElement('p');
+            dataEntryCfiPlaceholderStart.textContent = 'CFI';
+            dataEntryCfiPlaceholderStart.classList.add('dataEntryCfiPlaceholder');
+            dataEntryWrapper.appendChild(dataEntryCfiPlaceholderStart);
+
+            var calloutDiv = document.createElement('div');
+            calloutDiv.classList.add('dataEntryCallout');
+
+            dataEntryWrapper.appendChild(calloutDiv);
+
+            var dataEntryCfiPlaceholderEnd = document.createElement('p');
+            dataEntryCfiPlaceholderEnd.textContent = 'CFI';
+            dataEntryCfiPlaceholderEnd.classList.add('dataEntryCfiPlaceholder');
+            dataEntryWrapper.appendChild(dataEntryCfiPlaceholderEnd);
+
+            var header = document.createElement('div');
+            header.classList.add('dataEntryHeader');
+
+
+
+            var formElement = document.createElement('form');
+            //Prevent default form submit
+            formElement.onsubmit = function () {
+                return false;
+            }
+
+
+            var questionParagraph = document.createElement('p');
+            questionParagraph.classList.add('edit');
+            questionParagraph.innerHTML = question;
+            if (!question) {
+                questionParagraph.style.display = 'none';
+            }
+
+            var teamViewParagraph = document.createElement('p');
+            teamViewParagraph.classList.add('teamView');
+            teamViewParagraph.textContent = 'View your team‘s responses below for this activity.';
+
+            var classViewParagraph = document.createElement('p');
+            classViewParagraph.classList.add('classView');
+            classViewParagraph.textContent = 'View responses from the class below for this activity.';
+
+            formElement.appendChild(questionParagraph);
+            if (variableSharing) {
+                formElement.appendChild(teamViewParagraph);
+                formElement.appendChild(classViewParagraph);
+            }
+
+            //Keep track of textareas and radio buttons that get added
+            newDataEntry.textareas = new Set();
+            newDataEntry.radios = new Set();
+            newDataEntry.checkboxes = new Set();
+            newDataEntry.multiChoices = new Set();
+            newDataEntry.dropdowns = new Set();
+
+            for (var i = 0; i < forms.length; i++) {
+                var subID = dataEntry.comboID(dataEntryID, i);
+                //Create textarea fields
+                if (forms[i].type === 'text') {
+                    jQuery(formElement).append(dataEntry.createTextEntry(subID, forms[i], newDataEntry));
+                } else if (forms[i].type === 'table') {
+                    //Create table fields
+                    formElement.appendChild(dataEntry.createRadioEntry(subID, forms[i], newDataEntry));
+                } else if (forms[i].type === 'checkbox') {
+                    formElement.appendChild(dataEntry.createCheckboxEntry(subID, forms[i], newDataEntry));
+                } else if (forms[i].type === 'header') {
+                    formElement.appendChild(dataEntry.createHeader(subID, forms[i], newDataEntry));
+                } else if (forms[i].type === 'multipleChoice') {
+                    formElement.appendChild(dataEntry.createMultipleChoiceEntry(subID, forms[i], newDataEntry, polling));
+                } else if (forms[i].type === 'dropdown') {
+                    formElement.appendChild(dataEntry.createDropdownEntry(subID, forms[i], newDataEntry));
+                }
+            }
+
+
+
+            var formFooter = document.createElement('div');
+            formFooter.classList.add('dataEntryFooter');
+
+            //Submit the marked responses as the official submission, only visible to team leader in view tab.
+            var submitMarkedResponsesOfficial = jQuery('<button class="dataEntryFormSubmitOfficial unofficialView">Make it Official</button>');
+            submitMarkedResponsesOfficial.on('click', function () {
+                var message = dataEntry.getFormData(formElement, newDataEntry, 'Official', true);
+
+                if (message != null) {
+                    //Submit the official version
+                    var finalMessage = {
+                        "prompt": "DataEntryOfficial",
+                        "thread": dataEntry.comboID(dataEntryID, 'Official'),
+                        "text": JSON.stringify(message)
+                    }
+                    if (globalPebl)
+                        globalPebl.emitEvent(globalPebl.events.newMessage,
                             finalMessage);
 
-                        // If useConfig is true, call the function defined in the config
-                        if (useConfig && useConfig === 'true') {
-                            if (globalPebl && globalPebl.extension.config && globalPebl.extension.config.dataEntry) {
-                                var dataEntryConfig = globalPebl.extension.config.dataEntry;
-                                if (dataEntryConfig.onSubmit && typeof dataEntryConfig.onSubmit === 'function') {
-                                    dataEntryConfig.onSubmit();
-                                }
-                            }
+                    //TODO: Use a different xapi statement for this
+                    if (group) {
+                        var artifactPrompt = {
+                            "prompt": question,
+                            "learnlet": learnlet,
+                            "learnletTitle": learnletTitle
+                        }
+                        var artifactMessage = {
+                            "prompt": JSON.stringify(artifactPrompt),
+                            "thread": dataEntry.comboID(group.membershipId, learnletLevel),
+                            "text": JSON.stringify(message)
                         }
 
-                        newDataEntry.viewMode();
+                        if (globalPebl)
+                            globalPebl.emitEvent(globalPebl.events.newMessage,
+                                artifactMessage);
+                    }
+
+                    // If useConfig is true, call the function defined in the config
+                    if (useConfig && useConfig === 'true') {
+                        if (globalPebl && globalPebl.extension.config && globalPebl.extension.config.dataEntry) {
+                            var dataEntryConfig = globalPebl.extension.config.dataEntry;
+                            if (dataEntryConfig.onSubmitOfficial && typeof dataEntryConfig.onSubmitOfficial === 'function') {
+                                dataEntryConfig.onSubmitOfficial();
+                            }
+                        }
+                    }
+
+                    newDataEntry.officialMode();
+                }
+            });
+
+            var formSubmitOfficial = jQuery('<button class="dataEntryFormSubmitOfficial edit">Make it Official</button>');
+            formSubmitOfficial.on('click', function () {
+                var message = dataEntry.getFormData(formElement, newDataEntry, 'Official');
+
+                if (message != null) {
+                    //Submit the official version
+                    var finalMessage = {
+                        "prompt": "DataEntryOfficial",
+                        "thread": dataEntry.comboID(dataEntryID, 'Official'),
+                        "text": JSON.stringify(message)
+                    }
+
+                    if (globalPebl)
+                        globalPebl.emitEvent(globalPebl.events.newMessage,
+                            finalMessage);
+
+                    //TODO: Use a different xapi statement for this
+                    if (group) {
+                        var artifactPrompt = {
+                            "prompt": question,
+                            "learnlet": learnlet,
+                            "learnletTitle": learnletTitle
+                        }
+                        var artifactMessage = {
+                            "prompt": JSON.stringify(artifactPrompt),
+                            "thread": dataEntry.comboID(group.membershipId, learnletLevel),
+                            "text": JSON.stringify(message)
+                        }
+
+                        if (globalPebl)
+                            globalPebl.emitEvent(globalPebl.events.newMessage,
+                                artifactMessage);
+                    }
+
+                    // If useConfig is true, call the function defined in the config
+                    if (useConfig && useConfig === 'true') {
+                        if (globalPebl && globalPebl.extension.config && globalPebl.extension.config.dataEntry) {
+                            var dataEntryConfig = globalPebl.extension.config.dataEntry;
+                            if (dataEntryConfig.onSubmitOfficial && typeof dataEntryConfig.onSubmitOfficial === 'function') {
+                                dataEntryConfig.onSubmitOfficial();
+                            }
+                        }
+                    }
+
+                    newDataEntry.officialMode();
+                }
+            });
+
+            var formSubmit = jQuery('<button class="dataEntryFormSubmit edit">Submit</button>');
+            formSubmit.on('click', function () {
+                var message = dataEntry.getFormData(formElement, newDataEntry, '');
+
+                if (message != null) {
+                    var finalMessage = {
+                        "prompt": "DataEntry",
+                        "thread": dataEntryID,
+                        "text": JSON.stringify(message)
+                    }
+
+                    if (globalPebl)
+                        globalPebl.emitEvent(globalPebl.events.newMessage,
+                            finalMessage);
+
+                    // If useConfig is true, call the function defined in the config
+                    if (useConfig && useConfig === 'true') {
+                        if (globalPebl && globalPebl.extension.config && globalPebl.extension.config.dataEntry) {
+                            var dataEntryConfig = globalPebl.extension.config.dataEntry;
+                            if (dataEntryConfig.onSubmit && typeof dataEntryConfig.onSubmit === 'function') {
+                                dataEntryConfig.onSubmit();
+                            }
+                        }
+                    }
+
+                    newDataEntry.viewMode();
+                }
+            });
+
+            var variableFormSubmitPrivate = jQuery('<button class="edit">Submit Privately</button>');
+            variableFormSubmitPrivate.on('click', function () {
+                var message = dataEntry.getFormData(formElement, newDataEntry, 'Private');
+
+                if (message != null) {
+                    var finalMessage = {
+                        "prompt": "PrivateDataEntry",
+                        "thread": dataEntry.comboID(userProfile.identity, dataEntryID),
+                        "text": JSON.stringify(message)
+                    }
+                    if (globalPebl)
+                        globalPebl.emitEvent(globalPebl.events.newMessage,
+                            finalMessage);
+
+                    newDataEntry.privateViewMode();
+                }
+            });
+
+            var variableFormSubmitTeam = jQuery('<button class="edit">Submit to Team</button>');
+            variableFormSubmitTeam.on('click', function () {
+                var message = dataEntry.getFormData(formElement, newDataEntry, 'Team');
+
+                if (message != null) {
+                    var finalMessage = {
+                        "prompt": "TeamDataEntry",
+                        "thread": dataEntry.comboID(userProfile.currentClass, userProfile.currentTeam, dataEntryID),
+                        "text": JSON.stringify(message)
+                    }
+
+                    if (globalPebl)
+                        globalPebl.emitEvent(globalPebl.events.newMessage,
+                            finalMessage);
+
+                    newDataEntry.teamViewMode();
+                }
+            });
+
+            var variableFormSubmitClass = jQuery('<button class="edit">Submit to Class</button>');
+            variableFormSubmitClass.on('click', function () {
+                var message = dataEntry.getFormData(formElement, newDataEntry, 'Class');
+
+                if (message != null) {
+                    var finalMessage = {
+                        "prompt": "ClassDataEntry",
+                        "thread": dataEntry.comboID(userProfile.currentClass, dataEntryID),
+                        "text": JSON.stringify(message)
+                    }
+
+                    if (globalPebl)
+                        globalPebl.emitEvent(globalPebl.events.newMessage,
+                            finalMessage);
+
+                    newDataEntry.classViewMode();
+                }
+            });
+
+            newDataEntry.privateViewMode = function () {
+                dataEntry.handleResize(function () {
+                    jQuery(calloutDiv).addClass('privateViewMode');
+                    jQuery(calloutDiv).removeClass('teamViewMode');
+                    jQuery(calloutDiv).removeClass('classViewMode');
+                    jQuery(calloutDiv).removeClass('editMode');
+                });
+            }
+
+            newDataEntry.teamViewMode = function () {
+                dataEntry.handleResize(function () {
+                    jQuery(calloutDiv).addClass('teamViewMode');
+                    jQuery(calloutDiv).removeClass('privateViewMode');
+                    jQuery(calloutDiv).removeClass('classViewMode');
+                    jQuery(calloutDiv).removeClass('editMode');
+                });
+            }
+
+            newDataEntry.classViewMode = function () {
+                dataEntry.handleResize(function () {
+                    jQuery(calloutDiv).addClass('classViewMode');
+                    jQuery(calloutDiv).removeClass('teamViewMode');
+                    jQuery(calloutDiv).removeClass('privateViewMode');
+                    jQuery(calloutDiv).removeClass('editMode');
+                });
+            }
+
+            newDataEntry.officialMode = function () {
+                dataEntry.handleResize(function () {
+                    jQuery(calloutDiv).addClass('officialViewMode');
+                    jQuery(calloutDiv).removeClass('unofficialViewMode');
+                    jQuery(calloutDiv).removeClass('editMode');
+                });
+            }
+
+            //toggle viewMode for this dataEntry
+            newDataEntry.viewMode = function () {
+                dataEntry.handleResize(function () {
+                    jQuery(calloutDiv).removeClass('officialViewMode');
+                    jQuery(calloutDiv).addClass('unofficialViewMode');
+                    jQuery(calloutDiv).removeClass('editMode');
+                });
+            }
+
+            //toggle editMode for this dataEntry
+            newDataEntry.editMode = function () {
+                dataEntry.handleResize(function () {
+                    jQuery(calloutDiv).removeClass('officialViewMode');
+                    jQuery(calloutDiv).removeClass('unofficialViewMode');
+                    jQuery(calloutDiv).removeClass('privateViewMode');
+                    jQuery(calloutDiv).removeClass('teamViewMode');
+                    jQuery(calloutDiv).removeClass('classViewMode');
+                    jQuery(calloutDiv).addClass('editMode');
+                });
+            }
+
+            // Poll and set the view of the data entry widget, only if its out of view of the user, otherwise it would be annoying having it switch views while using it
+            // newDataEntry.setInitialView = setInterval(function() {
+            //     if (!dataEntry.isElementInViewport(calloutDiv)) {
+            //         if ((sharing === 'team' && group) && jQuery(calloutDiv).find('.officialView').children().not('.placeholder').not('.dataEntryTextResponseNoData').length > 0)
+            //             newDataEntry.officialMode();
+            //         else if (jQuery(calloutDiv).find('.unofficialView').children('[data-user="' + userProfile.identity + '"]').not('.placeholder').length > 0)
+            //             newDataEntry.viewMode();
+            //         else if (!displayMode || displayMode !== 'viewOnly')
+            //             newDataEntry.editMode();
+            //     }
+            // }, 5000);
+
+            var closeButton = document.createElement('div');
+            closeButton.classList.add('dataEntryCloseButton');
+            closeButton.addEventListener('click', function () {
+                jQuery(calloutDiv).parent().remove();
+                clearInterval(window.updatePollingCount);
+            });
+
+            closeButtonIcon = document.createElement('i');
+            closeButtonIcon.classList.add('fa', 'fa-times');
+            closeButton.appendChild(closeButtonIcon);
+
+            var privateViewModeButton = document.createElement('div');
+            privateViewModeButton.classList.add('dataEntryPrivateViewModeButton');
+            privateViewModeButton.addEventListener('click', function () {
+                newDataEntry.privateViewMode();
+            });
+
+            var privateViewModeButtonIcon = document.createElement('span');
+            privateViewModeButtonIcon.textContent = 'View Private';
+            privateViewModeButton.appendChild(privateViewModeButtonIcon);
+
+            var teamViewModeButton = document.createElement('div');
+            teamViewModeButton.classList.add('dataEntryTeamViewModeButton');
+            teamViewModeButton.addEventListener('click', function () {
+                newDataEntry.teamViewMode();
+            });
+
+            var teamViewModeButtonIcon = document.createElement('span');
+            teamViewModeButtonIcon.textContent = 'View Team';
+            teamViewModeButton.appendChild(teamViewModeButtonIcon);
+
+            var classViewModeButton = document.createElement('div');
+            classViewModeButton.classList.add('dataEntryClassViewModeButton');
+            classViewModeButton.addEventListener('click', function () {
+                newDataEntry.classViewMode();
+            });
+
+            var classViewModeButtonIcon = document.createElement('span');
+            classViewModeButtonIcon.textContent = 'View Class';
+            classViewModeButton.appendChild(classViewModeButtonIcon);
+
+            var viewModeButton = document.createElement('div');
+            viewModeButton.classList.add('dataEntryViewModeButton');
+            viewModeButton.addEventListener('click', function () {
+                newDataEntry.viewMode();
+            });
+
+            var viewModeButtonIcon = document.createElement('span');
+            viewModeButtonIcon.textContent = 'View';
+
+            viewModeButton.appendChild(viewModeButtonIcon);
+
+            var editModeButton = document.createElement('div');
+            editModeButton.classList.add('dataEntryEditModeButton');
+            editModeButton.addEventListener('click', function () {
+                newDataEntry.editMode();
+            });
+
+            var editModeButtonIcon = document.createElement('span');
+            editModeButtonIcon.textContent = 'Edit';
+
+            editModeButton.appendChild(editModeButtonIcon);
+
+            var officialModeButton = document.createElement('div');
+            officialModeButton.classList.add('dataEntryOfficialModeButton');
+            officialModeButton.addEventListener('click', function () {
+                newDataEntry.officialMode();
+            });
+
+            var officialModeButtonIcon = document.createElement('span');
+            officialModeButtonIcon.textContent = 'Official';
+
+            officialModeButton.appendChild(officialModeButtonIcon);
+
+
+
+
+
+            //If viewmode is set to viewOnly, don't show the edit mode button
+            if (!displayMode || displayMode !== 'viewOnly')
+                header.appendChild(editModeButton);
+
+            if (variableSharing) {
+                //header.appendChild(privateViewModeButton);
+                if (userProfile.currentTeam)
+                    header.appendChild(teamViewModeButton);
+
+                if (userProfile.currentClass)
+                    header.appendChild(classViewModeButton);
+
+                //jQuery(formFooter).append(variableFormSubmitPrivate);
+                if (userProfile.currentTeam)
+                    jQuery(formFooter).append(variableFormSubmitTeam);
+
+                if (userProfile.currentClass)
+                    jQuery(formFooter).append(variableFormSubmitClass);
+
+                // var privateMessageHandle = dataEntry.dataMessageHandler(dataEntry.comboID(userProfile.identity, dataEntryID));
+                // globalPebl.subscribeThread(dataEntry.comboID(userProfile.identity, dataEntryID), false, privateMessageHandle);
+
+                if (userProfile.currentTeam) {
+                    var teamMessageHandle = dataEntry.dataMessageHandler(dataEntry.comboID(userProfile.currentClass, userProfile.currentTeam, dataEntryID));
+                    if (globalPebl)
+                        globalPebl.subscribeThread(dataEntry.comboID(userProfile.currentClass, userProfile.currentTeam, dataEntryID), false, teamMessageHandle);
+                }
+
+                if (userProfile.currentClass) {
+                    var classMessageHandle = dataEntry.dataMessageHandler(dataEntry.comboID(userProfile.currentClass, dataEntryID));
+                    if (globalPebl)
+                        globalPebl.subscribeThread(dataEntry.comboID(userProfile.currentClass, dataEntryID), false, classMessageHandle);
+                }
+            } else {
+                header.appendChild(viewModeButton);
+
+                jQuery(formFooter).append(formSubmit);
+
+                var messageHandle = dataEntry.dataMessageHandler(dataEntryID);
+                if (globalPebl)
+                    globalPebl.subscribeThread(dataEntryID, false, messageHandle);
+
+                //Assuming we use the discussion mechanism for official submissions, will probably change later.
+                var officialMessageHandle = dataEntry.dataMessageHandler(dataEntry.comboID(dataEntryID, 'Official'));
+                if (globalPebl)
+                    globalPebl.subscribeThread(dataEntry.comboID(dataEntryID, 'Official'), false, officialMessageHandle);
+            }
+
+
+            //If sharing is set to team and not in standalone mode, show the official submit / view buttons
+            if (sharing === 'team' && group) {
+                header.appendChild(officialModeButton);
+                //TODO: Use the specific permission that lets you make official submissions
+                if (group.role === 'owner') {
+                    jQuery(formFooter).append(formSubmitOfficial);
+                    // Don't show the inline make official in viewOnly mode
+                    if (!displayMode || displayMode !== 'viewOnly') {
+                        jQuery(formFooter).append(submitMarkedResponsesOfficial);
+                        jQuery(formElement).addClass('showInlineMakeOfficial');
                     }
                 }
-            });
-        });
-
-        var variableFormSubmitPrivate = jQuery('<button class="edit">Submit Privately</button>');
-        variableFormSubmitPrivate.on('click', function() {
-            var message = dataEntry.getFormData(formElement, newDataEntry, 'Private');
-
-            if (message != null) {
-                var finalMessage = {
-                    "prompt": "PrivateDataEntry",
-                    "thread": dataEntry.comboID(userProfile.identity, dataEntryID),
-                    "text": JSON.stringify(message)
-                }
-                if (globalPebl)
-                    globalPebl.emitEvent(globalPebl.events.newMessage,
-                        finalMessage);
-
-                newDataEntry.privateViewMode();
             }
-        });
 
-        var variableFormSubmitTeam = jQuery('<button class="edit">Submit to Team</button>');
-        variableFormSubmitTeam.on('click', function() {
-            var message = dataEntry.getFormData(formElement, newDataEntry, 'Team');
+            // if (polling && polling === 'true')
+            //     header.appendChild(closeButton);
 
-            if (message != null) {
-                var finalMessage = {
-                    "prompt": "TeamDataEntry",
-                    "thread": dataEntry.comboID(userProfile.currentClass, userProfile.currentTeam, dataEntryID),
-                    "text": JSON.stringify(message)
-                }
-                if (globalPebl)
-                    globalPebl.emitEvent(globalPebl.events.newMessage,
-                        finalMessage);
+            calloutDiv.appendChild(formElement);
+            calloutDiv.appendChild(header);
+            calloutDiv.appendChild(formFooter);
 
-                newDataEntry.teamViewMode();
-            }
-        });
+            var insertLocation = document.getElementById(insertID);
 
-        var variableFormSubmitClass = jQuery('<button class="edit">Submit to Class</button>');
-        variableFormSubmitClass.on('click', function() {
-            var message = dataEntry.getFormData(formElement, newDataEntry, 'Class');
-
-            if (message != null) {
-                var finalMessage = {
-                    "prompt": "ClassDataEntry",
-                    "thread": dataEntry.comboID(userProfile.currentClass, dataEntryID),
-                    "text": JSON.stringify(message)
-                }
-                if (globalPebl)
-                    globalPebl.emitEvent(globalPebl.events.newMessage,
-                        finalMessage);
-
-                newDataEntry.classViewMode();
-            }
-        });
-
-        newDataEntry.privateViewMode = function() {
-            dataEntry.handleResize(function() {
-                jQuery(calloutDiv).addClass('privateViewMode');
-                jQuery(calloutDiv).removeClass('teamViewMode');
-                jQuery(calloutDiv).removeClass('classViewMode');
-                jQuery(calloutDiv).removeClass('editMode');
-            });
-        }
-
-        newDataEntry.teamViewMode = function() {
-            dataEntry.handleResize(function() {
-                jQuery(calloutDiv).addClass('teamViewMode');
-                jQuery(calloutDiv).removeClass('privateViewMode');
-                jQuery(calloutDiv).removeClass('classViewMode');
-                jQuery(calloutDiv).removeClass('editMode');
-            });
-        }
-
-        newDataEntry.classViewMode = function() {
-            dataEntry.handleResize(function() {
-                jQuery(calloutDiv).addClass('classViewMode');
-                jQuery(calloutDiv).removeClass('teamViewMode');
-                jQuery(calloutDiv).removeClass('privateViewMode');
-                jQuery(calloutDiv).removeClass('editMode');
-            });
-        }
-
-        newDataEntry.officialMode = function() {
-            dataEntry.handleResize(function() {
-                jQuery(calloutDiv).addClass('officialViewMode');
-                jQuery(calloutDiv).removeClass('unofficialViewMode');
-                jQuery(calloutDiv).removeClass('editMode');
-            });
-        }
-
-        //toggle viewMode for this dataEntry
-        newDataEntry.viewMode = function() {
-            dataEntry.handleResize(function() {
-                jQuery(calloutDiv).removeClass('officialViewMode');
-                jQuery(calloutDiv).addClass('unofficialViewMode');
-                jQuery(calloutDiv).removeClass('editMode');
-            });
-        }
-
-        //toggle editMode for this dataEntry
-        newDataEntry.editMode = function() {
-            dataEntry.handleResize(function() {
-                jQuery(calloutDiv).removeClass('officialViewMode');
-                jQuery(calloutDiv).removeClass('unofficialViewMode');
-                jQuery(calloutDiv).removeClass('privateViewMode');
-                jQuery(calloutDiv).removeClass('teamViewMode');
-                jQuery(calloutDiv).removeClass('classViewMode');
-                jQuery(calloutDiv).addClass('editMode');
-            });
-        }
-
-        // Poll and set the view of the data entry widget, only if its out of view of the user, otherwise it would be annoying having it switch views while using it
-        // newDataEntry.setInitialView = setInterval(function() {
-        //     if (!dataEntry.isElementInViewport(calloutDiv)) {
-        //         if ((sharing === 'team' && group) && jQuery(calloutDiv).find('.officialView').children().not('.placeholder').not('.dataEntryTextResponseNoData').length > 0)
-        //             newDataEntry.officialMode();
-        //         else if (jQuery(calloutDiv).find('.unofficialView').children('[data-user="' + userProfile.identity + '"]').not('.placeholder').length > 0)
-        //             newDataEntry.viewMode();
-        //         else if (!displayMode || displayMode !== 'viewOnly')
-        //             newDataEntry.editMode();
-        //     }
-        // }, 5000);
-
-        var closeButton = document.createElement('div');
-        closeButton.classList.add('dataEntryCloseButton');
-        closeButton.addEventListener('click', function() {
-            jQuery(calloutDiv).parent().remove();
-            clearInterval(window.updatePollingCount);
-        });
-
-        closeButtonIcon = document.createElement('i');
-        closeButtonIcon.classList.add('fa', 'fa-times');
-        closeButton.appendChild(closeButtonIcon);
-
-        var privateViewModeButton = document.createElement('div');
-        privateViewModeButton.classList.add('dataEntryPrivateViewModeButton');
-        privateViewModeButton.addEventListener('click', function() {
-            newDataEntry.privateViewMode();
-        });
-
-        var privateViewModeButtonIcon = document.createElement('span');
-        privateViewModeButtonIcon.textContent = 'View Private';
-        privateViewModeButton.appendChild(privateViewModeButtonIcon);
-
-        var teamViewModeButton = document.createElement('div');
-        teamViewModeButton.classList.add('dataEntryTeamViewModeButton');
-        teamViewModeButton.addEventListener('click', function() {
-            newDataEntry.teamViewMode();
-        });
-
-        var teamViewModeButtonIcon = document.createElement('span');
-        teamViewModeButtonIcon.textContent = 'View Team';
-        teamViewModeButton.appendChild(teamViewModeButtonIcon);
-
-        var classViewModeButton = document.createElement('div');
-        classViewModeButton.classList.add('dataEntryClassViewModeButton');
-        classViewModeButton.addEventListener('click', function() {
-            newDataEntry.classViewMode();
-        });
-
-        var classViewModeButtonIcon = document.createElement('span');
-        classViewModeButtonIcon.textContent = 'View Class';
-        classViewModeButton.appendChild(classViewModeButtonIcon);
-
-        var viewModeButton = document.createElement('div');
-        viewModeButton.classList.add('dataEntryViewModeButton');
-        viewModeButton.addEventListener('click', function() {
-            newDataEntry.viewMode();
-        });
-
-        var viewModeButtonIcon = document.createElement('span');
-        viewModeButtonIcon.textContent = 'View';
-
-        viewModeButton.appendChild(viewModeButtonIcon);
-
-        var editModeButton = document.createElement('div');
-        editModeButton.classList.add('dataEntryEditModeButton');
-        editModeButton.addEventListener('click', function() {
-            newDataEntry.editMode();
-        });
-
-        var editModeButtonIcon = document.createElement('span');
-        editModeButtonIcon.textContent = 'Edit';
-
-        editModeButton.appendChild(editModeButtonIcon);
-
-        var officialModeButton = document.createElement('div');
-        officialModeButton.classList.add('dataEntryOfficialModeButton');
-        officialModeButton.addEventListener('click', function() {
-            newDataEntry.officialMode();
-        });
-
-        var officialModeButtonIcon = document.createElement('span');
-        officialModeButtonIcon.textContent = 'Official';
-
-        officialModeButton.appendChild(officialModeButtonIcon);
+            insertLocation.parentNode.insertBefore(dataEntryWrapper, insertLocation);
+            insertLocation.remove();
 
 
+            //Do not add the will-change: transform fix when in safari, it doesn't need it and it breaks the rendering when not scrollable
+            if (!(!!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/)))
+                formElement.classList.add('fixScrolling');
 
-        
-
-        //If viewmode is set to viewOnly, don't show the edit mode button
-        if (!displayMode || displayMode !== 'viewOnly')
-            header.appendChild(editModeButton);
-
-        if (classSharing) {
-            //header.appendChild(privateViewModeButton);
-            if (userProfile.currentTeam)
-                header.appendChild(teamViewModeButton);
-
-            if (userProfile.currentClass)
-                header.appendChild(classViewModeButton);
-
-            //jQuery(formFooter).append(variableFormSubmitPrivate);
-            if (userProfile.currentTeam)
-                jQuery(formFooter).append(variableFormSubmitTeam);
-
-            if (userProfile.currentClass)
-                jQuery(formFooter).append(variableFormSubmitClass);
-
-            // var privateMessageHandle = dataEntry.dataMessageHandler(dataEntry.comboID(userProfile.identity, dataEntryID));
-            // globalPebl.subscribeThread(dataEntry.comboID(userProfile.identity, dataEntryID), false, privateMessageHandle);
-
-            if (userProfile.currentTeam) {
-                var teamMessageHandle = dataEntry.dataMessageHandler(dataEntry.comboID(userProfile.currentClass, userProfile.currentTeam, dataEntryID));
-                if (globalPebl)
-                    globalPebl.subscribeThread(dataEntry.comboID(userProfile.currentClass, userProfile.currentTeam, dataEntryID), false, teamMessageHandle);
-            }
-            
-            if (userProfile.currentClass) {
-                var classMessageHandle = dataEntry.dataMessageHandler(dataEntry.comboID(userProfile.currentClass, dataEntryID));
-                if (globalPebl)
-                    globalPebl.subscribeThread(dataEntry.comboID(userProfile.currentClass, dataEntryID), false, classMessageHandle);
-            }
-        } else {
-            header.appendChild(viewModeButton);
-
-            jQuery(formFooter).append(formSubmit);
-
-            var messageHandle = dataEntry.dataMessageHandler(dataEntryID);
-            if (globalPebl)
-                globalPebl.subscribeThread(dataEntryID, false, messageHandle);
-
-            //Assuming we use the discussion mechanism for official submissions, will probably change later.
-            var officialMessageHandle = dataEntry.dataMessageHandler(dataEntry.comboID(dataEntryID, 'Official'));
-            if (globalPebl)
-                globalPebl.subscribeThread(dataEntry.comboID(dataEntryID, 'Official'), false, officialMessageHandle);
-        }
-        
-
-        //If sharing is set to team and not in standalone mode, show the official submit / view buttons
-        if (sharing === 'team' && group) {
-            header.appendChild(officialModeButton);
-            //TODO: Use the specific permission that lets you make official submissions
-            if (group.role === 'owner') {
-                jQuery(formFooter).append(formSubmitOfficial);
-                // Don't show the inline make official in viewOnly mode
-                if (!displayMode || displayMode !== 'viewOnly') {
-                    jQuery(formFooter).append(submitMarkedResponsesOfficial);
-                    jQuery(formElement).addClass('showInlineMakeOfficial');
-                }
-            }
-        }
-
-        // if (polling && polling === 'true')
-        //     header.appendChild(closeButton);
-        
-        calloutDiv.appendChild(formElement);
-        calloutDiv.appendChild(header);
-        calloutDiv.appendChild(formFooter);
-
-        var insertLocation = document.getElementById(insertID);
-
-        insertLocation.parentNode.insertBefore(dataEntryWrapper, insertLocation);
-        insertLocation.remove();
-
-
-        //Do not add the will-change: transform fix when in safari, it doesn't need it and it breaks the rendering when not scrollable
-        if (!(!!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/)))
-            formElement.classList.add('fixScrolling');
-
-        //Put the dataEntry into viewmode if specified.
-        if (displayMode && displayMode === 'viewOnly')
-            newDataEntry.viewMode();
-        else
-            newDataEntry.editMode();
+            //Put the dataEntry into viewmode if specified.
+            if (displayMode && displayMode === 'viewOnly')
+                newDataEntry.viewMode();
+            else
+                newDataEntry.editMode();
     }
+
     // Render it when no globalPebl present
     if (!globalPebl)
         makeDataEntry(insertID, question, id, forms, sharing, displayMode, polling, useConfig, null, null, null);
@@ -1298,13 +1297,13 @@ dataEntry.createDataEntry = function(insertID, question, id, forms, sharing, dis
         });
 }
 
-dataEntry.dropdownMessageHandler = function(message, userProfile) {
+dataEntry.dropdownMessageHandler = function (message, userProfile) {
     console.log('dropdown');
     console.log(message);
 
 }
 
-dataEntry.multiChoiceMessageHandler = function(message, userProfile) {
+dataEntry.multiChoiceMessageHandler = function (message, userProfile) {
     var mine = userProfile.name == message.name;
     console.log(message);
 
@@ -1334,7 +1333,7 @@ dataEntry.multiChoiceMessageHandler = function(message, userProfile) {
 }
 
 //Message handler for standard textarea messages
-dataEntry.messageHandler = function(message, userProfile) {
+dataEntry.messageHandler = function (message, userProfile) {
     var mine = userProfile.name == message.name;
     var userIcon = document.createElement('i');
     userIcon.classList.add('fa', 'fa-user');
@@ -1347,7 +1346,7 @@ dataEntry.messageHandler = function(message, userProfile) {
     timestampBox.text(new Date(message.timestamp).toLocaleString());
     var textBox = jQuery('<p class="message"></p>');
     textBox.text(message.text);
-    var messageContainer = jQuery('<div data-user="' + message.name + '" data-timestamp="' + message.timestamp + '" id="' + dataEntry.comboID(message.name, message.thread) + '" class="' + (mine?"your ":"") + 'response"></div>');
+    var messageContainer = jQuery('<div data-user="' + message.name + '" data-timestamp="' + message.timestamp + '" id="' + dataEntry.comboID(message.name, message.thread) + '" class="' + (mine ? "your " : "") + 'response"></div>');
     if (message.text === '') {
         messageContainer.css('display', 'none');
         messageContainer[0].classList.add('placeholder');
@@ -1402,7 +1401,7 @@ dataEntry.messageHandler = function(message, userProfile) {
     }
 }
 
-dataEntry.checkboxMessageHandler = function(message, userProfile) {
+dataEntry.checkboxMessageHandler = function (message, userProfile) {
     var mine = userProfile.name == message.name;
     var checkbox = document.getElementById(message.thread);
     var responseBox = document.getElementById(message.responseBox);
@@ -1454,7 +1453,7 @@ dataEntry.checkboxMessageHandler = function(message, userProfile) {
     var timestampBox = jQuery('<span class="timestamp"></span>');
     timestampBox.text(new Date(message.timestamp).toLocaleString());
     var textBox = jQuery('<p class="message"></p>');
-    var messageContainer = jQuery('<div data-user="' + message.name + '" data-timestamp="' + message.timestamp + '" id="' + dataEntry.comboID(message.thread, message.name) + '" class="' + (mine?"your ":"") + 'response"></div>');
+    var messageContainer = jQuery('<div data-user="' + message.name + '" data-timestamp="' + message.timestamp + '" id="' + dataEntry.comboID(message.thread, message.name) + '" class="' + (mine ? "your " : "") + 'response"></div>');
 
     var makeOfficialWrapper = document.createElement('div');
     makeOfficialWrapper.classList.add('unofficialView');
@@ -1502,7 +1501,7 @@ dataEntry.checkboxMessageHandler = function(message, userProfile) {
             jQuery(responseBox).append(messageContainer);
         } else {
             //This is an old message, do nothing
-        } 
+        }
     } else {
         if (text === '') {
             messageContainer.css('display', 'none');
@@ -1513,7 +1512,7 @@ dataEntry.checkboxMessageHandler = function(message, userProfile) {
 }
 
 //Message handler for radio button messages
-dataEntry.radioMessageHandler = function(message, userProfile) {
+dataEntry.radioMessageHandler = function (message, userProfile) {
     var mine = userProfile.name == message.name;
 
     var makeOfficialWrapper = document.createElement('div');
@@ -1533,7 +1532,7 @@ dataEntry.radioMessageHandler = function(message, userProfile) {
     makeOfficialButton.setAttribute('data-responseBoxOfficial', message.responseBox + 'Official');
     makeOfficialButton.setAttribute('data-user', message.name);
     makeOfficialButton.setAttribute('data-title', message.title);
-    
+
     makeOfficialContainer.appendChild(makeOfficialButton);
     makeOfficialContainer.appendChild(makeOfficialSpan);
 
@@ -1568,11 +1567,11 @@ dataEntry.radioMessageHandler = function(message, userProfile) {
 }
 
 //Get the Combined Messages and hand them off to specific handlers
-dataEntry.dataMessageHandler = function(thread) {
+dataEntry.dataMessageHandler = function (thread) {
     return function (newMessages) {
         newMessages.sort(dataEntry.sortMessages);
         console.log(newMessages);
-        globalPebl.user.getUser(function(userProfile) {
+        globalPebl.user.getUser(function (userProfile) {
             if (userProfile) {
                 for (var i = 0; i < newMessages.length; i++) {
                     var message = newMessages[i];
@@ -1603,13 +1602,13 @@ dataEntry.dataMessageHandler = function(thread) {
     }
 }
 
-dataEntry.getFormData = function(formElement, newDataEntry, responseType, getMarkedResponses) {
+dataEntry.getFormData = function (formElement, newDataEntry, responseType, getMarkedResponses) {
     dataEntry.invalidFormActive = false;
     // Get text from the marked responses instead of the form
     if (getMarkedResponses) {
         var messages = [];
 
-        jQuery(formElement).find('.inlineMakeOfficialContainer input[type="radio"]:checked').each(function() {
+        jQuery(formElement).find('.inlineMakeOfficialContainer input[type="radio"]:checked').each(function () {
             var type = this.getAttribute('data-type');
             if (type === 'text') {
                 var val = this.getAttribute('data-message');
@@ -1623,7 +1622,7 @@ dataEntry.getFormData = function(formElement, newDataEntry, responseType, getMar
                     "text": val,
                     "responseBox": responseBox,
                     "type": type,
-                    "originalUser" : originalUser
+                    "originalUser": originalUser
                 }
                 messages.push(message);
             } else if (type === 'checkbox') {
@@ -1655,9 +1654,9 @@ dataEntry.getFormData = function(formElement, newDataEntry, responseType, getMar
                 var originalUser = this.getAttribute('data-user');
                 var title = this.getAttribute('data-title');
                 var message = {
-                    "prompt" : prompt,
-                    "thread" : thread,
-                    "text" : text,
+                    "prompt": prompt,
+                    "thread": thread,
+                    "text": text,
                     "responseBox": responseBox,
                     "type": "radio",
                     "title": title,
@@ -1706,7 +1705,7 @@ dataEntry.getFormData = function(formElement, newDataEntry, responseType, getMar
                     var index = elem.getAttribute('data-index');
 
 
-                    
+
                     var message = {
                         "prompt": prompt,
                         "thread": multiChoiceArray[i],
@@ -1747,9 +1746,9 @@ dataEntry.getFormData = function(formElement, newDataEntry, responseType, getMar
                     var responseBox = jQuery('input[name="' + radioArray[j] + '"]:checked').attr('data-responseBox' + responseType);
                     //Content of the message is the value of the radio button
                     var message = {
-                        "prompt" : prompt,
-                        "thread" : dataEntry.comboID(radioArray[j], responseType),
-                        "text" : val,
+                        "prompt": prompt,
+                        "thread": dataEntry.comboID(radioArray[j], responseType),
+                        "text": val,
                         "responseBox": responseBox,
                         "type": "radio",
                         "title": title
@@ -1794,13 +1793,13 @@ dataEntry.getFormData = function(formElement, newDataEntry, responseType, getMar
 }
 
 //Call readium library function to keep user on the same page after content resizes.
-dataEntry.handleResize = function(callback) {
+dataEntry.handleResize = function (callback) {
     //var currentPage = JSON.parse(globalReadium.reader.bookmarkCurrentPage());
     callback();
     //globalReadium.reader.openSpineItemElementCfi(currentPage.idref, currentPage.contentCFI);
 }
 
-dataEntry.sortMessages = function(a, b) {
+dataEntry.sortMessages = function (a, b) {
     var aDate = new Date(a.timestamp);
     var bDate = new Date(b.timestamp);
     var aTimestamp = aDate.getTime();
@@ -1810,7 +1809,7 @@ dataEntry.sortMessages = function(a, b) {
 }
 
 //Combines any number of strings with _ between them
-dataEntry.comboID = function(...strings) {
+dataEntry.comboID = function (...strings) {
     var newID = null;
     for (var string of strings) {
         if (newID === null)
@@ -1823,20 +1822,20 @@ dataEntry.comboID = function(...strings) {
 }
 
 // TODO: super basic for now, make it work better later
-dataEntry.getLearnletLevel = function(string) {
+dataEntry.getLearnletLevel = function (string) {
     return string.substr(0, 1);
 }
 
-dataEntry.getLearnlet = function(string) {
+dataEntry.getLearnlet = function (string) {
     return string.substr(2, 1);
 }
 
-dataEntry.getLearnletTitle = function() {
+dataEntry.getLearnletTitle = function () {
     return jQuery('.chapterTitle')[0].textContent;
 }
 
 //From https://stackoverflow.com/a/7557433
-dataEntry.isElementInViewport = function(el) {
+dataEntry.isElementInViewport = function (el) {
     //special bonus for those using jQuery
     if (typeof jQuery === "function" && el instanceof jQuery) {
         el = el[0];
