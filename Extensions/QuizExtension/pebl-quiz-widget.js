@@ -8,7 +8,7 @@ if (globalPebl)
 lowStakesQuiz.createQuizAnchor = function(id) {
     var anchor = document.createElement('ol');
     anchor.id = id;
-    anchor.classList.add('quiz');
+    anchor.classList.add('pebl__quiz');
 
     var quizScore = document.createElement('h3');
     quizScore.classList.add('quizScore');
