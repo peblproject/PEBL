@@ -16,6 +16,15 @@ jQuery(document).ready(function () {
     });
 });
 
+popout.iconTable = {
+	"book": "fa-book",
+	"file": "fa-file-alt",
+	"info": "fa-info-circle",
+	"link": "fa-link",
+	"chat": "fa-chat",
+	"note": "fa-sticky-note"
+}
+
 /* inputs
     insertID: the id of the html element this will be attaching to, the popoutDiv replaes this element
     title: the title of the popout which displays in the extension clickable bar 
@@ -57,7 +66,7 @@ popout.createPopout = function (insertID, title, content, iconType) {
 
     /* create icon element for iconType */
     popoutIconI = document.createElement('i');
-    popoutIconI.classList.add('fas', iconType);
+    popoutIconI.classList.add('fas', popout.iconTable[iconType]);
 
     /* create div to hold popoutContentDiv */
     popoutContentDiv = document.createElement('div');
