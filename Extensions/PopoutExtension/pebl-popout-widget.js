@@ -7,7 +7,7 @@ if (globalPebl)
 
 jQuery(document).ready(function () {
 
-    jQuery('.popout_popoutExtension').each(function () {
+    jQuery('.popout_popoutExtension, .peblExtension[data-peblextension="popout"]').each(function () {
         var insertID = jQuery(this)[0].getAttribute('id');
         var title = jQuery(this)[0].getAttribute('data-title');
         var content = jQuery(this)[0].getAttribute('data-content');
