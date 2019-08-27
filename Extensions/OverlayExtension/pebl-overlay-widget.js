@@ -334,10 +334,10 @@ function createTags() {
 
                 for (var i = 0; i < tags[key].length; i++) {
                     var tagWrapper = document.createElement('div');
-                    tagWrapper.classList.add('taxonomy-' + key);
+                    tagWrapper.classList.add('cardTag', 'taxonomy-' + key);
                     var tag = document.createElement('div');
                     tag.id = globalPebl.utils.getUuid();
-                    tag.classList.add('cardTag', 'resoure-tag');
+                    tag.classList.add('resource-tag');
                     tag.setAttribute('data-bucket', key);
                     tag.setAttribute('data-tag', tags[key][i]);
                     $(document.body).on('click', '#' + tag.id, function(event) {
