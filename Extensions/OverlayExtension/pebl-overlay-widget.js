@@ -335,7 +335,7 @@ function createTags() {
                 for (var i = 0; i < tags[key].length; i++) {
                     var tag = document.createElement('div');
                     tag.id = globalPebl.utils.getUuid();
-                    tag.classList.add('cardTag', key);
+                    tag.classList.add('cardTag', 'taxonomy-' + key);
                     tag.setAttribute('data-bucket', key);
                     tag.setAttribute('data-tag', tags[key][i]);
                     $(document.body).on('click', '#' + tag.id, function(event) {
