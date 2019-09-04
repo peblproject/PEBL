@@ -1072,9 +1072,13 @@ function createFooterDiscussButton() {
     var discussButtonText = document.createElement('span');
     discussButtonText.textContent = 'Discuss';
 
+    var discussCount = document.createElement('span');
+    discussCount.id = 'discussCounter';
+
     discussButtonTextContainer.appendChild(discussButtonText);
 
     discussButton.appendChild(discussButtonTextContainer);
+    discussButton.appendChild(discussCount);
 
     discussButtonContainer.appendChild(discussButton);
 
@@ -1153,9 +1157,13 @@ function createFooterNotesButton() {
     var notesText = document.createElement('span');
     notesText.textContent = 'My Notes';      // Recently changed from "Notes"
 
+    var notesCount = document.createElement('span');
+    notesCount.id = "notesCounter";
+
     notesTextContainer.appendChild(notesText);
 
     notesButton.appendChild(notesTextContainer);
+    notesButton.appendChild(notesCount);
 
     notesButtonContainer.appendChild(notesPrompt);
 

@@ -431,6 +431,11 @@ p.discussionQuestionBoxText {
     margin-left: 10px;
 }
 
+#discussCounter,
+#notesCounter {
+    margin-left: 0.5em;
+}
+
 .findButtonContainer {
     margin-left: 10px;
 }
