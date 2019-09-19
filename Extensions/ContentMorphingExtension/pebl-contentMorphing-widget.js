@@ -98,10 +98,15 @@ contentMorphing.applyMorphingControlPanel = function(id) {
 
 	if (whichLevels) {
 		whichLevels = JSON.parse(whichLevels);
+		var levelToDisplay = '';
+
 		for (var level of whichLevels) {
-			var elem = $('#' + id + '.adjustable-content #' + level).parent();
-			elem.show();
+			levelToDisplay += level;
 		}
+
+		var elem = $('#' + id + '.adjustable-content #' + levelToDisplay).parent();
+		elem.show();
+
 		$('#' + id + '.adjustable-content').addClass('active');
 	} else {
 		$('#' + id + '.adjustable-content').removeClass('active');
@@ -173,9 +178,9 @@ contentMorphing.createMorphing = function(insertID, levels, levelContent, id, ca
 	if (controls === 'true')
 		adjustableContentDiv.appendChild(levelOptionsDiv);
 
-	for (content in levelContent) {
-		var convertedValue = parseInt(content) + 1;
-		var target = document.getElementById(levelContent[content]);
+	for (var i = 0; i < levelContent.length; i++) {
+		var convertedValue = i + 1;
+		var target = document.getElementById(levelContent[i]);
 		var clone = target.cloneNode(true);
 		levelContentDiv = document.createElement('div');
 		levelContentDiv.classList.add('level' + convertedValue);
