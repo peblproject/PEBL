@@ -6,7 +6,7 @@ if (globalPebl)
 	globalPebl.extension.figure = figure;
 
 jQuery(document).ready(function() {
-	jQuery('.figure_figureExtension, .peblExtension[data-peblextension="figure"]').each(function() {
+	jQuery('.figure_figureExtension, .peblExtension[data-peblextension="figure"], .peblExtension[data-peblExtension="figure"]').each(function() {
 		var insertID = jQuery(this)[0].getAttribute('id');
 		var img = JSON.parse(jQuery(this)[0].getAttribute('data-img'));
 		var title = jQuery(this)[0].getAttribute('data-title');
