@@ -24,14 +24,13 @@
 }
 
 /* on inactive handle content also */
-.pebl__popout.inactive .pebl__popout--popout-content {
+.pebl__popout .pebl__popout--popout-content {
     display: none;
 }
 
 /* on active handle content also */
 .pebl__popout.active .pebl__popout--popout-content {
     width: 100%;
-    display: block;
     padding: .5rem;
     clear: both;
     background-color: var(--light-background);

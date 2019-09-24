@@ -105,8 +105,16 @@ popout.handlePopoutClick = function (event) {
     if (event.target.tagName === 'a')
         return;
     var e = jQuery(this).closest('.pebl__popout');
-    e.toggleClass('inactive');
-    e.toggleClass('active');
+    if (e.hasClass('active')) {
+        e.children('.pebl__popout--popout-content').slideToggle(400, function () {
+            e.toggleClass('inactive');
+            e.toggleClass('active');
+        });
+    } else {
+        e.toggleClass('inactive');
+           e.toggleClass('active');
+           e.children('.pebl__popout--popout-content').slideToggle(400);
+    }
 
     if (globalPebl != null) {
         var cfi = "";
