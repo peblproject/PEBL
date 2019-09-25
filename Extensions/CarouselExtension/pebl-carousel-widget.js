@@ -7,7 +7,7 @@ if (globalPebl)
     globalPebl.extension.carousel = carousel;
 
 $(document).ready(function () {
-    $('.carousel_carouselExtension, .peblExtension[data-peblextension="carousel"]').each(function() {
+    $('.carousel_carouselExtension, .peblExtension[data-peblextension="carousel"], .peblExtension[data-peblExtension="carousel"]').each(function() {
         var insertID = $(this)[0].getAttribute('id');
         var imagesArray = JSON.parse($(this)[0].getAttribute('data-images'));
         var captionsArray = JSON.parse($(this)[0].getAttribute('data-captions'));

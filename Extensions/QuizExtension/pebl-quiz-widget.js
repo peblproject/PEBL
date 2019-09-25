@@ -81,7 +81,7 @@ jQuery(document).on('click', '.feedbackLink', function (evt) {
 });
 
 jQuery().ready(function () {
-    jQuery('.quiz_quizExtension, .peblExtension[data-peblextension="quiz"]').each(function() {
+    jQuery('.quiz_quizExtension, .peblExtension[data-peblextension="quiz"], .peblExtension[data-peblExtension="quiz"]').each(function() {
         var insertID = jQuery(this)[0].getAttribute('id');    
         var id = jQuery(this)[0].getAttribute('data-id');
         var questionNumber = jQuery(this)[0].getAttribute('data-questionNumber') || jQuery(this)[0].getAttribute('data-questionnumber');

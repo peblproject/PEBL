@@ -17,7 +17,7 @@ jQuery(document).ready(function () {
     //     }) );
     // });
 
-    jQuery('.discussion_discussionExtension, .peblExtension[data-peblextension="discussion"]').each(function() {    
+    jQuery('.discussion_discussionExtension, .peblExtension[data-peblextension="discussion"], .peblExtension[data-peblExtension="discussion"]').each(function() {    
         var buttonText = jQuery(this)[0].getAttribute('data-buttonText') || jQuery(this)[0].getAttribute('data-buttontext');
         var prompt = jQuery(this)[0].getAttribute('data-prompt');
         var id = jQuery(this)[0].getAttribute('data-id');

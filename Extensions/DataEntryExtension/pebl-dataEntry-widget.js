@@ -16,7 +16,7 @@ dataEntry.invalidFormActive = false;
 dataEntry.activeEntries = {};
 
 dataEntry.insertExtensions = function() {
-    jQuery('.dataEntryExtension, .peblExtension[data-peblextension="dataentry"]').each(function() {        
+    jQuery('.dataEntryExtension, .peblExtension[data-peblextension="dataentry"], .peblExtension[data-peblExtension="dataentry"]').each(function() {        
         var prompt = jQuery(this)[0].getAttribute('data-prompt');        
         var id = jQuery(this)[0].getAttribute('data-id');        
         var insertID = jQuery(this)[0].getAttribute('id');        

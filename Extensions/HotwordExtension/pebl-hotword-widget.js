@@ -19,7 +19,7 @@ jQuery(document).ready(function() {
     jQuery(document.body).on('click', '.tooltip', function(event) {
         hotword.handleTooltipClick(event);
     });
-    jQuery('.hotword_hotwordExtension, .peblExtension[data-peblextension="hotword"]').each(function() {
+    jQuery('.hotword_hotwordExtension, .peblExtension[data-peblextension="hotword"], .peblExtension[data-peblExtension="hotword"]').each(function() {
         var insertID = jQuery(this)[0].getAttribute('id');
         var hotwordMain = jQuery(this)[0].getAttribute('data-hotword');
         var hotwordText = jQuery(this)[0].getAttribute('data-hotwordText') || jQuery(this)[0].getAttribute('data-hotwordtext');
