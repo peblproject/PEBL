@@ -21,6 +21,9 @@ jQuery(document).ready(function () {
         var buttonText = jQuery(this)[0].getAttribute('data-buttonText') || jQuery(this)[0].getAttribute('data-buttontext');
         var prompt = jQuery(this)[0].getAttribute('data-prompt');
         var id = jQuery(this)[0].getAttribute('data-id');
+        if (!id) {
+            id = this.getAttribute('id');
+        }
         var detailText = jQuery(this)[0].hasAttribute('data-detailText') ? jQuery(this)[0].getAttribute('data-detailText') : null;
         var insertID = jQuery(this)[0].getAttribute('id');
         var sharing = jQuery(this)[0].getAttribute('data-sharing') ? jQuery(this)[0].getAttribute('data-sharing') : null;
