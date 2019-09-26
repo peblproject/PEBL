@@ -821,7 +821,6 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
 
 
             var questionParagraph = document.createElement('p');
-            questionParagraph.classList.add('edit');
             questionParagraph.innerHTML = question;
             if (!question) {
                 questionParagraph.style.display = 'none';
@@ -1139,7 +1138,7 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
             });
 
             var privateViewModeButtonIcon = document.createElement('span');
-            privateViewModeButtonIcon.textContent = 'View Private';
+            privateViewModeButtonIcon.textContent = 'View Private Responses';
             privateViewModeButton.appendChild(privateViewModeButtonIcon);
 
             var teamViewModeButton = document.createElement('div');
@@ -1149,7 +1148,7 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
             });
 
             var teamViewModeButtonIcon = document.createElement('span');
-            teamViewModeButtonIcon.textContent = 'View Team';
+            teamViewModeButtonIcon.textContent = 'View Team Responses';
             teamViewModeButton.appendChild(teamViewModeButtonIcon);
 
             var classViewModeButton = document.createElement('div');
@@ -1159,7 +1158,7 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
             });
 
             var classViewModeButtonIcon = document.createElement('span');
-            classViewModeButtonIcon.textContent = 'View Class';
+            classViewModeButtonIcon.textContent = 'View Class Responses';
             classViewModeButton.appendChild(classViewModeButtonIcon);
 
             var viewModeButton = document.createElement('div');
@@ -1169,7 +1168,7 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
             });
 
             var viewModeButtonIcon = document.createElement('span');
-            viewModeButtonIcon.textContent = 'View';
+            viewModeButtonIcon.textContent = 'View Responses';
 
             viewModeButton.appendChild(viewModeButtonIcon);
 
@@ -1180,7 +1179,7 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
             });
 
             var editModeButtonIcon = document.createElement('span');
-            editModeButtonIcon.textContent = 'Edit';
+            editModeButtonIcon.textContent = 'Participate';
 
             editModeButton.appendChild(editModeButtonIcon);
 
@@ -1191,7 +1190,7 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
             });
 
             var officialModeButtonIcon = document.createElement('span');
-            officialModeButtonIcon.textContent = 'Official';
+            officialModeButtonIcon.textContent = 'View Official Responses';
 
             officialModeButton.appendChild(officialModeButtonIcon);
 
