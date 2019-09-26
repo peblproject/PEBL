@@ -48,7 +48,7 @@ discussion.createDiscussion = function (insertID, buttonText, question, id, deta
     chatButton = document.createElement('button');
     chatButton.classList.add('chat');
     chatButton.id = id;
-    chatButton.innerHTML = buttonText;
+    chatButton.innerHTML = buttonText.replace('&',' and ');
     chatIcon = document.createElement('i');
     chatIcon.classList.add('fa', 'fa-comments');
     chatButton.appendChild(chatIcon);
@@ -58,7 +58,7 @@ discussion.createDiscussion = function (insertID, buttonText, question, id, deta
         chatButton.setAttribute('data-sharing', sharing);
 
     questionParagraph = document.createElement('p');
-    questionParagraph.innerHTML = question;
+    questionParagraph.innerHTML = question.replace('&',' and ');
 
     calloutDiv.appendChild(chatButton);
     calloutDiv.appendChild(questionParagraph);
@@ -108,7 +108,7 @@ discussion.createDiscussionLightBox = function (question, chatButton) {
 
         var prompt = document.createElement('span');
         prompt.classList.add('discussionPrompt');
-        prompt.innerHTML = question;
+        prompt.innerHTML = question.replace('&',' and ');
 
         promptContainer.appendChild(prompt);
 
