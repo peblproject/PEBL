@@ -34,7 +34,7 @@ hotword.createHotword = function(insertID, tooltip, tooltipText) {
 
     tooltipSpan = document.createElement('span');
     tooltipSpan.classList.add('tooltip');
-    tooltipSpan.textContent = tooltip;
+    tooltipSpan.textContent = tooltip.replace('&',' and ');
     tooltipSpan.setAttribute('definition', tooltipText);
 
     insertLocation = document.getElementById(insertID);
@@ -175,7 +175,7 @@ hotword.handleTooltipClick = function(event) {
         var tooltipTextSpan = document.createElement('span');
         tooltipTextSpan.classList.add('tooltiptext');
 	    var textBody = jQuery(elem).attr('definition');
-        tooltipTextSpan.textContent = textBody;
+        tooltipTextSpan.textContent = textBody.replace('&',' and ');
 
         jQuery(elem).append(tooltipTextSpan);
 

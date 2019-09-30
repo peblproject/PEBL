@@ -39,7 +39,7 @@ lowStakesQuiz.createLowStakesMultiChoiceQuestion = function (insertID, id, quest
     var insertPoint = quizToAppendTo.lastElementChild;
 
     questionNumberSpan.textContent = questionNumber + ".";
-    questionPrompt.innerHTML = prompt;
+    questionPrompt.innerHTML = prompt.replace('&',' and ');
     //questionPromptContainer.appendChild(questionNumberSpan);
     questionPromptContainer.appendChild(questionPrompt);
     questionElement.appendChild(questionPromptContainer);
@@ -54,7 +54,7 @@ lowStakesQuiz.createLowStakesMultiChoiceQuestion = function (insertID, id, quest
 
     for (var i = 0; i < choices.length; i++) {
         var listElement = document.createElement('li');
-        listElement.innerHTML = choices[i];
+        listElement.innerHTML = choices[i].replace('&',' and ');
         if (choices[i] === answer) {
             listElement.classList.add('pebl__quiz--correct');
         }

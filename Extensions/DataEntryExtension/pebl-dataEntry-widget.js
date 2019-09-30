@@ -42,7 +42,7 @@ dataEntry.createHeader = function (id, form, activeEntry) {
 
     var headerText = document.createElement('div');
 
-    headerText.innerHTML = form.prompt;
+    headerText.innerHTML = form.prompt.replace('&',' and ');
     header.appendChild(headerText);
 
     return header;
@@ -54,7 +54,7 @@ dataEntry.createDropdownEntry = function (id, form, activeEntry) {
 
     var dropdownPrompt = document.createElement('span');
     dropdownPrompt.classList.add('dataEntryDropdownPrompt');
-    dropdownPrompt.innerHTML = form.prompt;
+    dropdownPrompt.innerHTML = form.prompt.replace('&',' and ');
 
     dropdownContainer.appendChild(dropdownPrompt);
 
@@ -119,7 +119,7 @@ dataEntry.createMultipleChoiceEntry = function (id, form, activeEntry, useGraphV
 
     var multiChoicePrompt = document.createElement('div');
     multiChoicePrompt.classList.add('dataEntryMultiChoicePrompt');
-    multiChoicePrompt.innerHTML = form.prompt;
+    multiChoicePrompt.innerHTML = form.prompt.replace('&',' and ');
 
     multiChoiceContainer.appendChild(multiChoicePrompt);
 
@@ -154,7 +154,7 @@ dataEntry.createMultipleChoiceEntry = function (id, form, activeEntry, useGraphV
     for (var i = 0; i < form.responses.length; i++) {
         var multiChoiceButton = document.createElement('button');
         multiChoiceButton.classList.add('dataEntryMultiChoiceButton', 'edit');
-        multiChoiceButton.textContent = form.responses[i];
+        multiChoiceButton.textContent = form.responses[i].replace('&',' and ');
         multiChoiceButton.setAttribute('data-prompt', form.prompt);
         multiChoiceButton.setAttribute('data-index', i);
         multiChoiceButton.setAttribute('data-responseBox', dataEntry.comboID(id, 'responseBox'));
@@ -186,7 +186,7 @@ dataEntry.createMultipleChoiceEntry = function (id, form, activeEntry, useGraphV
             var multiChoiceResponseTextContainer = document.createElement('div');        
             multiChoiceResponseTextContainer.classList.add('dataEntryMultiChoiceResponseTextContainer');        
             var multiChoiceResponseText = document.createElement('span');        
-            multiChoiceResponseText.textContent = form.responses[i];        
+            multiChoiceResponseText.textContent = form.responses[i].replace('&',' and ');        
             multiChoiceResponseTextContainer.appendChild(multiChoiceResponseText);        
             var multiChoiceResponseGraphContainer = document.createElement('div');        
             multiChoiceResponseGraphContainer.classList.add('dataEntryMultiChoiceResponseGraphContainer');        
@@ -218,7 +218,7 @@ dataEntry.createMultipleChoiceEntry = function (id, form, activeEntry, useGraphV
             multiChoiceResponseTextContainerTeam.classList.add('dataEntryMultiChoiceResponseTextContainer');
 
             var multiChoiceResponseTextTeam = document.createElement('span');
-            multiChoiceResponseTextTeam.textContent = form.responses[i];
+            multiChoiceResponseTextTeam.textContent = form.responses[i].replace('&',' and ');
 
             multiChoiceResponseTextContainerTeam.appendChild(multiChoiceResponseTextTeam);
 
@@ -260,7 +260,7 @@ dataEntry.createMultipleChoiceEntry = function (id, form, activeEntry, useGraphV
             multiChoiceResponseTextContainerClass.classList.add('dataEntryMultiChoiceResponseTextContainer');
 
             var multiChoiceResponseTextClass = document.createElement('span');
-            multiChoiceResponseTextClass.textContent = form.responses[i];
+            multiChoiceResponseTextClass.textContent = form.responses[i].replace('&',' and ');
 
             multiChoiceResponseTextContainerClass.appendChild(multiChoiceResponseTextClass);
 
@@ -383,7 +383,7 @@ dataEntry.createRadioEntry = function (id, form, activeEntry) {
     if (form.prompt) {
         var tablePrompt = document.createElement('div');
         tablePrompt.classList.add('dataEntryTablePrompt');
-        tablePrompt.innerHTML = form.prompt;
+        tablePrompt.innerHTML = form.prompt.replace('&',' and ');
 
         tableContainer.appendChild(tablePrompt);
     }
@@ -521,7 +521,7 @@ dataEntry.createCheckboxEntry = function (id, form, activeEntry) {
 
     //The text to the right of the checkbox
     var textSpan = document.createElement('span');
-    textSpan.innerHTML = form.prompt;
+    textSpan.innerHTML = form.prompt.replace('&',' and ');
 
     //If specified, add an additional text input after the text, which gets appended to the full text.
     if (form.input) {
@@ -560,7 +560,7 @@ dataEntry.createCheckboxEntry = function (id, form, activeEntry) {
             }
 
             var subFormPrompt = document.createElement('p');
-            subFormPrompt.innerHTML = form.prompt;
+            subFormPrompt.innerHTML = form.prompt.replace('&',' and ');
 
             subFormElement.appendChild(subFormPrompt);
 
@@ -821,7 +821,7 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
 
 
             var questionParagraph = document.createElement('p');
-            questionParagraph.innerHTML = question;
+            questionParagraph.innerHTML = question.replace('&',' and ');
             if (!question) {
                 questionParagraph.style.display = 'none';
             }
@@ -1542,9 +1542,9 @@ dataEntry.radioMessageHandler = function (message, userProfile) {
     messageContainer.setAttribute('data-timestamp', message.timestamp);
     messageContainer.setAttribute('data-user', message.name);
     var messageSpan = document.createElement('span');
-    messageSpan.textContent = message.name;
+    messageSpan.textContent = message.name.replace('&',' and ');
     if (message.originalUser)
-        messageSpan.textContent += ' via ' + message.originalUser;
+        messageSpan.textContent += ' via ' + message.originalUser.replace('&',' and ');
 
     var responseBox = document.getElementById(message.responseBox);
     var elem = document.querySelector('[data-id="' + dataEntry.comboID(message.thread, message.name) + '"]');
