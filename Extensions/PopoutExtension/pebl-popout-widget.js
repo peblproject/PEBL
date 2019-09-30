@@ -62,7 +62,7 @@ popout.createPopout = function (insertID, title, content, iconType) {
 
     /* create popout title */
     header = document.createElement('h4');
-    header.innerHTML = title;
+    header.innerHTML = title.replace('&',' and ');
 
     /* create icon element for iconType */
     popoutIconI = document.createElement('i');
@@ -77,7 +77,7 @@ popout.createPopout = function (insertID, title, content, iconType) {
 
     paragraph = document.createElement('p');
     paragraph.classList.add('Basic-Paragraph');
-    paragraph.innerHTML = content;
+    paragraph.innerHTML = content.replace('&',' and ');
 
     popoutContentDiv.appendChild(closeButton);
     popoutContentDiv.appendChild(paragraph);
