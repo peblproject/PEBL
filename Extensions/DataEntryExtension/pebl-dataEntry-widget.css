@@ -283,6 +283,7 @@ display: inline-block;
     width: 100%;
     text-align: center;
     cursor: pointer;
+    padding: 0.5rem;
 }
 
 .dataEntryHeader>div:hover,
@@ -521,14 +522,16 @@ display: inline-block;
     flex-direction: column;
 }
 
-
 .dataEntryMultiChoiceButton {
-    padding: 2em;
+    padding: 1em;
     cursor: pointer;
     outline: none;
-    margin: 0.5em;
+    margin: 0.25em;
     -webkit-appearance: none;
     background: var(--dark-background);
+    font-size: 1rem;
+    font-weight: bold;
+    font-family: "Libre Franklin", "Helvetica Neue", helvetica, arial, sans-serif;
 }
 
 .dataEntryMultiChoiceButton.active {
