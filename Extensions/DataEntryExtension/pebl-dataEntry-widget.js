@@ -346,7 +346,7 @@ dataEntry.createTextEntry = function (id, form, activeEntry) {
 
     var placeholderString = '';
     if (form.placeholder) {
-        placeholderString = 'placeholder="' + form.placeholder + '"';
+        placeholderString = 'placeholder="' + form.placeholder.replace('&', ' and ') + '"';
     }
 
     var cssClass = '';
@@ -359,7 +359,7 @@ dataEntry.createTextEntry = function (id, form, activeEntry) {
     var textPrivateResponses = jQuery('<div id="' + dataEntry.comboID(id, "responseBoxPrivate") + '" class="textResponses privateView"><p class="dataEntryTextResponseNoData">Nothing has been submitted yet.</p></div>');
     var textTeamResponses = jQuery('<div id="' + dataEntry.comboID(id, "responseBoxTeam") + '" class="textResponses teamView"><p class="dataEntryTextResponseNoData">Nothing has been submitted yet.</p></div>');
     var textClassResponses = jQuery('<div id="' + dataEntry.comboID(id, "responseBoxClass") + '" class="textResponses classView"><p class="dataEntryTextResponseNoData">Nothing has been submitted yet.</p></div>');
-    var textInput = jQuery('<div class="textInput ' + cssClass + '"><label id="textDetailText">' + form.prompt + '</label><textarea ' + placeholderString + ' class="edit" data-responseBoxClass="' + dataEntry.comboID(id, "responseBoxClass") + '" data-responseBoxTeam="' + dataEntry.comboID(id, "responseBoxTeam") + '" data-responseBoxPrivate="' + dataEntry.comboID(id, "responseBoxPrivate") + '" data-responseBoxOfficial="' + dataEntry.comboID(id, "responseBoxOfficial") + '" data-responseBox="' + dataEntry.comboID(id, "responseBox") + '" data-prompt="' + form.prompt + '" ' + requiredString + ' oninvalid="globalPebl.extension.dataEntry.invalidForm();" id="' + id + '"></textarea></div>');
+    var textInput = jQuery('<div class="textInput ' + cssClass + '"><label id="textDetailText">' + form.prompt.replace('&', ' and ') + '</label><textarea ' + placeholderString + ' class="edit" data-responseBoxClass="' + dataEntry.comboID(id, "responseBoxClass") + '" data-responseBoxTeam="' + dataEntry.comboID(id, "responseBoxTeam") + '" data-responseBoxPrivate="' + dataEntry.comboID(id, "responseBoxPrivate") + '" data-responseBoxOfficial="' + dataEntry.comboID(id, "responseBoxOfficial") + '" data-responseBox="' + dataEntry.comboID(id, "responseBox") + '" data-prompt="' + form.prompt.replace('&', ' and ') + '" ' + requiredString + ' oninvalid="globalPebl.extension.dataEntry.invalidForm();" id="' + id + '"></textarea></div>');
     var text = jQuery('<div class="textBox"></div>');
     text.append(textInput);
     text.append(textResponses);
@@ -530,7 +530,7 @@ dataEntry.createCheckboxEntry = function (id, form, activeEntry) {
             input.type = 'text';
             input.classList.add('edit');
             input.id = dataEntry.comboID(id, 'checkboxInput');
-            input.placeholder = form.input.placeholder;
+            input.placeholder = form.input.placeholder.replace('&', ' and ');
             //Add a linebreak if specified
             if (form.input.inline && form.input.inline === "false") {
                 var br = document.createElement('br');
