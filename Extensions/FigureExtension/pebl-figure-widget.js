@@ -50,10 +50,10 @@ figure.createFigure = function(insertID, img, title, caption, zoomable) {
 
 	span = document.createElement('span');
 	span.classList.add('fig');
-	span.innerHTML = title;
+	span.innerHTML = title.replace('&',' and ');
 
 	paragraph = document.createElement('p');
-	paragraph.innerHTML = caption;
+	paragraph.innerHTML = caption.replace('&',' and ');
 
 	figureCaption.appendChild(span);
 	figureCaption.appendChild(paragraph);
