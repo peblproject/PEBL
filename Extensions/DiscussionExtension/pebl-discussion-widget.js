@@ -1,4 +1,6 @@
 var globalPebl = window.parent.PeBL;
+var globalConfiguration = window.parent.Configuration;
+var globalLightbox = window.parent.Lightbox;
 
 var discussion = {};
 if (globalPebl)
@@ -276,21 +278,30 @@ discussion.createSubThread = function (thread, input, prompt, textarea, response
 
 
 discussion.handleChatButtonClick = function (elem) {
-    jQuery('.lightBox').remove();
-    var element,
-        question;
-    if (elem)
-        element = jQuery(elem);
-    else
-        element = jQuery(this);
-    question = element.parent().children('p:first').text();
-    if (globalPebl) {
-        if ((element[0].id != null) && (element[0].id != "")) {
-            if (element.parent().children(".chatBox").length == 0) {
-                discussion.createDiscussionLightBox(question, element[0]);
+    var self = this;
+    globalPebl.user.isLoggedIn(function(isLoggedIn) {
+        if (!isLoggedIn) {
+            if (globalConfiguration && globalConfiguration.useLinkedIn && globalLightbox && globalLightbox.linkedInSignIn) {
+                globalLightbox.linkedInSignIn();
+            }
+        } else {
+            jQuery('.lightBox').remove();
+            var element,
+                question;
+            if (elem)
+                element = jQuery(elem);
+            else
+                element = jQuery(self);
+            question = element.parent().children('p:first').text();
+            if (globalPebl) {
+                if ((element[0].id != null) && (element[0].id != "")) {
+                    if (element.parent().children(".chatBox").length == 0) {
+                        discussion.createDiscussionLightBox(question, element[0]);
+                    }
+                }
             }
         }
-    }
+    });
 }
 
 discussion.replyDiscussion = function (event) {

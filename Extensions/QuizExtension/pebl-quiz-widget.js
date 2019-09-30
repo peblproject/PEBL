@@ -1,5 +1,7 @@
 var globalPebl = window.parent.PeBL;
 var globalReadium = window.parent.READIUM;
+var globalConfiguration = window.parent.Configuration;
+var globalLightbox = window.parent.Lightbox;
 
 var lowStakesQuiz = {};
 if (globalPebl)
@@ -210,93 +212,102 @@ lowStakesQuiz.attachClickHandler = function (quizId) {
 
     jQuery('ol.pebl__quiz[id="' + quizId + '"] .pebl__quiz--choices').off();
     jQuery(document.body).on('click', 'ol.pebl__quiz[id="' + quizId + '"] .pebl__quiz--choices > li', function () {
-        var answered = jQuery(this).text();
-        var prompt = jQuery(this).parent().parent().find(".questionPromptContainer").text();
-        var jQueryanswers = jQuery(this).parents('.pebl__quiz--choices');
-        var jQueryanswersText = jQueryanswers.children();
-        jQueryanswersText = jQueryanswersText.map(function (i) {
-            return jQuery(jQueryanswersText[i]).text();
+        var self = this;
+        globalPebl.user.isLoggedIn(function(isLoggedIn) {
+            if (!isLoggedIn) {
+                if (globalConfiguration && globalConfiguration.useLinkedIn && globalLightbox && globalLightbox.linkedInSignIn) {
+                    globalLightbox.linkedInSignIn();
+                }
+            } else {
+                var answered = jQuery(self).text();
+                var prompt = jQuery(self).parent().parent().find(".questionPromptContainer").text();
+                var jQueryanswers = jQuery(self).parents('.pebl__quiz--choices');
+                var jQueryanswersText = jQueryanswers.children();
+                jQueryanswersText = jQueryanswersText.map(function (i) {
+                    return jQuery(jQueryanswersText[i]).text();
+                });
+                var correctAnswer = jQueryanswers.find('.pebl__quiz--correct').text();
+                var jQueryfeedback = jQueryanswers.siblings('.pebl__quiz--feedback');
+                var correct = jQuery(self).hasClass('pebl__quiz--correct'); // T or F
+                var questionNum = jQuery('ol.pebl__quiz .pebl__quiz--choices').index(jQueryanswers);
+                var linkText = jQuery(self).attr('data-feedbackText');
+
+                if (quizAttempts[questionNum].length == 0) {
+                    // first attempt
+                    jQueryanswers.children('li').removeClass('pebl__ quiz--wrong');
+                    quizAttempts[questionNum].push(correct);
+                    localStorage.setItem(quizEntry, JSON.stringify(quizAttempts));
+                    if (correct) {
+                        jQueryanswers.addClass('reveal');
+                        jQueryfeedback.text(linkText);
+                    } else {
+                        jQuery(self).addClass('pebl__quiz--wrong');
+                        //jQuery(self).delay(1000).slideUp();
+                        jQueryfeedback.text(linkText);
+                    }
+
+                    if (globalPebl != null)
+                        globalPebl.emitEvent(globalPebl.events.eventAnswered, {
+                            "prompt": prompt,
+                            "answers": jQueryanswersText,
+                            "correctAnswers": [
+                                [correctAnswer]
+                            ],
+                            "answered": answered,
+                            "score": correct ? 1 : 0,
+                            "minScore": 0,
+                            "maxScore": 1,
+                            "complete": true,
+                            "success": correct
+                        });
+
+
+                    gradeTest();
+                    lowStakesQuiz.handleResize(function () {
+                        jQueryfeedback.slideDown();
+                    });
+                } else if (quizAttempts[questionNum].length == 1 && quizAttempts[questionNum][0] == false) {
+
+                    // 2nd attempt
+                    //jQueryanswers.children('li').removeClass('wrong');
+                    quizAttempts[questionNum].push(correct);
+                    localStorage.setItem(quizEntry, JSON.stringify(quizAttempts));
+                    if (correct == true) {
+                        jQueryanswers.addClass('reveal');
+                        jQueryfeedback.text(linkText);
+                    } else {
+                        setTimeout(function () {
+                            jQueryanswers.addClass('reveal secondary');
+                        }, 1500);
+
+                        jQuery(self).addClass('pebl__quiz--wrong');
+                        //jQuery(self).delay(1000).slideUp();
+                        jQueryfeedback.text(linkText);
+                    }
+
+                    if (globalPebl != null)
+                        globalPebl.emitEvent(globalPebl.events.eventAnswered, {
+                            "prompt": prompt,
+                            "answers": jQueryanswersText,
+                            "correctAnswers": [
+                                [correctAnswer]
+                            ],
+                            "answered": answered,
+                            "score": correct ? 1 : 0,
+                            "minScore": 0,
+                            "maxScore": 1,
+                            "complete": true,
+                            "success": correct
+                        });
+                    gradeTest();
+                    lowStakesQuiz.handleResize(function () {
+                        jQueryfeedback.slideDown();
+                    });
+                } else if (quizAttempts[questionNum].length > 1) {
+                    // Ignore repeated attempts
+                }
+            }
         });
-        var correctAnswer = jQueryanswers.find('.pebl__quiz--correct').text();
-        var jQueryfeedback = jQueryanswers.siblings('.pebl__quiz--feedback');
-        var correct = jQuery(this).hasClass('pebl__quiz--correct'); // T or F
-        var questionNum = jQuery('ol.pebl__quiz .pebl__quiz--choices').index(jQueryanswers);
-        var linkText = jQuery(this).attr('data-feedbackText');
-
-        if (quizAttempts[questionNum].length == 0) {
-            // first attempt
-            jQueryanswers.children('li').removeClass('pebl__ quiz--wrong');
-            quizAttempts[questionNum].push(correct);
-            localStorage.setItem(quizEntry, JSON.stringify(quizAttempts));
-            if (correct) {
-                jQueryanswers.addClass('reveal');
-                jQueryfeedback.text(linkText);
-            } else {
-                jQuery(this).addClass('pebl__quiz--wrong');
-                //jQuery(this).delay(1000).slideUp();
-                jQueryfeedback.text(linkText);
-            }
-
-            if (globalPebl != null)
-                globalPebl.emitEvent(globalPebl.events.eventAnswered, {
-                    "prompt": prompt,
-                    "answers": jQueryanswersText,
-                    "correctAnswers": [
-                        [correctAnswer]
-                    ],
-                    "answered": answered,
-                    "score": correct ? 1 : 0,
-                    "minScore": 0,
-                    "maxScore": 1,
-                    "complete": true,
-                    "success": correct
-                });
-
-
-            gradeTest();
-            lowStakesQuiz.handleResize(function () {
-                jQueryfeedback.slideDown();
-            });
-        } else if (quizAttempts[questionNum].length == 1 && quizAttempts[questionNum][0] == false) {
-
-            // 2nd attempt
-            //jQueryanswers.children('li').removeClass('wrong');
-            quizAttempts[questionNum].push(correct);
-            localStorage.setItem(quizEntry, JSON.stringify(quizAttempts));
-            if (correct == true) {
-                jQueryanswers.addClass('reveal');
-                jQueryfeedback.text(linkText);
-            } else {
-                setTimeout(function () {
-                    jQueryanswers.addClass('reveal secondary');
-                }, 1500);
-
-                jQuery(this).addClass('pebl__quiz--wrong');
-                //jQuery(this).delay(1000).slideUp();
-                jQueryfeedback.text(linkText);
-            }
-
-            if (globalPebl != null)
-                globalPebl.emitEvent(globalPebl.events.eventAnswered, {
-                    "prompt": prompt,
-                    "answers": jQueryanswersText,
-                    "correctAnswers": [
-                        [correctAnswer]
-                    ],
-                    "answered": answered,
-                    "score": correct ? 1 : 0,
-                    "minScore": 0,
-                    "maxScore": 1,
-                    "complete": true,
-                    "success": correct
-                });
-            gradeTest();
-            lowStakesQuiz.handleResize(function () {
-                jQueryfeedback.slideDown();
-            });
-        } else if (quizAttempts[questionNum].length > 1) {
-            // Ignore repeated attempts
-        }
     });
 }
 
