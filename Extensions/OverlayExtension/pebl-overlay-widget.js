@@ -394,6 +394,9 @@ function createSidebar() {
     var categories = allCatAttr ? allCatAttr : window.pageCategories;
     
     if (categories) {
+        if (categories['pebl_conversion_flags']) {
+            delete categories['pebl_conversion_flags']; // We don't want this tag in the list
+        }
         var sidebar = document.createElement('div');
         sidebar.id = 'peblSidebar';
         sidebar.classList.add('peblSidebar');
