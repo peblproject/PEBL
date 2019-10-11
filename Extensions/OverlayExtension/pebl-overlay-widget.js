@@ -1793,6 +1793,9 @@ function createTOC() {
         tocContainer.classList.add('tocContainer');
 
         Object.keys(tocObject).forEach(function(sectionKey) {
+            if (!tocObject[sectionKey].Section) {
+                return;
+            }
             //Sections
             var tocSection = document.createElement('div');
             tocSection.classList.add('tocSection');
