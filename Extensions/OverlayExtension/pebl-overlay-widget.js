@@ -1839,12 +1839,12 @@ function createTOC() {
                     if (tocObject[sectionKey][pageKey].skip !== undefined) {
                         var tocSubsectionTitleText = document.createElement('a');
                         tocSubsectionTitleText.classList.add('tocSubsectionTitleText');
-                        tocSubsectionTitleText.textContent = tocObject[sectionKey][pageKey].title;
+                        tocSubsectionTitleText.innerHTML = tocObject[sectionKey][pageKey].title;
                         tocSubsectionTitleText.href = tocObject[sectionKey][pageKey].location;
                     } else {
                         var tocSubsectionTitleText = document.createElement('a');
                         tocSubsectionTitleText.classList.add('tocSubsectionTitleText');
-                        tocSubsectionTitleText.textContent = tocObject[sectionKey][pageKey].title;
+                        tocSubsectionTitleText.innerHTML = tocObject[sectionKey][pageKey].title;
                         tocSubsectionTitleText.href = tocObject[sectionKey][pageKey].location;
                     }
                     
@@ -1935,7 +1935,7 @@ function createTOC() {
                             var tocPageText = document.createElement('a');
                             tocPageText.id = globalPebl.utils.getUuid();
                             tocPageText.classList.add('tocPageText');
-                            tocPageText.textContent = tocObject[sectionKey][pageKey].pages[cardKey].title;
+                            tocPageText.innerHTML = tocObject[sectionKey][pageKey].pages[cardKey].title;
                             tocPageText.href = tocObject[sectionKey][pageKey].pages[cardKey].location;
                             $(document.body).on('click', '#' + tocPageText.id, function() {
                                 handleTocPageTextClick(event, this);
