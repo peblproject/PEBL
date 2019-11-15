@@ -12,6 +12,7 @@ var searchableTOC = null;
 var currentPrefix = null;
 var currentSection = null;
 var searchTerms = [];
+var askFrameSrc = 'https://ask.extension.org/'; // this is default, but can be programmatically set now using setAskFrameSrc(url)
 
 window.addEventListener("message", receiveMessage, false);
 
@@ -1711,7 +1712,10 @@ function createHelpListElement(id, title, body) {
     return tempDiv;
 }
 
-
+function setAskFrameSrc(url) {
+    if (url && url != '')
+        askFrameSrc = url;
+}
 
 function createAskExpert() {
     clearUI();
@@ -1727,7 +1731,7 @@ function createAskExpert() {
     var askFrame = document.createElement('iframe');
     askFrame.id = 'askFrame';
     askFrame.classList.add('askFrame');
-    askFrame.src = 'https://ask.extension.org/';        // Recently changed to use new front end
+    askFrame.src = askFrameSrc;        
     wrapper.appendChild(askFrame);
     askContainer.appendChild(wrapper);
     document.getElementById('peblOverlay').appendChild(askContainer);
