@@ -1,3 +1,12 @@
+var globalPebl = window.parent.PeBL;
+
+var overlay = {
+    askFrameSrc: "https://ask.extension.org/" // this is default, but can be programmatically set now using setAskFrameSrc(url)
+};
+
+if (globalPebl)
+    globalPebl.extension.overlay = overlay;
+
 var overlayIsExtended = false;
 var tutorialIsActive = false;
 var overlayIsDisplayed = false;
@@ -14,6 +23,18 @@ var currentSection = null;
 var searchTerms = [];
 
 window.addEventListener("message", receiveMessage, false);
+
+overlay.setAskFrameSrc = function(url) {
+    if (url && url != '')
+        overlay.askFrameSrc = url;
+}
+
+overlay.getAskFrameSrc = function() {
+    if (overlay.askFrameSrc && overlay.askFrameSrc != '')
+        return overlay.askFrameSrc;
+    else
+        return "https://ask.extension.org/";
+}
 
 function receiveMessage(event) {
     var data = event.data;
@@ -1711,8 +1732,6 @@ function createHelpListElement(id, title, body) {
     return tempDiv;
 }
 
-
-
 function createAskExpert() {
     clearUI();
     //Create the askExpert page
@@ -1727,7 +1746,7 @@ function createAskExpert() {
     var askFrame = document.createElement('iframe');
     askFrame.id = 'askFrame';
     askFrame.classList.add('askFrame');
-    askFrame.src = 'https://ask.extension.org/';        // Recently changed to use new front end
+    askFrame.src = overlay.getAskFrameSrc();        
     wrapper.appendChild(askFrame);
     askContainer.appendChild(wrapper);
     document.getElementById('peblOverlay').appendChild(askContainer);
