@@ -46,7 +46,7 @@
 
 .ratingContainer .rateUp:before {
     opacity: 0.8;
-    content: url('./thumbs-up.svg'), url(../image/thumbs-up.svg);
+    content: url(../image/thumbs-up.svg);
     position: absolute;
     top: 8px;
     left: 8px;
@@ -54,7 +54,7 @@
 
 .ratingContainer .rateDown:before {
     opacity: 0.8;
-    content: url('./thumbs-down.svg'), url(../image/thumbs-down.svg);
+    content: url(../image/thumbs-down.svg);
     position: absolute;
     top: 8px;
     left: 8px;
