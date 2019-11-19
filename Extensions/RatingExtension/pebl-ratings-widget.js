@@ -3,7 +3,8 @@ var globalReadium = window.parent.READIUM;
 
 var ratings = {};
 
-globalPebl.extension.ratings = ratings;
+if (globalPebl)
+    globalPebl.extension.ratings = ratings;
 
 $(document).ready(function () {
     $('.ratingsExtension, .peblExtension[data-peblextension="ratings"]').each(function () {
