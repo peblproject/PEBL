@@ -1,0 +1,198 @@
+.ratingContainer {
+    display: inline-block;
+    vertical-align: middle;
+    font-family: var(--secondary-font-family);
+}
+
+.ratingWrapper {
+    padding-top: 2rem;
+    display: inline-block;
+    clear: both;
+    width: calc(100% - 2px);
+    
+}
+.ratingWrapper p {
+    font-family: var(--secondary-font-family) !important;
+}
+
+
+/* Hide text label but keep accessible to screen readers */
+.ratingContainer label {
+    display: block;
+    position: absolute;
+    left: -10000px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+.ratingContainer [type="radio"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    display: inline-block;
+    position: relative;
+    background-color: var(--dark-background);
+    color: #fff;
+    height: 40px;
+    width: 40px;
+    border: 0;
+    border-radius: 50px;
+    cursor: pointer;
+    margin: 0.5em;
+    outline: none;
+}
+
+.ratingContainer .rateUp:before {
+    opacity: 0.8;
+    content: url(../image/thumbs-up.svg);
+    position: absolute;
+    top: 8px;
+    left: 8px;
+}
+
+.ratingContainer .rateDown:before {
+    opacity: 0.8;
+    content: url(../image/thumbs-down.svg);
+    position: absolute;
+    top: 8px;
+    left: 8px;
+}
+
+.ratingContainer [type="radio"]:checked:before {
+    opacity: 1;
+    position: absolute;
+    transform: rotate(0deg);
+}
+
+.ratingContainer .rateUp:hover {
+    background-color: var(--primary-color);
+}
+
+.ratingContainer .rateUp:checked {
+    background-color: var(--primary-color-dark);
+}
+
+.ratingContainer .rateDown:hover {
+    background-color: var(--secondary-color);
+}
+
+.ratingContainer .rateDown:checked {
+    background-color: var(--secondary-color-dark);
+}
+
+.ratingContainer .rateUp:focus:before {
+    animation: rateIconUp 0.5s;
+}
+
+@keyframes rateIconUp {
+    66% {
+        transform: scale(1.5) rotate(-40deg);
+    }
+
+    100% {
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+.ratingContainer .rateDown:focus:before {
+    animation: rateIconDown 0.5s;
+}
+
+.ratingNegativeFeedbackWrapper {
+    max-height: calc(70vh - 105px);
+    width: calc(100% - 2px);
+    break-inside: avoid-column;
+    -webkit-column-break-inside: avoid;
+}
+.showFeedbackCallout {
+    display: block;
+}
+.hideFeedbackCallout {
+    display: none;
+}
+.ratingNegativeFeedbackCallout {
+    background-color: var(--light-background);
+    width: calc(100% - 2px);
+    margin: 0;
+    clear: both;
+    overflow: hidden; /* fix for Firefox */
+    break-inside: avoid-column;
+    -webkit-column-break-inside: avoid;
+    color: #000000;
+    font-weight: bold;
+}
+.ratingNegativeFeedbackCallout label {
+    font-weight: 500;
+}
+.ratingNegativeFeedbackCallout .checkBox {
+        padding: .5rem;
+}
+
+.ratingNegativeFeedbackCallout p {
+    margin: 0;
+    padding: 0;
+}
+.ratingNegativeFeedbackCallout textarea {
+    overflow: auto;
+    background-color: var(--light-background);
+    border: none;
+    outline: none;
+    font-size: .9rem;
+    color: var(--dark-font);
+}
+
+.ratingNegativeFeedbackCallout form > .textBox{
+    padding-right: 1em;
+    padding-left: 1em;
+    margin-bottom: 1em;
+}
+.ratingNegativeFeedbackFooter {
+    background-color:var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    min-height: 10px;
+    order: 3;
+}
+
+.ratingNegativeFeedbackFooter > button {
+    width: 100%;
+    color: white;
+    background: transparent;
+    padding: 0.5em;
+    border: none;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.ratingNegativeFeedbackFooter > div:hover,
+.ratingNegativeFeedbackFooter > div.active,
+.ratingNegativeFeedbackFooter > button:hover {
+	background: var(--primary-color-dark);
+}
+
+p.thanksFeedback {
+    margin: 5em;
+    text-align: center;
+}
+
+.ratingsCfiPlaceholder {
+    margin: 0 !important;
+    padding: 0 !important;
+    color: transparent !important;
+    font-size: 2px !important;
+    line-height: 0 !important;
+}
+
+@keyframes rateIconDown {
+    66% {
+        transform: scale(1.5) rotate(40deg);
+    }
+
+    100% {
+        transform: scale(1) rotate(0deg);
+    }
+}
