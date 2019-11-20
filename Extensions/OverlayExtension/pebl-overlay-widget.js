@@ -56,6 +56,76 @@ function receiveMessage(event) {
     }
 }
 
+function createEmailSubmissionModal() {
+    var emailModal = document.createElement('div');
+    emailModal.classList.add('emailModal', 'peblModal');
+    emailModal.id = 'emailModal';
+
+    var emailModalHeader = document.createElement('div');
+    emailModalHeader.classList.add('emailModalHeader');
+
+    var emailModalHeaderText = document.createElement('span');
+    emailModalHeaderText.classList.add('emailModalHeaderText');
+    emailModalHeaderText.textContent = 'Provide contact email';
+
+    emailModalHeader.appendChild(emailModalHeaderText);
+
+    var emailModalCloseButton = document.createElement('i');
+    emailModalCloseButton.classList.add('fa', 'fa-times', 'emailModalCloseButton');
+    emailModalCloseButton.addEventListener('click', function() {
+        jQuery('#emailModal').remove();
+        globalPebl.emitEvent(globalPebl.events.eventUndisplayed, {
+            target: 'emailSubmit',
+            type: 'emailSubmit'
+        });
+    });
+
+    emailModalHeader.appendChild(emailModalCloseButton);
+
+    emailModal.appendChild(emailModalHeader);
+
+    var emailModalBody = document.createElement('div');
+    emailModalBody.classList.add('emailModalBody');
+
+    emailModal.appendChild(emailModalBody);
+
+    // var emailModalDescription = document.createElement('p');
+    // emailModalDescription.classList.add('emailModalDescription');
+    // emailModalDescription.textContent = 'Please provide an email address to contact you for feedback';
+
+    //emailModalBody.appendChild(emailModalDescription);
+    var inputContainer = document.createElement('div');
+    inputContainer.classList.add('emailModalInputContainer');
+
+    var inputLabel = document.createElement('label');
+    inputLabel.textContent = 'Email Address: ';
+
+    var emailInput = document.createElement('input');
+
+    inputContainer.appendChild(inputLabel);
+    inputContainer.appendChild(emailInput);
+
+    var emailSubmit = document.createElement('button');
+    emailSubmit.textContent = 'Submit';
+    emailSubmit.addEventListener('click', function() {
+        var val = emailInput.value.trim();
+        if (val.length > 0) {
+            globalPebl.emitEvent(globalPebl.events.eventSubmitted, {
+                'name': val,
+                'type': 'email'
+            });
+            jQuery('#emailModal').remove();
+        } else {
+            window.alert('Please provide an email with which to contact you.');
+        }
+    });
+
+    emailModalBody.appendChild(inputContainer);
+    emailModalBody.appendChild(emailSubmit);
+
+    document.body.appendChild(emailModal);
+}
+
 $(document).ready(function() {
     globalPebl = window.parent.PeBL;
     globalReadium = window.parent.ReadiumSDK;
@@ -68,6 +138,16 @@ $(document).ready(function() {
     attachAddedResources();
     handleOrientationChange();
     displayUITutorial();
+
+    // Prompt for voluntary participation in evaluation
+    var previouslyPrompted = window.localStorage.getItem('previouslyPrompted-' + embeddedBookName);
+    if (!previouslyPrompted) {
+        var promptResponse = window.confirm('Are you willing to provide feedback to improve this eFieldbook?');
+        if (promptResponse) {
+            createEmailSubmissionModal();
+        }
+        window.localStorage.setItem('previouslyPrompted-' + embeddedBookName, 'true');
+    }
 
     //var checkAccount = setInterval(setAccountName, 1000);
     //var fixIframes = setInterval(fixIframeScrolling, 500);

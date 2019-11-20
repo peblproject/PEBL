@@ -1376,6 +1376,53 @@ i.overlayCloseButton {
     border-left: 10px solid transparent;
 }
 
+.emailModal {
+    position: fixed;
+    top: 10vh;
+    left: 0;
+    right: 0;
+    background-color: var(--light-background);
+    z-index: 999999;
+    box-shadow: var(--elevation-2);
+    max-width: 700px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    -webkit-box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+}
+
+.emailModalHeader {
+    display: flex;
+    background-color: var(--primary-color-light);
+    justify-content: space-between;
+    align-items: center;
+    color: #fff;
+    padding: 1em;
+    font-size: 1rem;
+    font-family: var(--secondary-font-family);
+}
+
+.emailModalBody {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 1em;
+}
+
+.emailModalCloseButton {
+    width: 1em;
+    height: 1em;
+    font-size: 1.5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.askExpertExpertsModalDescription {
+    padding: 1em;
+}
+
 /*Overrides*/
 
 .discussionQuestionBoxText {
