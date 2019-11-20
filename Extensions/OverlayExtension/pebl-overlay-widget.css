@@ -844,6 +844,21 @@ i.helpButton {
     color: rgb(7, 126, 188);
 }
 
+.feedbackButtonContainer {
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    float: right;
+    display: flex;
+    margin-right: 2em;
+}
+
+i.feedbackButton {
+    cursor: pointer;
+    font-size: 2rem;
+    color: rgb(7, 126, 188);
+}
+
 
 
 

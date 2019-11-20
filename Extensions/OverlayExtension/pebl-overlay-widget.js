@@ -166,6 +166,7 @@ $(document).ready(function() {
     $(document.body).on('click', '.expandButtonContainerUnderlay', handleExpandButtonClick);
     $(document.body).on('click', '#closeButton', handleCloseButtonClick);
     $(document.body).on('click', '#helpButton', handleHelpButtonClick);
+    $(document.body).on('click', '#feedbackButton', handleFeedbackButtonClick);
     $(document.body).on('click', '.showCardTagsButton', toggleCardTags);
 
     $(document.body).on('click', ".discussButton", function() {
@@ -379,6 +380,7 @@ function createOverlay() {
     //overlay.appendChild(createAccountButton());
     //iconContainer.appendChild(createNotificationButton());
     iconContainer.appendChild(createHelpButton());
+    iconContainer.appendChild(createFeedbackButton());
     iconContainer.appendChild(createAskButton());
     iconContainer.appendChild(createSearchButton());
     iconContainer.appendChild(createTOCButton());
@@ -1316,6 +1318,19 @@ function createHelpButton() {
     helpButtonContainer.appendChild(helpButton);
 
     return helpButtonContainer;
+}
+
+function createFeedbackButton() {
+    var feedbackButtonContainer = document.createElement('div');
+    feedbackButtonContainer.id = 'feedbackButtonContainer';
+    feedbackButtonContainer.classList.add('feedbackButtonContainer');
+
+    var feedbackButton = document.createElement('i');
+    feedbackButton.id = 'feedbackButton';
+    feedbackButton.classList.add('feedbackButton', 'fa', 'fa-share-square');
+    feedbackButtonContainer.appendChild(feedbackButton);
+
+    return feedbackButtonContainer;
 }
 
 function createNotificationButton() {
@@ -2293,6 +2308,10 @@ function handleTOCButtonClick() {
 function handleHelpButtonClick() {
     localStorage.setItem('tutorialStatus', 'Incomplete');
     displayUITutorial();
+}
+
+function handleFeedbackButtonClick() {
+    location.href = "mailto:impact-collaborative@extension.org?subject=Feedback%20for%20" + embeddedBookName;
 }
 
 function handleAskButtonClick() {
