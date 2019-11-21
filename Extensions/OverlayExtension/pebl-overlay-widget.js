@@ -89,11 +89,11 @@ function createEmailSubmissionModal() {
 
     emailModal.appendChild(emailModalBody);
 
-    // var emailModalDescription = document.createElement('p');
-    // emailModalDescription.classList.add('emailModalDescription');
-    // emailModalDescription.textContent = 'Please provide an email address to contact you for feedback';
+    var emailModalDescription = document.createElement('p');
+    emailModalDescription.classList.add('emailModalDescription');
+    emailModalDescription.textContent = 'Cooperative Extension professionals can add additional value to this eFieldbook, and bring their expertise to the national conversation. If you are interested in providing feedback, becoming a contributor, or serving on an advisory group, please provide your email below. A member from our team will reach out to you.';
 
-    //emailModalBody.appendChild(emailModalDescription);
+    emailModalBody.appendChild(emailModalDescription);
     var inputContainer = document.createElement('div');
     inputContainer.classList.add('emailModalInputContainer');
 
@@ -105,6 +105,18 @@ function createEmailSubmissionModal() {
     inputContainer.appendChild(inputLabel);
     inputContainer.appendChild(emailInput);
 
+    var checkboxContainer = document.createElement('div');
+    checkboxContainer.classList.add('emailModalCheckboxContainer');
+
+    var checkboxLabel = document.createElement('label');
+    checkboxLabel.textContent = 'Please check this box if you would like to receive updates about this eFieldbook.';
+
+    var checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+
+    checkboxContainer.appendChild(checkboxLabel);
+    checkboxContainer.appendChild(checkbox);
+
     var emailSubmit = document.createElement('button');
     emailSubmit.textContent = 'Submit';
     emailSubmit.addEventListener('click', function() {
@@ -112,8 +124,14 @@ function createEmailSubmissionModal() {
         if (val.length > 0) {
             globalPebl.emitEvent(globalPebl.events.eventSubmitted, {
                 'name': val,
-                'type': 'email'
+                'type': 'emailFeedback'
             });
+            if (checkbox.checked) {
+                globalPebl.emitEvent(globalPebl.events.eventSubmitted, {
+                    'name': val,
+                    'type': 'emailMarketing'
+                });
+            }
             jQuery('#emailModal').remove();
         } else {
             window.alert('Please provide an email with which to contact you.');
@@ -121,6 +139,7 @@ function createEmailSubmissionModal() {
     });
 
     emailModalBody.appendChild(inputContainer);
+    emailModalBody.appendChild(checkboxContainer);
     emailModalBody.appendChild(emailSubmit);
 
     document.body.appendChild(emailModal);
