@@ -161,10 +161,7 @@ $(document).ready(function() {
     // Prompt for voluntary participation in evaluation
     var previouslyPrompted = window.localStorage.getItem('previouslyPrompted-' + embeddedBookName);
     if (!previouslyPrompted) {
-        var promptResponse = window.confirm('Are you willing to provide feedback to improve this eFieldbook?');
-        if (promptResponse) {
-            createEmailSubmissionModal();
-        }
+        createEmailSubmissionModal();
         window.localStorage.setItem('previouslyPrompted-' + embeddedBookName, 'true');
     }
 
