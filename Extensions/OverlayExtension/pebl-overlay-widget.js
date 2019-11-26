@@ -66,7 +66,7 @@ function createEmailSubmissionModal() {
 
     var emailModalHeaderText = document.createElement('span');
     emailModalHeaderText.classList.add('emailModalHeaderText');
-    emailModalHeaderText.textContent = 'Provide contact email';
+    emailModalHeaderText.textContent = 'We Need You';
 
     emailModalHeader.appendChild(emailModalHeaderText);
 
@@ -121,7 +121,8 @@ function createEmailSubmissionModal() {
     emailSubmit.textContent = 'Submit';
     emailSubmit.addEventListener('click', function() {
         var val = emailInput.value.trim();
-        if (val.length > 0) {
+        // TODO: Add better email validation
+        if (val.length > 0 && val.indexOf('@') > 0) {
             globalPebl.emitEvent(globalPebl.events.eventSubmitted, {
                 'name': val,
                 'type': 'emailFeedback'
@@ -134,7 +135,7 @@ function createEmailSubmissionModal() {
             }
             jQuery('#emailModal').remove();
         } else {
-            window.alert('Please provide an email with which to contact you.');
+            window.alert('Please provide a valid email with which we may contact you.');
         }
     });
 
