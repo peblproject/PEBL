@@ -1391,47 +1391,125 @@ i.overlayCloseButton {
     border-left: 10px solid transparent;
 }
 
+:root {
+    --modal-header: 1.4rem;
+} 
 .emailModal {
+    font-size: .9rem;
     position: fixed;
     top: 10vh;
     left: 0;
     right: 0;
     background-color: var(--light-background);
     z-index: 999999;
-    box-shadow: var(--elevation-2);
+    box-shadow: var(--elevated-2);
     max-width: 700px;
+    border-radius: 10px !important;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
     -webkit-box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
     box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
 }
-
+.icon {
+    padding: .25rem .25rem;
+}
+.button {
+    cursor: pointer;
+}
 .emailModalHeader {
+    border-top-left-radius: 10px !important;
+    border-top-right-radius: 10px !important;
     display: flex;
+    justify-content: space-between;
     background-color: var(--primary-color-light);
+    border
     justify-content: space-between;
     align-items: center;
     color: #fff;
     padding: 1em;
-    font-size: 1rem;
     font-family: var(--secondary-font-family);
 }
-
-.emailModalBody {
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
-    padding: 1em;
+.emailModalHeaderText {
+    font-size: var(--modal-header);
+    font-family: var(--secondary-font-family);
 }
-
+.emailModalBody {
+    font-size: .95rem !important;
+    font-family: var(--primary-font-family);
+    overflow: auto;
+    font-weight: 300;
+    line-height: 1.4rem;
+    -webkit-overflow-scrolling: touch;
+    padding: 1rem;
+}
+.emailModalBody .emailModalDescription {
+    font-size: .95rem !important;
+}
+.emailModalInputContainer {
+    font-size: .95rem !important;
+    padding: .5rem 0rem;
+}
 .emailModalCloseButton {
     width: 1em;
+    float:right;
+    color: black;
     height: 1em;
     font-size: 1.5em;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+}
+.emailModalCheckboxContainer .input-label {
+    font-size: .8rem;
+}
+.emailModalInputContainer .input-label {
+    display:block;
+    font-weight: 400;
+    font-size: .8rem;
+}
+.emailModalInputContainer input {
+    padding: .25rem .5rem;
+    border-radius: var(--small-radius);
+     -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    height: 1.25rem;
+    outline: none;
+    font-size: 1rem;
+    font-weight: 300;
+    min-width: 16rem;
+    box-shadow: none;
+    border: 1px solid var(--dark-background);
+}
+.modal-actions button:hover {
+    background-color: var(--primary-color-light);
+}
+.modal-actions button:active {
+    background-color: var(--primary-color-dark);
+}
+.emailModalInputContainer input:focus {
+    border: 1.5px solid var(--primary-color-dark) !important;
+}
+.askExpertExpertsModalDescription {
+    padding: 1em;
+}
+.main-button {
+    background-color: var(--primary-color);
+    min-width: 160px;
+    height: 2rem;
+    border-radius: var(--small-radius);
+    color: white;
+    font-size: .9rem;
+    font-weight: 500;
+    margin-top: 1rem;
+}
+.modal-actions {
+    width: 100%;
+    display: flex;
+    flex-direction: row-reverse;
+    flex-start: end;
+  
 }
 
 .askExpertExpertsModalDescription {

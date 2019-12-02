@@ -66,12 +66,12 @@ function createEmailSubmissionModal() {
 
     var emailModalHeaderText = document.createElement('span');
     emailModalHeaderText.classList.add('emailModalHeaderText');
-    emailModalHeaderText.textContent = 'We Need You';
+    emailModalHeaderText.textContent = "We'd Appreciate Your Feedback";
 
     emailModalHeader.appendChild(emailModalHeaderText);
 
     var emailModalCloseButton = document.createElement('i');
-    emailModalCloseButton.classList.add('fa', 'fa-times', 'emailModalCloseButton');
+    emailModalCloseButton.classList.add('fa', 'fa-times-circle', 'emailModalCloseButton');
     emailModalCloseButton.addEventListener('click', function() {
         jQuery('#emailModal').remove();
         globalPebl.emitEvent(globalPebl.events.eventUndisplayed, {
@@ -98,7 +98,7 @@ function createEmailSubmissionModal() {
     inputContainer.classList.add('emailModalInputContainer');
 
     var inputLabel = document.createElement('label');
-    inputLabel.textContent = 'Email Address: ';
+    inputLabel.textContent = 'Email Address';
 
     var emailInput = document.createElement('input');
 
@@ -109,13 +109,16 @@ function createEmailSubmissionModal() {
     checkboxContainer.classList.add('emailModalCheckboxContainer');
 
     var checkboxLabel = document.createElement('label');
-    checkboxLabel.textContent = 'Please check this box if you would like to receive updates about this eFieldbook.';
+    checkboxLabel.textContent = "Yes, I'd like to receive email updates about this eFieldbook.";
 
     var checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
 
-    checkboxContainer.appendChild(checkboxLabel);
     checkboxContainer.appendChild(checkbox);
+    checkboxContainer.appendChild(checkboxLabel);
+
+    var actionsContainer = document.createElement('div');
+    actionsContainer.classList.add('modal-actions');
 
     var emailSubmit = document.createElement('button');
     emailSubmit.textContent = 'Submit';
@@ -138,10 +141,11 @@ function createEmailSubmissionModal() {
             window.alert('Please provide a valid email with which we may contact you.');
         }
     });
+    actionsContainer.appendChild(emailSubmit);
 
     emailModalBody.appendChild(inputContainer);
     emailModalBody.appendChild(checkboxContainer);
-    emailModalBody.appendChild(emailSubmit);
+    emailModalBody.appendChild(actionsContainer);
 
     document.body.appendChild(emailModal);
 }
