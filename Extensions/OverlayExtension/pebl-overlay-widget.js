@@ -70,6 +70,8 @@ function createEmailSubmissionModal() {
 
     emailModalHeader.appendChild(emailModalHeaderText);
 
+    var emailModalCloseContainer = document.createElement('span');
+    emailModalCloseContainer.classList.add('icon', 'button');
     var emailModalCloseButton = document.createElement('i');
     emailModalCloseButton.classList.add('fa', 'fa-times-circle', 'emailModalCloseButton');
     emailModalCloseButton.addEventListener('click', function() {
@@ -80,28 +82,27 @@ function createEmailSubmissionModal() {
         });
     });
 
-    emailModalHeader.appendChild(emailModalCloseButton);
-
+    emailModalCloseContainer.appendChild(emailModalCloseButton);
+    emailModalHeader.appendChild(emailModalCloseContainer);
     emailModal.appendChild(emailModalHeader);
 
     var emailModalBody = document.createElement('div');
     emailModalBody.classList.add('emailModalBody');
-
     emailModal.appendChild(emailModalBody);
 
     var emailModalDescription = document.createElement('p');
     emailModalDescription.classList.add('emailModalDescription');
     emailModalDescription.textContent = 'Cooperative Extension professionals can add additional value to this eFieldbook, and bring their expertise to the national conversation. If you are interested in providing feedback, becoming a contributor, or serving on an advisory group, please provide your email below. A member from our team will reach out to you.';
-
     emailModalBody.appendChild(emailModalDescription);
+
     var inputContainer = document.createElement('div');
     inputContainer.classList.add('emailModalInputContainer');
 
     var inputLabel = document.createElement('label');
-    inputLabel.textContent = 'Email Address';
+    inputLabel.textContent = 'Email Address ';
+    inputLabel.classList.add('input-label');
 
     var emailInput = document.createElement('input');
-
     inputContainer.appendChild(inputLabel);
     inputContainer.appendChild(emailInput);
 
@@ -110,10 +111,11 @@ function createEmailSubmissionModal() {
 
     var checkboxLabel = document.createElement('label');
     checkboxLabel.textContent = "Yes, I'd like to receive email updates about this eFieldbook.";
+    checkboxLabel.classList.add('input-label');
 
     var checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
-
+    checkbox.classList.add('input');
     checkboxContainer.appendChild(checkbox);
     checkboxContainer.appendChild(checkboxLabel);
 
@@ -122,6 +124,7 @@ function createEmailSubmissionModal() {
 
     var emailSubmit = document.createElement('button');
     emailSubmit.textContent = 'Submit';
+    emailSubmit.classList.add('main-button');
     emailSubmit.addEventListener('click', function() {
         var val = emailInput.value.trim();
         // TODO: Add better email validation
