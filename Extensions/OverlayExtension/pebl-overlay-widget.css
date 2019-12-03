@@ -1495,7 +1495,7 @@ i.overlayCloseButton {
     padding: 1em;
 }
 .main-button {
-    background-color: var(--primary-color);
+    background-color: rgb(7, 126, 188);
     min-width: 160px;
     height: 2rem;
     border-radius: var(--small-radius);
