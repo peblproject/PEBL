@@ -1603,6 +1603,18 @@ function nextTutorialStage() {
         $('#tutorialMessageContainer').attr('Stage', '4');
     } else if (currentStage === '4') {
         $('#tutorialMessageContainer').animate({
+            left: ($('#feedbackButtonContainer').offset().left - ($('#feedbackButtonContainer').width() / 2)) - 150
+        }, 500);
+
+        $('#tutorialMessageArrow').animate({
+            marginLeft: '175px'
+        }, 500);
+
+        $('#tutorialMessage').text('Click this Feedback button at any time to send an email with your feedback');
+
+        $('#tutorialMessageContainer').attr('Stage', '5');
+    } else if (currentStage === '5') {
+        $('#tutorialMessageContainer').animate({
             left: ($('#helpButtonContainer').offset().left - ($('#helpButtonContainer').width() / 2)) - 150
         }, 500);
 
@@ -1613,11 +1625,11 @@ function nextTutorialStage() {
         $('#tutorialMessage').text('Click this Help button at any time you would like to review this eFieldbook feature tour.');
         //Skip the sidebar section if it doesn't exist
         if ($('.peblSidebar').length < 1) {
-            $('#tutorialMessageContainer').attr('Stage', '6');
+            $('#tutorialMessageContainer').attr('Stage', '7');
         } else {
-            $('#tutorialMessageContainer').attr('Stage', '5');
+            $('#tutorialMessageContainer').attr('Stage', '6');
         }
-    } else if (currentStage === '5') {
+    } else if (currentStage === '6') {
         $('.peblSidebarExpandButton').click();
         setTimeout(function() {
             $('#tutorialMessageContainer').animate({
@@ -1636,9 +1648,9 @@ function nextTutorialStage() {
             });
 
             $('#tutorialMessage').text('The Category Filters feature allows you to build and refine filtered lists of eFieldbook resources using descriptive tags.');
-            $('#tutorialMessageContainer').attr('Stage', '6');
+            $('#tutorialMessageContainer').attr('Stage', '7');
         }, 500)
-    } else if (currentStage === '6') {
+    } else if (currentStage === '7') {
         $('.peblSidebarExpandButton').click();
         var offset = ($('#findButton').width() - $('#tutorialMessageContainer').width()) / 2;
         if (offset < 0)
@@ -1661,8 +1673,8 @@ function nextTutorialStage() {
         });
 
         $('#tutorialMessage').text('This option will launch a search of Knowledge Network resources that is in context to the current page.');
-        $('#tutorialMessageContainer').attr('Stage', '7');
-    } else if (currentStage === '7') {
+        $('#tutorialMessageContainer').attr('Stage', '8');
+    } else if (currentStage === '8') {
         var offset = ($('.discussButton').width() - $('#tutorialMessageContainer').width()) / 2;
         if (offset < 0)
             offset = 0;
@@ -1671,8 +1683,8 @@ function nextTutorialStage() {
         }, 500);
 
         $('#tutorialMessage').text('The Discuss feature provides a place for PeBL eBook users to share feedback and insights in context to the current page.');
-        $('#tutorialMessageContainer').attr('Stage', '8');
-    } else if (currentStage === '8') {
+        $('#tutorialMessageContainer').attr('Stage', '9');
+    } else if (currentStage === '9') {
         var offset = ($('.notesButton').width() - $('#tutorialMessageContainer').width());
         if (offset > 0 && $('.notesButton').width() < $('#tutorialMessageContainer').width())
             offset = 0;
