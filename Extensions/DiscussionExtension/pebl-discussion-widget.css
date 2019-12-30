@@ -1,9 +1,10 @@
 .pebl__discussion--lightbox {
     position: fixed;
-    top: 55px;
+    top: 10vh;
     left: 0;
     right: 0;
-    bottom: 10px;
+    min-height: 400px;
+    height: 80vh;
     background-color: var(--light-background);
     z-index: 5000;
     box-shadow: var(--elevation-2);
@@ -16,19 +17,20 @@
 }
 
 .pebl__discussion--lightbox__textarea {
-    display: block;
+display: block;
     box-sizing: border-box;
     width: calc(100% - 1em);
-    max-width: 700px;
+    /* max-width: 700px; */
     word-wrap: break-word;
-    resize: none;
+    height: 6em;
+    resize: vertical;
     margin: .5em;
     color: #222;
     font-weight: normal;
-    font-size: 24px;
-    line-height: 40px;
-    webkit-border-radius: 8px;
-    border-radius: 8px;
+    padding: 0.5em;
+    font-size: 1.2em;
+    line-height: 1.5em;
+    border-radius: 0.5em;
     border: .1em solid var(--secondary-grey);
 }
 
@@ -46,14 +48,13 @@
     background-color: var(--primary-color-light);
     justify-content: space-between;
     align-items: center;
-    color: var(--dark-font);
+    color: white;
     padding: 1em;
-    font-size: 2rem;
     font-family: var(--secondary-font-family);
 }
 
 .discussionPromptContainer {
-    font-weight: bolder;
+/*    font-weight: bolder;*/
 }
 
 .discussionLightboxCloseButtonContainer {
@@ -76,13 +77,14 @@
 .discussionButtonContainer {
     display: flex;
     flex-direction: row-reverse;
+    flex-shrink: 0;
 }
 
 .discussionResponseBody {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    /* for Firefox */
+    flex-shrink: 500;
     min-height: 0;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
@@ -90,9 +92,9 @@
     font-style: normal;
     font-weight: normal;
     font-size: 14px;
-    border-top: 1px solid #ddd;
+    border-top: 1px solid #aaa;
     clear: both;
-    margin: 1em;
+    margin-top: 2em;
 }
 
 .discussionResponseBody .response {
@@ -133,9 +135,9 @@
 
 .discussionSubmitButton {
     cursor: pointer;
-    -webkit-border-radius: 5;
-    -moz-border-radius: 5;
-    border-radius: 5px;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
     text-shadow: 1px 1px 3px #666666;
     padding: .5rem 2rem .5rem 2rem;
     text-decoration: none;
@@ -188,9 +190,9 @@
 
 button.replySubmitButton {
     cursor: pointer;
-    -webkit-border-radius: 5;
-    -moz-border-radius: 5;
-    border-radius: 5px;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0px;
     text-shadow: 1px 1px 3px #666666;
     padding: 10px 20px 10px 20px;
     text-decoration: none;
@@ -270,4 +272,9 @@ button.chat>i {
 .messageDeleteButton {
     font-size: 30px;
     color: red;
+}
+
+.discussionDetailTextContainer {
+    padding-left: 1em;
+    font-family: var(--secondary-font-family);
 }

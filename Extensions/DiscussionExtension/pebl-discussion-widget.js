@@ -1,4 +1,4 @@
-var globalPebl = window.parent.PeBL;
+var globalPebl = (window.parent && window.parent.PeBL) ? window.parent.PeBL : (window.PeBL ? window.PeBL : null);
 var globalConfiguration = window.parent.Configuration;
 var globalLightbox = window.parent.Lightbox;
 
@@ -7,17 +7,6 @@ if (globalPebl)
     globalPebl.extension.discussion = discussion;
 
 jQuery(document).ready(function () {
-
-    //Find inDesign shortcodes and replace with actual pebl shortcodes
-    // jQuery("body").children().each(function () {
-    //     jQuery(this).html( jQuery(this).html().replace(/\[\[\[(type=”discussion”) (prompt=”.*?”) (button=”.*?”) (visibility=”.*?”) (postLimit=”.*?”) (notify=”.*?”)]]]/g, function(x) {
-    //         var prompt = x.match(/prompt=”(.*?)”/);
-    //         var button = x.match(/button=”(.*?)”/);
-
-    //         var widgetCode = '<i class="discussion_discussionExtension" id="someID2" data-id="someID2" data-prompt="' + prompt[1] + '" data-buttonText="' + button[1] + '"></i>';
-    //         return widgetCode;
-    //     }) );
-    // });
 
     jQuery('.discussion_discussionExtension, .peblExtension[data-peblextension="discussion"], .peblExtension[data-peblExtension="discussion"]').each(function() {    
         var buttonText = jQuery(this)[0].getAttribute('data-buttonText') || jQuery(this)[0].getAttribute('data-buttontext');
@@ -35,6 +24,17 @@ jQuery(document).ready(function () {
     jQuery(document.body).on('click', '.chat', function (evt) {
         discussion.handleChatButtonClick(evt.currentTarget);
     });
+});
+
+// hide modals when clicking other areas
+jQuery(document).mouseup(function (e) {
+    var container = jQuery('.peblModal');
+    if (!container.is(e.target) // if the target of the click isn't the container...
+        &&
+        container.has(e.target).length === 0) // ... nor a descendant of the container
+    {
+        container.remove();
+    }
 });
 
 discussion.createDiscussion = function (insertID, buttonText, question, id, detailText, sharing) {
@@ -75,8 +75,9 @@ discussion.createDiscussionLightBox = function (question, chatButton) {
     globalPebl.user.getUser(function (userProfile) {
         var private = false;
         var thread = chatButton.id;
+        var sharing = 'all';
         if (chatButton.hasAttribute('data-sharing')) {
-            var sharing = chatButton.getAttribute('data-sharing');
+            sharing = chatButton.getAttribute('data-sharing');
             if (sharing === 'team') {
                 if (window.parent.extensionDashboard && window.parent.extensionDashboard.programID) {
                     thread = discussion.comboID(window.parent.extensionDashboard.programID, thread);
@@ -97,7 +98,7 @@ discussion.createDiscussionLightBox = function (question, chatButton) {
 
         var lightBox = document.createElement('div');
         lightBox.id = 'pebl__discussion--lightbox';
-        lightBox.classList.add('pebl__discussion--lightbox');
+        lightBox.classList.add('pebl__discussion--lightbox', 'peblModal');
 
         var lightBoxContent = document.createElement('div');
         lightBoxContent.classList.add('pebl__discussion--lightbox__content');
@@ -169,10 +170,10 @@ discussion.createDiscussionLightBox = function (question, chatButton) {
         discussionResponseBody.classList.add('discussionResponseBody');
 
         discussionSubmitButton.addEventListener('click', function () {
-            discussion.createThread(thread, jQuery(discussionTextArea).val(), question, discussionTextArea, discussionResponseBody);
+            discussion.createThread(thread, jQuery(discussionTextArea).val(), question, discussionTextArea, discussionResponseBody, sharing);
         });
 
-        var messageHandle = discussion.messageHandler(discussionResponseBody, thread, private);
+        var messageHandle = discussion.messageHandler(discussionResponseBody, thread, sharing);
         globalPebl.subscribeThread(thread, false, messageHandle);
 
         lightBoxContent.appendChild(discussionHeader);
@@ -185,7 +186,7 @@ discussion.createDiscussionLightBox = function (question, chatButton) {
     });
 }
 
-discussion.messageHandler = function (responseBox, thread, replyDisabled) {
+discussion.messageHandler = function (responseBox, thread, sharing) {
     return function (newMessages) {
         newMessages.sort(discussion.sortMessages);
         globalPebl.user.getUser(function (userProfile) {
@@ -204,13 +205,13 @@ discussion.messageHandler = function (responseBox, thread, replyDisabled) {
                         messageContainer.append(userIdBox);
                         messageContainer.append(timestampBox);
                         messageContainer.append(textBox);
-                        if (!replyDisabled) {
+                        if (sharing !== 'private') {
                             var messageReplyButton = document.createElement('a');
                             messageReplyButton.classList.add('messageReplyButton');
                             messageReplyButton.textContent = 'Reply';
                             messageReplyButton.addEventListener('click', function (event) {
                                 event.preventDefault();
-                                discussion.replyDiscussion(event);
+                                discussion.replyDiscussion(event, sharing);
                             });
                             messageContainer.append(jQuery(messageReplyButton));
                         }
@@ -245,29 +246,35 @@ discussion.messageHandler = function (responseBox, thread, replyDisabled) {
     };
 }
 
-discussion.createThread = function (thread, input, prompt, textarea, responseBox) {
+discussion.createThread = function (thread, input, prompt, textarea, responseBox, access) {
     var messageHandle = discussion.messageHandler(responseBox, thread);
     globalPebl.subscribeThread(thread, false, messageHandle);
     if (input.trim() != "") {
         var message = {
             "prompt": prompt,
             "thread": thread,
-            "text": input
+            "text": input,
+            "access": access
         };
-        globalPebl.emitEvent(globalPebl.events.newMessage,
-            message);
+        if (access === "private") {
+            globalPebl.emitEvent(globalPebl.events.eventNoted, message);
+        } else {
+            globalPebl.emitEvent(globalPebl.events.newMessage, message);
+        }
+        
         jQuery(textarea).val("");
     }
 }
 
-discussion.createSubThread = function (thread, input, prompt, textarea, responseBox) {
+discussion.createSubThread = function (thread, input, prompt, textarea, responseBox, sharing) {
     var messageHandle = discussion.messageHandler(responseBox, thread);
     globalPebl.subscribeThread(thread, false, messageHandle);
     if (input.trim() != "") {
         var message = {
             "prompt": prompt,
             "thread": thread,
-            "text": input
+            "text": input,
+            "access": sharing
         };
         globalPebl.emitEvent(globalPebl.events.newMessage,
             message);
@@ -277,7 +284,7 @@ discussion.createSubThread = function (thread, input, prompt, textarea, response
 
 
 
-discussion.handleChatButtonClick = function (elem) {
+discussion.handleChatButtonClick = function (elem, prompt) {
     var self = this;
     globalPebl.user.isLoggedIn(function(isLoggedIn) {
         if (!isLoggedIn) {
@@ -292,7 +299,7 @@ discussion.handleChatButtonClick = function (elem) {
                 element = jQuery(elem);
             else
                 element = jQuery(self);
-            question = element.parent().children('p:first').text();
+            question = prompt ? prompt : element.parent().children('p:first').text();
             if (globalPebl) {
                 if ((element[0].id != null) && (element[0].id != "")) {
                     if (element.parent().children(".chatBox").length == 0) {
@@ -304,7 +311,7 @@ discussion.handleChatButtonClick = function (elem) {
     });
 }
 
-discussion.replyDiscussion = function (event) {
+discussion.replyDiscussion = function (event, sharing) {
     discussion.replyClose();
     var parentPost = jQuery(event.currentTarget).parent();
     var parentAuthor = parentPost.children('.userId');
@@ -328,7 +335,7 @@ discussion.replyDiscussion = function (event) {
     replySubmitButton.classList.add('replySubmitButton');
     replySubmitButton.textContent = 'Submit';
     replySubmitButton.addEventListener('click', function (event) {
-        discussion.replySubmit(parentId, jQuery(replyTextArea).val(), parentMessage, jQuery(replyTextArea), parentChatReplies);
+        discussion.replySubmit(parentId, jQuery(replyTextArea).val(), parentMessage, jQuery(replyTextArea), parentChatReplies, sharing);
     });
 
     replyContainer.appendChild(replyTextArea);
@@ -345,8 +352,8 @@ discussion.replyClose = function () {
     jQuery('.messageReplyButton').show();
 }
 
-discussion.replySubmit = function (thread, input, prompt, textarea, responseBox) {
-    discussion.createSubThread(thread, input, prompt, textarea, responseBox);
+discussion.replySubmit = function (thread, input, prompt, textarea, responseBox, sharing) {
+    discussion.createSubThread(thread, input, prompt, textarea, responseBox, sharing);
     discussion.replyClose();
 }
 
