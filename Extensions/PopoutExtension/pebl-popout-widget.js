@@ -1,4 +1,4 @@
-var globalPebl = window.parent.PeBL;
+var globalPebl = (window.parent && window.parent.PeBL) ? window.parent.PeBL : (window.PeBL ? window.PeBL : null);
 var globalReadium = window.parent.READIUM;
 
 var popout = {};
@@ -17,12 +17,12 @@ jQuery(document).ready(function () {
 });
 
 popout.iconTable = {
-	"book": "fa-book",
-	"file": "fa-file-alt",
-	"info": "fa-info-circle",
-	"link": "fa-link",
-	"chat": "fa-chat",
-	"note": "fa-sticky-note"
+    "book": "fa-book",
+    "file": "fa-file-alt",
+    "info": "fa-info-circle",
+    "link": "fa-link",
+    "chat": "fa-chat",
+    "note": "fa-sticky-note"
 }
 
 /* inputs
@@ -47,6 +47,7 @@ popout.createPopout = function (insertID, title, content, iconType) {
     /* Create div to wrap the entire popout */
     popoutDiv = document.createElement('div');
     popoutDiv.classList.add('pebl__popout');
+    popoutDiv.setAttribute('data-trackingId', insertID);
 
     /* Create span to accept icon class  */
     popoutTitleSpan = document.createElement('div');
@@ -77,7 +78,7 @@ popout.createPopout = function (insertID, title, content, iconType) {
 
     paragraph = document.createElement('p');
     paragraph.classList.add('Basic-Paragraph');
-    paragraph.innerHTML = content.replace('&',' and ');
+    paragraph.innerHTML = content.replace('&','&amp;');
 
     popoutContentDiv.appendChild(closeButton);
     popoutContentDiv.appendChild(paragraph);
@@ -104,27 +105,23 @@ popout.handlePopoutClick = function (event) {
     //Don't close the popout when clicking a link inside it.
     if (event.target.tagName === 'a')
         return;
-    var e = jQuery(this).closest('.pebl__popout');
+    var e = $(this).closest('.pebl__popout');
     if (e.hasClass('active')) {
         e.children('.pebl__popout--popout-content').slideToggle(400, function () {
             e.toggleClass('inactive');
             e.toggleClass('active');
+            globalPebl.emitEvent(globalPebl.events.eventHid, {
+                target: e.attr('data-trackingId'),
+                type: 'popout'
+            });
         });
     } else {
         e.toggleClass('inactive');
            e.toggleClass('active');
            e.children('.pebl__popout--popout-content').slideToggle(400);
-    }
-
-    if (globalPebl != null) {
-        var cfi = "";
-        // if (window.top.ReadiumSDK != null)
-        //     cfi = window.top.ReadiumSDK.reader.getCfiForElement(e);
-
-        globalPebl.emitEvent(globalPebl.events.eventPreferred, {
-            target: cfi,
-            type: e.hasClass('inactive') ? "popoutHide" : "popoutShow"
+           globalPebl.emitEvent(globalPebl.events.eventShowed, {
+            target: e.attr('data-trackingId'),
+            type: 'popout'
         });
-
     }
 }
