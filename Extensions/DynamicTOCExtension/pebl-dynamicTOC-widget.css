@@ -1,25 +1,45 @@
 .tocContainer {
-    width: 100%;
-    height: 100%;
     position: fixed;
-    top: 0;
+    top: 10vh;
     left: 0;
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
-    background-color: white;
-    z-index: 10001;
-    margin: 0;
-    -webkit-box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
-    box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
+    right: 0;
+    min-height: 400px;
+    height: 80vh;
+    background-color: var(--light-background);
+    z-index: 5000;
+    box-shadow: var(--elevation-2);
+    max-width: 700px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    -webkit-box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+}
+
+.tocContainerHeader {
+    display: flex;
+    background-color: var(--primary-color-light);
+    justify-content: space-between;
+    align-items: center;
+    color: #fff;
+    padding: 1em;
+    font-size: 1rem;
+    font-family: var(--secondary-font-family);
 }
 
 .tocCloseButton {
-    position: fixed;
-    top: 0.25em;
-    right: 1em;
-    z-index: 5001;
-    font-size: 2em;
+    width: 1em;
+    height: 1em;
+    font-size: 1.5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
+}
+
+.tocContainerBody {
+    overflow: auto;
+    padding: 1em;
 }
 
 .tocSection::after {
@@ -28,7 +48,23 @@
   clear: both;
 }
 
+.tocSection a:hover {
+    color: var(--secondary-color-light) !important;
+}
+
+.tocSectionTitleText,
+.tocSubsectionTitleText
+{
+    text-decoration: none;
+    font-family: 'Helvetica Neue', sans-serif;
+    color: var(--primary-color-dark);
+    cursor: pointer;
+}
+
+/* HIDE TOC Numbers, per request Nov 01, 2019 */
+
 .tocSectionPrefix {
+    display: none;
     position: relative;
     width: auto;
     float: left;
@@ -38,41 +74,35 @@
     position: absolute;
     height: auto;
     width: 100%;
-    font-family: 'Helvetica Neue', sans-serif;
     font-size: 30px;
-    text-decoration: none;
-    color: rgb(7, 126, 188);
 }
 
 .tocSectionTitleTextWrapper {
+/*
     position: relative;
-    padding-left: 40px;
     width: auto;
     float: left;
+*/
 }
 
 .tocSectionTitle {
-    padding: 10px;
+    padding: 0;
     clear: both;
 }
 
 .tocSectionTitleText {
-    font-family: "Helvetica Neue", sans-serif;
-    font-size: 30px;
-    text-decoration: none;
-    color: rgb(7, 126, 188);
+    font-size: 1.3em;
 }
 
 .tocSubsectionTitle {
-    cursor: pointer;
+/*    cursor: pointer;*/
     padding-top: 10px;
-    padding-bottom: 5px;
-    background-color: white;
     width: 100%;
     clear: both;
 }
 
 .tocSubsectionPrefix {
+    display: none;
     position: relative;
     width: 10%;
     float: left;
@@ -83,27 +113,25 @@
     height: auto;
     width: 100%;
     font-family: 'Helvetica Neue', sans-serif;
-    font-size: 20px;
+    font-size: 1.2em;
     text-decoration: none;
-    color: rgb(7, 126, 188);
+    color: var(--primary-color);
     padding-left: 50px;
 }
 
 .tocSubsectionTitleTextWrapper {
     width: auto;
-    padding-left: 100px;
+    padding-left: 0;
 }
 
 .tocSubsectionTitleText {
     font-family: 'Helvetica Neue', sans-serif;
-    font-size: 20px;
+    font-size: 1.2em;
     text-decoration: none;
-    color: rgb(7, 126, 188);
+    color: var(--primary-color);
 }
 
 .tocPage {
-    cursor: pointer;
-    background-color: white;
     width: 100%;
     clear: both;
 }
@@ -119,13 +147,14 @@
 }
 
 .tocPagePrefix {
+    display: none;
     position: absolute;
     height: auto;
     width: 100%;
     font-family: 'Helvetica Neue', sans-serif;
     font-size: 20px;
     text-decoration: none;
-    color: rgb(7, 126, 188);
+    color: var(--primary-color);
     padding-left: 100px;
 }
 
@@ -139,29 +168,30 @@
     position: absolute;
     height: auto;
     width: 20px;
-    margin-top: 8px;
-    padding-left: 122px;
-    color: rgb(115, 115, 115) !important;
+    margin-top: 0.25em;
+    padding-left: 3.5em;
+    opacity: 0.33;
 }
 
 .tocPageTextWrapper,
 .tocPageTextWrapperWide,
 .tocPageTextWrapperDynamic {
+/*
     position: relative;
     padding-left: 10px;
     width: 90%;
     float: left;
+*/
 }
 
 .tocPageTextWrapperWide {
     width: auto;
-    padding-left: 160px;
-    padding-bottom: 5px;
+    padding-left: 2em;
 }
 
 .tocPageTextWrapperDynamic {
     width: 60%;
-    padding-left: 160px;
+    padding-left: 5em;
 }
 
 .tocPageTextWrapper {
@@ -170,9 +200,9 @@
 
 .tocPageText {
     font-family: "Helvetica Neue", sans-serif;
-    font-size: 20px;
+/*    font-size: 20px;*/
     text-decoration: none;
-    color: rgb(7, 126, 188);
+    color: var(--primary-color-dark);
 }
 
 .tocPageDeleteButtonWrapper {
@@ -268,21 +298,34 @@
     width: 100%;
     left: 0;
     top: 50px;
-    background-color: rgb(228, 228, 228);
+    background-color: var(--primary-color-light);
+    color: white;
     height: 50px;
-    -webkit-box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
-    box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
 }
 
 .dynamicPageHeaderLink {
+    box-sizing: border-box;
     position: relative;
-    left: 25px;
+    left: 1em;
     top: 15px;
-    text-decoration: none;
-    color: blue;
+    width: 80%;
     display: block;
+    text-decoration: none;
+    font-family: sans-serif;
+    color: white;
+    white-space: nowrap;
     overflow: hidden;
-    width: 85%;
+    text-overflow: ellipsis;
+    opacity: 0.33;
+}
+
+.dynamicPageHeaderLink:before {
+    content: "Source: ";
+    font-weight: bold;
+}
+
+.dynamicPageHeaderLink:hover {
+    opacity: 1;
 }
 
 .dynamicPage {
@@ -290,6 +333,7 @@
     width: 100%;
     left: 0;
     top: 100px;
+    z-index: 5000;
     bottom: 0;
     background-color: white;
     -webkit-box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
@@ -307,9 +351,24 @@
 i.dynamicPageCloseButton {
     cursor: pointer;
     position: fixed;
-    top: 51px;
+    top: 1.9em;
     right: 20px;
-    color: rgba(0, 0, 0, 0.6);
-    font-size: 3rem;
-    font-weight: bold;
+    color: white;
+    font-size: 2em;
+}
+
+.dynamicTOCButton {
+    background-color: var(--primary-color) !important;
+    width: 240px;
+    margin-top: .5rem;
+    padding: .5rem;
+    font-weight: 500;
+    border: none;
+    color: #fff !important;
+    cursor: pointer;
+    text-align: center;
+}
+
+.dynamicTOCButton:hover {
+    background-color: var(--primary-color-dark) !important;
 }
