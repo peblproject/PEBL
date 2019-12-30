@@ -1,4 +1,4 @@
-var globalPebl = window.parent.PeBL;
+var globalPebl = (window.parent && window.parent.PeBL) ? window.parent.PeBL : (window.PeBL ? window.PeBL : null);
 var globalReadium = window.parent.READIUM;
 
 var showHide = {};
@@ -11,6 +11,8 @@ showHide.toggleVisibility = function (event, programInvoked) {
         buttonText1 = event.currentTarget.getAttribute('buttonText1'),
         buttonText2 = event.currentTarget.getAttribute('buttonText2'),
         state;
+
+    var trackingId = event.currentTarget.getAttribute('data-trackingId');
 
     console.log(event.currentTarget);
 
@@ -53,10 +55,17 @@ showHide.toggleVisibility = function (event, programInvoked) {
             $('#' + id).addClass("userToggled");
             // if (window.top.ReadiumSDK != null)
             //  cfi = window.top.ReadiumSDK.reader.getCfiForElement($("#" + target));
-            globalPebl.emitEvent(globalPebl.events.eventPreferred, {
-                target: target,
-                type: state
-            });
+            if (state === "showing") {
+                globalPebl.emitEvent(globalPebl.events.eventShowed, {
+                    target: trackingId,
+                    type: 'showHide'
+                });
+            } else if (state === "hiding") {
+                globalPebl.emitEvent(globalPebl.events.eventHid, {
+                    target: trackingId,
+                    type: 'showHide'
+                });
+            }
         }
     }
 }
@@ -89,6 +98,7 @@ showHide.createShowHide = function (insertID, buttonText1, buttonText2, id, isIn
     button = document.createElement('button');
     button.id = id + 'Btn';
     button.setAttribute('otherId', id);
+    button.setAttribute('data-trackingId', insertID);
     button.classList.add('showHideButton');
     if (defaultState === 'closed')
         button.classList.add('hiding');
@@ -110,9 +120,9 @@ showHide.createShowHide = function (insertID, buttonText1, buttonText2, id, isIn
     if (buttonText1 != null && buttonText2 != null) {
         var buttonText = document.createElement('span');
         if (defaultState === 'closed') {
-            buttonText.textContent = buttonText2;
-        } else {
             buttonText.textContent = buttonText1;
+        } else {
+            buttonText.textContent = buttonText2;
         }
         button.classList.add('text');
         button.appendChild(buttonText);

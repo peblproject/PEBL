@@ -1,15 +1,18 @@
 .showHideButton {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    min-width: 100%;
     cursor: pointer;
     -webkit-border-radius: 5;
     -moz-border-radius: 5;
     border-radius: 5px;
-    text-shadow: 1px 1px 3px #666666;
-    color: #ffffff;
-    background: #077ebc;
+    outline: none !important;
+    background-color: #ffffff;
+    color:var(--secondary-color);
     text-decoration: none;
-    margin-bottom: 1em;
+    margin: .5em 0em;
     border: none;
-    float: right;
     position: relative;
     font-size: 2em;
     padding: 0;
@@ -21,19 +24,54 @@
     -webkit-column-break-inside: avoid;
 }
 
-.showHideButton.text {
-    padding: 10px 20px 10px 20px;
-    height: auto;
-    width: auto;
-    font-size: 1em;
+.showHideButton:active,
+.showHideButton:focus,
+.showHideButton:hover {
+    background-color: white !important;
 }
 
-.showHideButton:hover {
-    background: #3cb0fd;
+.showHideButton.text i {
+    margin-left: 0;
+    text-align: left;
+}
+
+.showHideButton.text span {
+    margin-left: 1em;
+}
+
+.showHideButton.text {
+    padding: .5rem;
+    font-weight: 400;
+    height: auto;
+    background: #fff;
+    min-width: 100%;
+    text-align: left;
+    color:var(--secondary-color);
+    outline: none;
+    width: auto;
+    font-size: 1.2em;
+}
+.showHideButton.hiding {
+    color: var(--secondary-color-light) !important;
+    font-weight: 400 !important;
+    background-color: #fff !important;
+}
+
+.showHideButton.text:hover,
+.showHideButton.text:active,
+.showHideButton.text:focus {
     text-decoration: none;
+    color: var(--secondary-color-dark);
+    background-color: #fff !important;
+    font-weight: 500;
 }
 
 .showHideButton.inline {
     float: none !important;
     margin-bottom: 0 !important;
+}
+
+.userToggled {
+    min-width: 100%;
+    padding: 0rem 0rem 1rem 0rem;
 }
