@@ -1,27 +1,30 @@
 .tooltip {
     position: relative;
     display: inline-block;
-    border-bottom: 2px solid var(--primary-color-dark);
+    border-bottom: 1px dotted black;
     text-indent: 0px;
-    cursor: help;
+    cursor: pointer;
 }
 
 .tooltip .tooltiptext {
     /*    visibility: hidden;*/
     display: none;
     cursor: pointer;
-    width: 200px;
-    background-color:var(--primary-color-light);
-    color: var(--dark--font);
+    width: 300px;
+    background-color: var(--dark-cream);
+    font-family: var(--secondary-font-family);
+    color: var(--dark-font);
     text-align: left;
     border-radius: 6px;
     padding: 0.5em;
     padding-left: 1em;
     position: absolute;
     z-index: 1;
+    font-size: 16px;
+    line-height: 1rem;
     bottom: 125%;
-    left: -80px;
-    margin-left: -60px;
+/*    left: -80px;
+    margin-left: -60px;*/
     opacity: 0;
     transition: opacity 1s;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
@@ -35,17 +38,18 @@
     margin-left: -8px;
     width: 0;
     height: 0;
-    border-top: 8px solid var(--primary-color-light);
+    border-top: 8px solid var(--dark-cream);
     border-right: 8px solid transparent;
     border-left: 8px solid transparent;
 }
 
 .tooltip.active {
-    font-weight: 500;
+    background-color: lightyellow;
     border-color: transparent;
 }
 
 .tooltip.active .tooltiptext {
     display: block;
     opacity: 1;
+    word-break: break-word;
 }

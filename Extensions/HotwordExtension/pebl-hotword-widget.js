@@ -1,4 +1,4 @@
-var globalPebl = window.parent.PeBL;
+var globalPebl = (window.parent && window.parent.PeBL) ? window.parent.PeBL : (window.PeBL ? window.PeBL : null);
 var globalReadium = window.parent.READIUM;
 
 var hotword = {};
@@ -23,17 +23,21 @@ jQuery(document).ready(function() {
         var insertID = jQuery(this)[0].getAttribute('id');
         var hotwordMain = jQuery(this)[0].getAttribute('data-hotword');
         var hotwordText = jQuery(this)[0].getAttribute('data-hotwordText') || jQuery(this)[0].getAttribute('data-hotwordtext');
-        hotword.createHotword(insertID, hotwordMain, hotwordText);
+        var hotwordClass = this.hasAttribute('data-hotwordClass') ? this.getAttribute('data-hotwordClass') : null;
+        hotword.createHotword(insertID, hotwordMain, hotwordText, hotwordClass);
     });
 });
 
-hotword.createHotword = function(insertID, tooltip, tooltipText) {
+hotword.createHotword = function(insertID, tooltip, tooltipText, tooltipClass) {
     var tooltipSpan,
         tooltipTextSpan,
         insertLocation;
 
     tooltipSpan = document.createElement('span');
+    tooltipSpan.id = insertID;
     tooltipSpan.classList.add('tooltip');
+    if (tooltipClass)
+        tooltipSpan.classList.add(tooltipClass);
     tooltipSpan.textContent = tooltip.replace('&',' and ');
     tooltipSpan.setAttribute('definition', tooltipText);
 
@@ -54,10 +58,10 @@ hotword.offsetTop = function(elem) {
     var elemRect = elem.parent()[0].getBoundingClientRect();
     var rect = elem[0].getBoundingClientRect();
 
-    if (tooltiptextHeight > elemRect.top || rect.top < 0) {
+    if (tooltiptextHeight > (elemRect.top - 70) || rect.top < 0) {
         elem.css('bottom', 'inherit');
         var newMarginTop = (-4 - elem.innerHeight());
-        topStyleString = "border-top-width: 0px;border-bottom-width: 8px;border-bottom-style: solid;border-bottom-color: rgb(85, 85, 85);margin-top: " + newMarginTop + "px;";
+        topStyleString = "border-top-width: 0px;border-bottom-width: 8px;border-bottom-style: solid;border-bottom-color: var(--dark-cream);margin-top: " + newMarginTop + "px;";
         adjustTop = true;
     }
 
@@ -73,10 +77,19 @@ hotword.offsetRight = function(elem, adjustTop, topStyleString) {
 
     var rect = elem[0].getBoundingClientRect();
     var w = jQuery(window).width();
+    var h = jQuery(window).height();
     var marginLeft = parseInt(elem.css('marginLeft'));
+    var isPortrait = h > w ? true : false;
+    var columnGap = $('html').css('column-gap');
 
     if (rect.right > w) {
         var offset = w - rect.right;
+        elem.css('margin-left', offset);
+        var newMarginLeft = -8 + (marginLeft - offset);
+        rightStyleString = "margin-left: " + newMarginLeft + 'px;';
+        adjustRight = true;
+    } else if ((!isPortrait && rect.right > w / 2 && rect.left < w / 2)) {
+        var offset = (isPortrait ? w : w / 2) - rect.right - (isPortrait ? 0 : (columnGap ? parseInt(columnGap) : 0));
         elem.css('margin-left', offset);
         var newMarginLeft = -8 + (marginLeft - offset);
         rightStyleString = "margin-left: " + newMarginLeft + 'px;';
@@ -134,13 +147,16 @@ hotword.offsetArrow = function(elem, adjustTop, topStyleString, adjustRight, rig
 
 // hide tooltips when clicking other areas
 jQuery(document).mouseup(function (e) {
-    var container = jQuery('.tooltip');
-    if (!container.is(e.target) // if the target of the click isn't the container...
-        &&
-        container.has(e.target).length === 0) // ... nor a descendant of the container
-    {
-        jQuery(".tooltip").removeClass('active');
-    }
+    var activeTooltips = jQuery('.tooltip.active');
+    activeTooltips.each(function (i, elem) {
+        globalPebl.emitEvent(globalPebl.events.eventHid, {
+            name: elem.textContent,
+            target: elem.id,
+            type: 'hotword'
+        });
+    });
+    jQuery(".tooltip").removeClass('active');
+    jQuery(".tooltip").children().remove();
 });
 
 hotword.handleTooltipClick = function(event) {
@@ -168,23 +184,29 @@ hotword.handleTooltipClick = function(event) {
     if (jQuery(elem).hasClass('active')) {
         jQuery(elem).removeClass('active');
         jQuery(elem).children('.tooltiptext').remove();
+
+        globalPebl.emitEvent(globalPebl.events.eventHid, {
+            name: elem.textContent,
+            target: elem.id,
+            type: 'hotword'
+        });
     } else {
         jQuery(elem).removeClass('active');
         jQuery(elem).addClass('active');
 
         var tooltipTextSpan = document.createElement('span');
         tooltipTextSpan.classList.add('tooltiptext');
-	    var textBody = jQuery(elem).attr('definition');
+        var textBody = jQuery(elem).attr('definition');
         tooltipTextSpan.textContent = textBody.replace('&',' and ');
 
         jQuery(elem).append(tooltipTextSpan);
 
         hotword.offsetTop(jQuery(tooltipTextSpan));
 
-	globalPebl.emitEvent(globalPebl.events.eventPreferred, {
-	    name: jQuery(elem).text(),
-	    type: "hotword",
-	    description: textBody
-	});
+        globalPebl.emitEvent(globalPebl.events.eventShowed, {
+            name: elem.textContent,
+            target: elem.id,
+            type: 'hotword'
+        });
     }
 }
