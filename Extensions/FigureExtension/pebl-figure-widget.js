@@ -1,4 +1,4 @@
-var globalPebl = window.parent.PeBL;
+var globalPebl = (window.parent && window.parent.PeBL) ? window.parent.PeBL : (window.PeBL ? window.PeBL : null);
 var globalReadium = window.parent.READIUM;
 
 var figure = {};
