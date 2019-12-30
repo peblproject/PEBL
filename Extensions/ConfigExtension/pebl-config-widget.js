@@ -1,4 +1,9 @@
-var globalPebl = window.top.PeBL;
+var globalPebl = (window.parent && window.parent.PeBL) ? window.parent.PeBL : (window.PeBL ? window.PeBL : null);
+
+window.Configuration = {}
+window.Configuration.lrsUrl = ''; //TODO: CHANGE ME
+window.Configuration.lrsCredential = ''; //TODO: CHANGE ME
+window.Configuration.useLinkedIn = false;
 
 var config = {};
 
