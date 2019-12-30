@@ -1,10 +1,9 @@
-var globalPebl = window.parent.PeBL;
+var globalPebl = (window.parent && window.parent.PeBL) ? window.parent.PeBL : (window.PeBL ? window.PeBL : null);
 var globalReadium = window.parent.READIUM;
 
 var ratings = {};
 
-if (globalPebl)
-    globalPebl.extension.ratings = ratings;
+globalPebl.extension.ratings = ratings;
 
 $(document).ready(function () {
     $('.ratingsExtension, .peblExtension[data-peblextension="ratings"]').each(function () {
