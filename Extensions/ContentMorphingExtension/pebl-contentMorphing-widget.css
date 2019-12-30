@@ -1,18 +1,95 @@
+.contentMorphingControlPanelContainer {
+    padding: 1rem;
+    display:block;
+}
+
+.contentMorphingControlPanelContainer > div:first-child {
+    border-bottom: 1px solid var(--dark-background);
+    margin-bottom: 0.5rem;
+}
+.contentMorphingControlPanelLevelCheckboxContainer input {
+    -webkit-appearance: none;
+    background-color: #fafafa;
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0px -15px 10px -12px rgba(0,0,0,0.05);
+    padding: .7rem;
+    border-radius: 3px;
+    display: inline-block;
+    position: relative;
+    outline: none;
+}
+
+.contentMorphingControlPanelLevelCheckboxContainer input:before {
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+
+}
+
+.contentMorphingControlPanelLevelCheckboxContainer input:active,
+.contentMorphingControlPanelLevelCheckboxContainer input:checked:active  {
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0px 1px 3px rgba(0,0,0,0.1);
+    border: 3px solid var(--primary-color);
+}
+.contentMorphingControlPanelLevelCheckboxContainer input:checked {
+    background-color: var(--primary-color);
+    border: 3px solid var(--primary-color);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0px -15px 10px -12px rgba(0,0,0,0.05), inset 15px 10px -12px rgba(255,255,255,0.1);
+    color: #fff;
+}
+.contentMorphingControlPanelLevelCheckboxContainer input:checked:after {
+    content: '\f00c';
+    font-weight: 900;
+    font-size: 1rem;
+    font-family: "Font Awesome 5 Free";
+    position: absolute;
+    top: 4px;
+    left: 3px;
+    color: #fff;
+}
+
+.contentMorphingControlPanelLevelCheckboxContainer .levelCheckboxLabel {
+    font-family: var(--secondary-font-family);
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    display: inline;
+    vertical-align: top;
+    line-height: 2rem;
+    padding: 0rem .5rem;
+}
+
 .adjustable-content {
-    background-color: #e1f3fa;
-    border-radius: 5px;
     padding: 5px;
-    border: 3px solid #077ebc;
     box-sizing: border-box;
-    clear: both;
+    border-radius: 5px;
     display: none;
-    /*    position: relative;*/
+    -webkit-column-break-inside: avoid;
+    break-inside: avoid-column;
 }
 
 .adjustable-content.active {
     display: block;
 }
 
+.adjustable-content a {
+    font-family: var(--secondary-font-family);
+    color: var(--secondary-color);
+    float: right;
+    font-size: .9rem;
+}
+
+.dynamicReturnLink {
+    background-color: var(--primary-color);
+    font-family: var(--secondary-font-family);
+    padding: .5rem;
+    float: right;
+    clear: both;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #fff;
+}
 .adjustable-content .level1,
 .adjustable-content .level2,
 .adjustable-content .level3,
@@ -25,11 +102,12 @@
 }
 
 .adjustable-content .level-options {
-    float: right;
     position: relative;
+    float: right;
 }
 
 .level-options .current-level {
+    margin: 1rem;
     display: block;
     opacity: 1;
     cursor: pointer;
@@ -37,40 +115,43 @@
     height: 40px;
     background: url(../image/icon-white-speed0.png) center no-repeat;
     background-size: 34px;
-    background-color: #077ebc !important;
-    border-radius: 5px;
+    background-color: var(--primary-color) !important;
+    border-radius: 40px;
 }
 
-.level-options .current-level:hover {
+.level-options  .current-level:hover {
     opacity: 1;
+
 }
 
 .level-options .current-level.set-level1 {
     background: url(../image/icon-white-speed0.png) center no-repeat;
     background-size: 34px;
+
 }
 
 .level-options .current-level.set-level2 {
     background: url(../image/icon-white-speed3.png) center no-repeat;
     background-size: 34px;
+
 }
 
 .level-options .current-level.set-level3 {
-    background: url(../image/icon-white-speed3.png) center no-repeat;
+    background: url(../image/icon-white-speed1) center no-repeat;
     background-size: 34px;
+    color: var(--primary-blue);
 }
 
 .level-options ul {
     box-sizing: border-box;
-    padding: 0.5em;
+    padding: 0.8em;
     display: none;
     position: absolute;
-    top: -1.25em;
-    right: 2.5em;
+    top: -.75em;
+    right: 3.25em;
     background-color: #fff;
-    color: #000;
-    background: black;
-    opacity: 0.8;
+    background: var(--light-background);
+    border: var(--light-background);
     border-radius: 5px;
 }
 
@@ -79,6 +160,7 @@
     left: 100%;
     top: 25%;
     border: solid transparent;
+    color: var(--background-light) !important;
     content: " ";
     height: 0;
     width: 0;
@@ -88,14 +170,14 @@
 
 .level-options ul:after {
     border-color: rgba(232, 232, 232, 0);
-    border-left-color: rgba(0,0,0,0.8);
+    border-left-color: var(--light-background) !important;
     border-width: 10px;
     margin-top: -10px;
 }
 
 .level-options ul:before {
     border-color: rgba(0, 0, 0, 0);
-    border-left-color: rgba(0,0,0,0.8);
+    border-left-color: var(--light-background);
     border-width: 11px;
     margin-top: -11px;
 }
@@ -108,30 +190,48 @@
     display: block;
     white-space: nowrap;
     cursor: pointer;
-    padding-left: 1.5em;
-    list-style: none;
-    color: white;
+    margin-left: .5em;
+    list-style-type: disc !important;
+    color: var(--primary-color-light);
 }
 
 .level-options li.select-level1 {
-    background: url(../image/icon-white-speed0.png) center left no-repeat;
     background-size: contain;
+    color: var(--primary-color-light);
 }
 
 .level-options li.select-level2 {
-    background: url(../image/icon-white-speed3.png) center left no-repeat;
     background-size: contain;
+    color: var(--primary-color-light);
 }
 
 .level-options li.select-level3 {
-    background: url(../image/icon-white-speed3.png) center left no-repeat;
     background-size: contain;
+    color: var(--primary-color-light);
 }
 
 .level-options li.selected {
-    color: orange;
+    color: var(--primary-color-dark);
 }
 
 .level-options li:hover {
-    color: yellow;
+    color: var(--primary-color);
+}
+
+.changeSelectionButton {
+    background-color: var(--primary-color) !important;
+    width: 240px;
+    margin-top: .5rem;
+    padding: .5rem;
+    font-weight: 500;
+    float: left !important;
+    border-radius: 5px;
+    color: #fff !important;
+    text-align: center;
+    font-family: var(--secondary-font-family);
+    text-decoration: none;
+}
+
+.changeSelectionButton i {
+    padding: .5rem;
 }
