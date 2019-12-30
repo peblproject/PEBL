@@ -1,5 +1,5 @@
 .pebl__quiz {
-    border-left: var(--primary-color) solid var(--side-border-size);
+    border-left: var(--secondary-color) solid var(--side-border-size);
     background-color: var(--light-background);
     padding: .5em .5em .5em 2em;
 }
@@ -27,8 +27,16 @@
 .pebl__quiz .pebl__quiz--choices li {
     cursor: pointer;
     padding: .25em 1em;
+    padding-left: 2em;
     margin: .25em 0em;
     border-radius: var(--border-radius);
+}
+
+.pebl__quiz .pebl__quiz--choices li:before {
+    content: "\25A2";
+    margin-left: -1.5em;
+    display: block;
+    float: left;
 }
 
 .pebl__quiz .pebl__quiz--choices li:hover {
@@ -46,10 +54,16 @@
     background-color: var(--primary-color) !important;
     color: var(--light-font);
 }
+.pebl__quiz .pebl__quiz--choices.reveal li.pebl__quiz--correct:before {
+    content: "\2714" !important;
+}
 
 .pebl__quiz .pebl__quiz--choices li.pebl__quiz--wrong {
     font-family: var(--primary-font-family);
     background-color: var(--secondary-color-light);
+}
+.pebl__quiz .pebl__quiz--choices li.pebl__quiz--wrong:before {
+    content: "\2716" !important;
 }
 
 .pebl__quiz .pebl__quiz--feedback {

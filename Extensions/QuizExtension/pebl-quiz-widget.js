@@ -1,4 +1,4 @@
-var globalPebl = window.parent.PeBL;
+var globalPebl = (window.parent && window.parent.PeBL) ? window.parent.PeBL : (window.PeBL ? window.PeBL : null);
 var globalReadium = window.parent.READIUM;
 var globalConfiguration = window.parent.Configuration;
 var globalLightbox = window.parent.Lightbox;
@@ -152,7 +152,7 @@ lowStakesQuiz.attachClickHandler = function (quizId) {
         });
     }
 
-    var gradeTest = function () {
+    var gradeTest = function (id) {
         var score = 0;
         var total = 0;
         var finished = true;
@@ -169,13 +169,12 @@ lowStakesQuiz.attachClickHandler = function (quizId) {
             total += 1;
         }
         if (finished) {
-            var id = jQuery("ol.pebl__quiz")[0].id;
             var promptElems = jQuery("i[data-id=" + id + "]");
             var prompts = [];
             promptElems.each(function (i, elem) {
                 prompts.push(" ][ " + jQuery(elem).attr("data-prompt"));
             });
-            var description = jQuery(".title").text().trim() + prompts.join("");
+            var description = id;
             var normalizedScore = ((Math.round((score / total) * 100) / 100) * 100) | 0;
             var quizFeedback = normalizedScore + "%";
             var event;
@@ -206,7 +205,7 @@ lowStakesQuiz.attachClickHandler = function (quizId) {
                     description: description
                 });
             localStorage.removeItem(quizEntry);
-            jQuery(".quizScore").text(quizFeedback);
+            jQuery("#" + id + " .quizScore").text(quizFeedback);
         }
     };
 
@@ -229,8 +228,9 @@ lowStakesQuiz.attachClickHandler = function (quizId) {
                 var correctAnswer = jQueryanswers.find('.pebl__quiz--correct').text();
                 var jQueryfeedback = jQueryanswers.siblings('.pebl__quiz--feedback');
                 var correct = jQuery(self).hasClass('pebl__quiz--correct'); // T or F
-                var questionNum = jQuery('ol.pebl__quiz .pebl__quiz--choices').index(jQueryanswers);
+                var questionNum = jQuery('#' + quizId + ' .pebl__quiz--choices').index(jQueryanswers);
                 var linkText = jQuery(self).attr('data-feedbackText');
+                var feedbackLink = jQueryfeedback.attr('feedbackLink');
 
                 if (quizAttempts[questionNum].length == 0) {
                     // first attempt
@@ -239,15 +239,21 @@ lowStakesQuiz.attachClickHandler = function (quizId) {
                     localStorage.setItem(quizEntry, JSON.stringify(quizAttempts));
                     if (correct) {
                         jQueryanswers.addClass('reveal');
-                        jQueryfeedback.text(linkText);
+                        if (linkText)
+                            jQueryfeedback.text(linkText);
+                        else
+                            jQueryfeedback.text('Correct');
                     } else {
                         jQuery(self).addClass('pebl__quiz--wrong');
                         //jQuery(self).delay(1000).slideUp();
-                        jQueryfeedback.text(linkText);
+                        if (linkText)
+                            jQueryfeedback.text(linkText + ' Try again.');
+                        else
+                            jQueryfeedback.text('Not quite. Try again.');
                     }
 
                     if (globalPebl != null)
-                        globalPebl.emitEvent(globalPebl.events.eventAnswered, {
+                        globalPebl.emitEvent(globalPebl.events.eventAttempted, {
                             "prompt": prompt,
                             "answers": jQueryanswersText,
                             "correctAnswers": [
@@ -262,7 +268,7 @@ lowStakesQuiz.attachClickHandler = function (quizId) {
                         });
 
 
-                    gradeTest();
+                    gradeTest(quizId);
                     lowStakesQuiz.handleResize(function () {
                         jQueryfeedback.slideDown();
                     });
@@ -274,7 +280,10 @@ lowStakesQuiz.attachClickHandler = function (quizId) {
                     localStorage.setItem(quizEntry, JSON.stringify(quizAttempts));
                     if (correct == true) {
                         jQueryanswers.addClass('reveal');
-                        jQueryfeedback.text(linkText);
+                        if (linkText)
+                            jQueryfeedback.text(linkText);
+                        else
+                            jQueryfeedback.text('Correct');
                     } else {
                         setTimeout(function () {
                             jQueryanswers.addClass('reveal secondary');
@@ -282,11 +291,16 @@ lowStakesQuiz.attachClickHandler = function (quizId) {
 
                         jQuery(self).addClass('pebl__quiz--wrong');
                         //jQuery(self).delay(1000).slideUp();
-                        jQueryfeedback.text(linkText);
+                        if (linkText)
+                            jQueryfeedback.text(linkText);
+                        else if (feedbackLink)
+                            jQueryfeedback.html('Please study the correct answer <a data-dynamicReturnLink="NPSPolicies2006-8.6.xhtml#' + quizId + '" data-dynamicReturnLinkText="Return to Quiz" href="' + feedbackLink + '">here</a>');
+                        else
+                            jQueryfeedback.text('Please study the correct answer');
                     }
 
                     if (globalPebl != null)
-                        globalPebl.emitEvent(globalPebl.events.eventAnswered, {
+                        globalPebl.emitEvent(globalPebl.events.eventAttempted, {
                             "prompt": prompt,
                             "answers": jQueryanswersText,
                             "correctAnswers": [
@@ -299,7 +313,7 @@ lowStakesQuiz.attachClickHandler = function (quizId) {
                             "complete": true,
                             "success": correct
                         });
-                    gradeTest();
+                    gradeTest(quizId);
                     lowStakesQuiz.handleResize(function () {
                         jQueryfeedback.slideDown();
                     });
