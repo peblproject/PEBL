@@ -1,4 +1,4 @@
-var globalPebl = window.parent.PeBL;
+var globalPebl = (window.parent && window.parent.PeBL) ? window.parent.PeBL : (window.PeBL ? window.PeBL : null);
 var globalReadium = window.parent.READIUM;
 var globalConfiguration = window.parent.Configuration;
 var globalLightbox = window.parent.Lightbox;
@@ -19,15 +19,16 @@ dataEntry.activeEntries = {};
 
 dataEntry.insertExtensions = function() {
     jQuery('.dataEntryExtension, .peblExtension[data-peblextension="dataentry"], .peblExtension[data-peblExtension="dataentry"]').each(function() {        
-        var prompt = jQuery(this)[0].getAttribute('data-prompt');        
-        var id = jQuery(this)[0].getAttribute('data-id');        
-        var insertID = jQuery(this)[0].getAttribute('id');        
-        var forms = JSON.parse(jQuery(this)[0].getAttribute('data-forms'));        
-        var sharing = jQuery(this)[0].getAttribute('data-sharing');        
-        var displayMode = jQuery(this)[0].getAttribute('data-displayMode') || jQuery(this)[0].getAttribute('data-displaymode');        
-        var polling = jQuery(this)[0].hasAttribute('data-polling') ? jQuery(this)[0].getAttribute('data-polling') : 'false';        
-        var useConfig = jQuery(this)[0].hasAttribute('data-useConfig') ? jQuery(this)[0].getAttribute('data-useConfig') : 'false';        
-        dataEntry.createDataEntry(insertID, prompt, id, forms, sharing, displayMode, polling, useConfig);        
+        var prompt = this.getAttribute('data-prompt');        
+        var id = this.getAttribute('data-id');        
+        var insertID = this.getAttribute('id');        
+        var forms = JSON.parse(this.getAttribute('data-forms'));        
+        var sharing = this.getAttribute('data-sharing');        
+        var displayMode = this.getAttribute('data-displayMode') || jQuery(this)[0].getAttribute('data-displaymode');        
+        var polling = this.hasAttribute('data-polling') ? jQuery(this)[0].getAttribute('data-polling') : 'false';        
+        var useConfig = this.hasAttribute('data-useConfig') ? jQuery(this)[0].getAttribute('data-useConfig') : 'false';
+        var closeable = this.hasAttribute('data-closeable') ? this.getAttribute('data-closeable') : 'false'; 
+        dataEntry.createDataEntry(insertID, prompt, id, forms, sharing, displayMode, polling, useConfig, closeable);        
     });        
 }
 
@@ -758,14 +759,15 @@ dataEntry.invalidForm = function () {
     }
 }
 
-dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, displayMode, polling, useConfig) {
+dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, displayMode, polling, useConfig, closeable) {
     var programID = null;
     if (window.parent.extensionDashboard && window.parent.extensionDashboard.programID)
         programID = window.parent.extensionDashboard.programID;
 
-    var makeDataEntry = function(insertID, question, id, forms, sharing, displayMode, polling, useConfig, userProfile, programID, group) {
+    var makeDataEntry = function(insertID, question, id, forms, sharing, displayMode, polling, useConfig, closeable, userProfile, programID, group) {
         var dataEntryID;
             var variableSharing = false;
+            var privateAndAllSharing = false;
             // var learnletLevel = dataEntry.getLearnletLevel(document.body.id);
             // var learnlet = dataEntry.getLearnlet(document.body.id);
             // var learnletTitle = dataEntry.getLearnletTitle();
@@ -774,13 +776,18 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
             if (sharing === 'team') {
                 if (group) {
                     dataEntryID = dataEntry.comboID(group.membershipId, id);
+                } else if (userProfile.currentTeam && userProfile.currentClass) {
+                    dataEntryID = dataEntry.comboID(userProfile.currentClass, userProfile.currentTeam, id);
                 } else {
                     //User did not use the dashboard to launch the learnlet
                     dataEntryID = id;
-                    window.alert('This activity requires you to be part of a team. Consider relaunching this learnlet through the dashboard.');
+                    //window.alert('This activity requires you to be part of a team. Consider relaunching this learnlet through the dashboard.');
                 }
             } else if (sharing === 'private') {
-                dataEntryID = dataEntry.comboID(userProfile.identity, id);
+                dataEntryID = id;
+            } else if (sharing === 'private+all') {
+                dataEntryID = id;
+                privateAndAllSharing = true;
             } else if (sharing === 'variable') {
                 dataEntryID = id;
                 //Handle it later...
@@ -794,6 +801,13 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
 
             var dataEntryWrapper = document.createElement('div');
             dataEntryWrapper.classList.add('dataEntryWrapper');
+            if (sharing === 'private') {
+                dataEntryWrapper.classList.add('dataEntry__submitToPersonal');
+            } else if (sharing === 'team') {
+                dataEntryWrapper.classList.add('dataEntry__submitToTeam');
+            } else if (sharing === 'all') {
+                dataEntryWrapper.classList.add('dataEntry__submitToAll');
+            }
 
             var dataEntryCfiPlaceholderStart = document.createElement('p');
             dataEntryCfiPlaceholderStart.textContent = 'CFI';
@@ -873,12 +887,17 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
             var formFooter = document.createElement('div');
             formFooter.classList.add('dataEntryFooter');
 
+            var submitMarkedResponsesOfficialText = 'Make it Official';
+            if (globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.teamSharingMakeOfficialText) {
+                submitMarkedResponsesOfficialText = globalPebl.extension.config.dataEntry.teamSharingMakeOfficialText;
+            }
+
             //Submit the marked responses as the official submission, only visible to team leader in view tab.
-            var submitMarkedResponsesOfficial = jQuery('<button class="dataEntryFormSubmitOfficial unofficialView">Make it Official</button>');
+            var submitMarkedResponsesOfficial = jQuery('<button class="dataEntryFormSubmitOfficial unofficialView">'+ submitMarkedResponsesOfficialText + '</button>');
             submitMarkedResponsesOfficial.on('click', function () {
                 var message = dataEntry.getFormData(formElement, newDataEntry, 'Official', true);
 
-                if (message != null) {
+                if (message != null && message.length > 0) {
                     //Submit the official version
                     var finalMessage = {
                         "prompt": "DataEntryOfficial",
@@ -918,10 +937,17 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
                     }
 
                     newDataEntry.officialMode();
+                } else {
+                    window.alert('Select an Official Team Response to share.');
                 }
             });
 
-            var formSubmitOfficial = jQuery('<button class="dataEntryFormSubmitOfficial edit">Make it Official</button>');
+            var formSubmitOfficialText = 'Make it Official';
+            if (globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.teamSharingMakeOfficialText) {
+                formSubmitOfficialText = globalPebl.extension.config.dataEntry.teamSharingMakeOfficialText;
+            }
+
+            var formSubmitOfficial = jQuery('<button class="dataEntryFormSubmitOfficial edit">' + formSubmitOfficialText + '</button>');
             formSubmitOfficial.on('click', function () {
                 var message = dataEntry.getFormData(formElement, newDataEntry, 'Official');
 
@@ -969,7 +995,12 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
                 }
             });
 
-            var formSubmit = jQuery('<button class="dataEntryFormSubmit edit">Submit</button>');
+            var formSubmitText = 'Share with Everyone';
+            if (globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.allSharingSubmitText) {
+                formSubmitText = globalPebl.extension.config.dataEntry.allSharingSubmitText;
+            }
+
+            var formSubmit = jQuery('<button class="dataEntryFormSubmit edit">' + formSubmitText + '</button>');
             formSubmit.on('click', function () {
                 globalPebl.user.isLoggedIn(function(isLoggedIn) {
                     if (!isLoggedIn) {
@@ -983,7 +1014,8 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
                             var finalMessage = {
                                 "prompt": "DataEntry",
                                 "thread": dataEntryID,
-                                "text": JSON.stringify(message)
+                                "text": JSON.stringify(message),
+                                "access": 'all'
                             }
 
                             if (globalPebl)
@@ -1006,7 +1038,12 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
                 });
             });
 
-            var variableFormSubmitPrivate = jQuery('<button class="edit">Submit Privately</button>');
+            var formSubmitPrivateText = 'Submit Privately';
+            if (sharing === 'private' && globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.privateSharingSubmitText) {
+                formSubmitPrivateText = globalPebl.extension.config.dataEntry.privateSharingSubmitText;
+            }
+
+            var variableFormSubmitPrivate = jQuery('<button class="dataEntryFormSubmitPrivate edit">' + formSubmitPrivateText + '</button>');
             variableFormSubmitPrivate.on('click', function () {
                 var message = dataEntry.getFormData(formElement, newDataEntry, 'Private');
 
@@ -1014,7 +1051,8 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
                     var finalMessage = {
                         "prompt": "PrivateDataEntry",
                         "thread": dataEntry.comboID(userProfile.identity, dataEntryID),
-                        "text": JSON.stringify(message)
+                        "text": JSON.stringify(message),
+                        "access": "private"
                     }
                     if (globalPebl)
                         globalPebl.emitEvent(globalPebl.events.newMessage,
@@ -1024,7 +1062,7 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
                 }
             });
 
-            var variableFormSubmitTeam = jQuery('<button class="edit">Submit to Team</button>');
+            var variableFormSubmitTeam = jQuery('<button class="dataEntryFormSubmitTeam edit">Share with Team</button>');
             variableFormSubmitTeam.on('click', function () {
                 var message = dataEntry.getFormData(formElement, newDataEntry, 'Team');
 
@@ -1032,7 +1070,8 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
                     var finalMessage = {
                         "prompt": "TeamDataEntry",
                         "thread": dataEntry.comboID(userProfile.currentClass, userProfile.currentTeam, dataEntryID),
-                        "text": JSON.stringify(message)
+                        "text": JSON.stringify(message),
+                        "access": "team"
                     }
 
                     if (globalPebl)
@@ -1043,7 +1082,7 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
                 }
             });
 
-            var variableFormSubmitClass = jQuery('<button class="edit">Submit to Class</button>');
+            var variableFormSubmitClass = jQuery('<button class="dataEntryFormSubmitClass edit">Share with Class</button>');
             variableFormSubmitClass.on('click', function () {
                 var message = dataEntry.getFormData(formElement, newDataEntry, 'Class');
 
@@ -1051,7 +1090,8 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
                     var finalMessage = {
                         "prompt": "ClassDataEntry",
                         "thread": dataEntry.comboID(userProfile.currentClass, dataEntryID),
-                        "text": JSON.stringify(message)
+                        "text": JSON.stringify(message),
+                        "access": "class"
                     }
 
                     if (globalPebl)
@@ -1065,6 +1105,8 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
             newDataEntry.privateViewMode = function () {
                 dataEntry.handleResize(function () {
                     jQuery(calloutDiv).addClass('privateViewMode');
+                    jQuery(calloutDiv).removeClass('officialViewMode');
+                    jQuery(calloutDiv).removeClass('unofficialViewMode');
                     jQuery(calloutDiv).removeClass('teamViewMode');
                     jQuery(calloutDiv).removeClass('classViewMode');
                     jQuery(calloutDiv).removeClass('editMode');
@@ -1101,6 +1143,9 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
             newDataEntry.viewMode = function () {
                 dataEntry.handleResize(function () {
                     jQuery(calloutDiv).removeClass('officialViewMode');
+                    jQuery(calloutDiv).removeClass('privateViewMode');
+                    jQuery(calloutDiv).removeClass('teamViewMode');
+                    jQuery(calloutDiv).removeClass('classViewMode');
                     jQuery(calloutDiv).addClass('unofficialViewMode');
                     jQuery(calloutDiv).removeClass('editMode');
                 });
@@ -1149,6 +1194,9 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
 
             var privateViewModeButtonIcon = document.createElement('span');
             privateViewModeButtonIcon.textContent = 'View Private Responses';
+            if (sharing === 'private' && globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.privateSharingViewText) {
+                privateViewModeButtonIcon.textContent = globalPebl.extension.config.dataEntry.privateSharingViewText;
+            }
             privateViewModeButton.appendChild(privateViewModeButtonIcon);
 
             var teamViewModeButton = document.createElement('div');
@@ -1179,6 +1227,11 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
 
             var viewModeButtonIcon = document.createElement('span');
             viewModeButtonIcon.textContent = 'View Responses';
+            if (sharing === 'team' && globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.teamSharingViewText) {
+                viewModeButtonIcon.textContent = globalPebl.extension.config.dataEntry.teamSharingViewText;
+            } else if (sharing === 'private+all' && globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.privateAndAllSharingViewText) {
+                viewModeButtonIcon.textContent = globalPebl.extension.config.dataEntry.privateAndAllSharingViewText;
+            }
 
             viewModeButton.appendChild(viewModeButtonIcon);
 
@@ -1190,6 +1243,18 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
 
             var editModeButtonIcon = document.createElement('span');
             editModeButtonIcon.textContent = 'Participate';
+            if (sharing === 'all' && globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.allSharingEditText) {
+                editModeButtonIcon.textContent = globalPebl.extension.config.dataEntry.allSharingEditText;
+            } else if (sharing === 'private' && globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.privateSharingEditText) {
+                editModeButtonIcon.textContent = globalPebl.extension.config.dataEntry.privateSharingEditText;
+            } else if (sharing === 'team' && globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.teamSharingEditText) {
+                editModeButtonIcon.textContent = globalPebl.extension.config.dataEntry.teamSharingEditText;
+            }
+
+            // Polling overrides previous choice
+            if (polling === 'true' && globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.pollEditText) {
+                editModeButtonIcon.textContent = globalPebl.extension.config.dataEntry.pollEditText;
+            } 
 
             editModeButton.appendChild(editModeButtonIcon);
 
@@ -1201,6 +1266,9 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
 
             var officialModeButtonIcon = document.createElement('span');
             officialModeButtonIcon.textContent = 'View Official Responses';
+            if (sharing === 'team' && globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.teamSharingViewOfficialText) {
+                officialModeButtonIcon.textContent = globalPebl.extension.config.dataEntry.teamSharingViewOfficialText;
+            }
 
             officialModeButton.appendChild(officialModeButtonIcon);
 
@@ -1211,8 +1279,14 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
             //If viewmode is set to viewOnly, don't show the edit mode button
             if (!displayMode || displayMode !== 'viewOnly')
                 header.appendChild(editModeButton);
+            if (sharing === 'private') {
+                header.appendChild(privateViewModeButton);
+                jQuery(formFooter).append(variableFormSubmitPrivate);
 
-            if (variableSharing) {
+                var privateMessageHandle = dataEntry.dataMessageHandler(dataEntry.comboID(userProfile.identity, dataEntryID));
+                if (globalPebl)
+                    globalPebl.subscribeThread(dataEntry.comboID(userProfile.identity, dataEntryID), false, privateMessageHandle);
+            } else if (variableSharing) {
                 //header.appendChild(privateViewModeButton);
                 if (userProfile.currentTeam)
                     header.appendChild(teamViewModeButton);
@@ -1241,6 +1315,20 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
                     if (globalPebl)
                         globalPebl.subscribeThread(dataEntry.comboID(userProfile.currentClass, dataEntryID), false, classMessageHandle);
                 }
+            } else if (privateAndAllSharing) {
+                header.appendChild(privateViewModeButton);
+                header.appendChild(viewModeButton);
+
+                jQuery(formFooter).append(variableFormSubmitPrivate);
+                jQuery(formFooter).append(formSubmit);
+
+                var privateMessageHandle = dataEntry.dataMessageHandler(dataEntry.comboID(userProfile.identity, dataEntryID));
+                if (globalPebl)
+                    globalPebl.subscribeThread(dataEntry.comboID(userProfile.identity, dataEntryID), false, privateMessageHandle);
+
+                var messageHandle = dataEntry.dataMessageHandler(dataEntryID);
+                if (globalPebl)
+                    globalPebl.subscribeThread(dataEntryID, false, messageHandle);
             } else {
                 header.appendChild(viewModeButton);
 
@@ -1258,10 +1346,10 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
 
 
             //If sharing is set to team and not in standalone mode, show the official submit / view buttons
-            if (sharing === 'team' && group) {
+            if (sharing === 'team' && (group || (userProfile.currentClass && userProfile.currentTeam))) {
                 header.appendChild(officialModeButton);
                 //TODO: Use the specific permission that lets you make official submissions
-                if (group.role === 'owner') {
+                if ((group && group.role === 'owner') || (globalPebl.extension.config && globalPebl.extension.config.userRoles && globalPebl.extension.config.userRoles[userProfile.identity] && globalPebl.extension.config.userRoles[userProfile.identity] === 'owner')) {
                     jQuery(formFooter).append(formSubmitOfficial);
                     // Don't show the inline make official in viewOnly mode
                     if (!displayMode || displayMode !== 'viewOnly') {
@@ -1271,8 +1359,8 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
                 }
             }
 
-            // if (polling && polling === 'true')
-            //     header.appendChild(closeButton);
+            if (closeable && closeable === 'true')
+                header.appendChild(closeButton);
 
             calloutDiv.appendChild(formElement);
             calloutDiv.appendChild(header);
@@ -1289,20 +1377,29 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
                 formElement.classList.add('fixScrolling');
 
             //Put the dataEntry into viewmode if specified.
-            if (displayMode && displayMode === 'viewOnly')
-                newDataEntry.viewMode();
-            else
+            if (displayMode && displayMode === 'viewOnly') {
+                if (sharing === 'all' || sharing === 'team')
+                    newDataEntry.viewMode();
+                else if (sharing === 'private' || sharing === 'private+all')
+                    newDataEntry.privateViewMode();
+                else if (sharing === 'variable')
+                    newDataEntry.teamViewMode();
+            } else {
                 newDataEntry.editMode();
+            }
     }
 
     // Render it when no globalPebl present
     if (!globalPebl)
-        makeDataEntry(insertID, question, id, forms, sharing, displayMode, polling, useConfig, null, null, null);
+        makeDataEntry(insertID, question, id, forms, sharing, displayMode, polling, useConfig, closeable, null, null, null);
     else
         globalPebl.user.getUser(function(userProfile) {
-            globalPebl.utils.getSpecificGroupMembership(programID, function(group) {
-                makeDataEntry(insertID, question, id, forms, sharing, displayMode, polling, useConfig, userProfile, programID, group);
-            });
+            if (programID)
+                globalPebl.utils.getSpecificGroupMembership(programID, function(group) {
+                    makeDataEntry(insertID, question, id, forms, sharing, displayMode, polling, useConfig, closeable, userProfile, programID, group);
+                });
+            else
+                makeDataEntry(insertID, question, id, forms, sharing, displayMode, polling, useConfig, closeable, userProfile, null, null);
         });
 }
 
@@ -1368,6 +1465,9 @@ dataEntry.messageHandler = function (message, userProfile) {
 
     var makeOfficialSpan = document.createElement('span');
     makeOfficialSpan.textContent = 'Official';
+    if (globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.teamSharingMakeOfficialInlineText) {
+        makeOfficialSpan.textContent = globalPebl.extension.config.dataEntry.teamSharingMakeOfficialInlineText;
+    }
 
     var makeOfficialButton = document.createElement('input');
     makeOfficialButton.type = 'radio';
@@ -1560,7 +1660,7 @@ dataEntry.radioMessageHandler = function (message, userProfile) {
     var elem = document.querySelector('[data-id="' + dataEntry.comboID(message.thread, message.name) + '"]');
 
     messageContainer.appendChild(messageSpan);
-    messageContainer.appendChild(makeOfficialWrapper);
+    //messageContainer.appendChild(makeOfficialWrapper);
     if (elem) {
         var oldTimestamp = elem.getAttribute('data-timestamp');
         var newTimestamp = message.timestamp;
