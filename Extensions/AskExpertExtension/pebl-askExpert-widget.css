@@ -1,5 +1,5 @@
 .askContainer {
-	height: 100%;
+    height: 100%;
     -webkit-box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
     box-shadow: rgba(0, 0, 0, 0.137255) 0px 4px 5px 0px, rgba(0, 0, 0, 0.117647) 0px 1px 10px 0px, rgba(0, 0, 0, 0.298039) 0px 2px 4px -1px;
     width: 100%;
@@ -10,14 +10,14 @@
 }
 
 .responsive-wrapper {
-	position: relative;
+    position: relative;
     height: 100%;
     -webkit-overflow-scrolling: touch;
     overflow: auto;
 }
 
 .askFrame {
-	position: absolute;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
@@ -28,10 +28,99 @@
 }
 
 .askExpertCloseButton {
-	position: fixed;
+    position: fixed;
     top: 0.25em;
     right: 1em;
     z-index: 5001;
     font-size: 2em;
     cursor: pointer;
+}
+
+.askExpertButton {
+    background-color: var(--primary-color) !important;
+    width: 240px;
+    margin-top: .5rem;
+    padding: .5rem;
+    font-weight: 500;
+    border: none;
+    color: #fff !important;
+    cursor: pointer;
+    text-align: center;
+}
+
+.askExpertButton:hover {
+    background-color: var(--primary-color-dark) !important;
+}
+
+.askExpertExpertsModal {
+    position: fixed;
+    top: 10vh;
+    left: 0;
+    right: 0;
+    min-height: 400px;
+    height: 80vh;
+    background-color: var(--light-background);
+    z-index: 5000;
+    box-shadow: var(--elevation-2);
+    max-width: 700px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    -webkit-box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+}
+
+.askExpertExpertsModalHeader {
+    display: flex;
+    background-color: var(--primary-color-light);
+    justify-content: space-between;
+    align-items: center;
+    color: #fff;
+    padding: 1em;
+    font-size: 1rem;
+    font-family: var(--secondary-font-family);
+}
+
+.askExpertExpertsModalBody {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.askExpertExpertsModalCloseButton {
+    width: 1em;
+    height: 1em;
+    font-size: 1.5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.askExpertExpertContainer {
+    display: flex;
+    flex-direction: column;
+    padding: 1em;
+    cursor: pointer;
+}
+
+.askExpertExpertContainer:hover {
+    background-color: var(--pebl-primary-color);
+}
+
+.askExpertExpertContainer:hover span {
+    color: white !important;
+}
+
+.askExpertExpertName {
+    font-family: var(--secondary-font-family);
+}
+
+.askExpertExpertDescription {
+    font-family: var(--secondary-font-family);
+    color: var(--dark-font);
+    font-style: italic;
+}
+
+.askExpertExpertsModalDescription {
+    padding: 1em;
 }
