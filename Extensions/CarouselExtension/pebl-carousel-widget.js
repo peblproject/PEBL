@@ -1,4 +1,4 @@
-var globalPebl = window.parent.PeBL;
+var globalPebl = (window.parent && window.parent.PeBL) ? window.parent.PeBL : (window.PeBL ? window.PeBL : null);
 var globalReadium = window.parent.READIUM;
 
 var carousel = {};
@@ -120,7 +120,7 @@ carousel.createCarousel = function (insertID, imagesArray, captionsArray, zoomab
 
             var caption = document.createElement('span');
             caption.classList.add('carousel_caption');
-            caption.textContent = captionsArray[i];
+            caption.textContent = captionsArray[i].replace('&',' and ');
 
             captionContainer.appendChild(caption);
 
@@ -130,6 +130,27 @@ carousel.createCarousel = function (insertID, imagesArray, captionsArray, zoomab
         }
 
         carouselBody.appendChild(slide);
+
+        var carouselExperienced = function(elem, slide, caption) {
+            if (carousel.isElementInViewport(elem) && window.getComputedStyle(slide).zIndex === '2') {
+                globalPebl.emitEvent(globalPebl.events.eventExperienced, {
+                    target: insertID,
+                    type: "carousel",
+                    description: caption ? caption.textContent : undefined,
+                    name: slide.id
+                });
+            } else {
+                setTimeout(function() {
+                    carouselExperienced(elem, slide, caption)
+                }, 1000);
+            }
+        }
+
+        setTimeout(function(elem, slide, caption) {
+            return(function() {
+                carouselExperienced(elem, slide, caption)
+            });
+        }(carouselWrapper, slide, caption), 2000);
     }
 
     insertLocation = document.getElementById(insertID);
@@ -197,4 +218,21 @@ carousel.nextSlide = function (elem) {
 carousel.goToSlide = function (n) {
     var slide = parseInt(n);
     console.log("Slide " + slide);
+}
+
+//From https://stackoverflow.com/a/7557433
+carousel.isElementInViewport = function (el) {
+    //special bonus for those using jQuery
+    if (typeof jQuery === "function" && el instanceof jQuery) {
+        el = el[0];
+    }
+
+    var rect = el.getBoundingClientRect();
+
+    return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /*or jQuery(window).height() */
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth) /*or jQuery(window).width() */
+    );
 }

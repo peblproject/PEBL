@@ -152,8 +152,7 @@
     padding: 1em;
     height: 2rem;
     line-height: 1em;
-    overflow: scroll;
-    font-size: .8em;
+    overflow: auto;
     color: var(--dark-font);
     font-family: var(--primary-font-family);
     background-color: var(--light-background);
