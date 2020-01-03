@@ -1920,7 +1920,8 @@ dataEntry.sortMessages = function (a, b) {
 //Combines any number of strings with _ between them
 dataEntry.comboID = function () {
     var newID = null;
-    for (var string of arguments) {
+    for (var i = 0; i < arguments.length; i++) {
+        var string = arguments[i];
         if (newID === null)
             newID = string;
         else
