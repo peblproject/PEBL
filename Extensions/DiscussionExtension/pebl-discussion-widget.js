@@ -367,9 +367,9 @@ discussion.sortMessages = function (a, b) {
 }
 
 //Combines any number of strings with _ between them
-discussion.comboID = function (...strings) {
+discussion.comboID = function () {
     var newID = null;
-    for (var string of strings) {
+    for (var string of arguments) {
         if (newID === null)
             newID = string;
         else
