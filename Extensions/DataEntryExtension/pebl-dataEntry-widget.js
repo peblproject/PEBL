@@ -75,7 +75,8 @@ dataEntry.createDropdownEntry = function (id, form, activeEntry) {
     dropdownInput.setAttribute('data-responseBoxTeam', dataEntry.comboID(id, 'responseBoxTeam'));
     dropdownInput.setAttribute('data-responseBoxClass', dataEntry.comboID(id, 'responseBoxClass'));
 
-    for (var option of form.options) {
+    for (var i = 0; i < form.options.length; i++) {
+        var option = form.options[i];
         var optionElem = document.createElement('option');
         optionElem.value = option;
         optionElem.textContent = option;
