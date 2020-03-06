@@ -905,7 +905,7 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
             formFooter.classList.add('dataEntryFooter');
 
             var submitMarkedResponsesOfficialText = 'Make it Official';
-            if (globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.teamSharingMakeOfficialText) {
+            if (globalPebl && globalPebl.extension && globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.teamSharingMakeOfficialText) {
                 submitMarkedResponsesOfficialText = globalPebl.extension.config.dataEntry.teamSharingMakeOfficialText;
             }
 
@@ -960,7 +960,7 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
             });
 
             var formSubmitOfficialText = 'Make it Official';
-            if (globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.teamSharingMakeOfficialText) {
+            if (globalPebl && globalPebl.extension && globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.teamSharingMakeOfficialText) {
                 formSubmitOfficialText = globalPebl.extension.config.dataEntry.teamSharingMakeOfficialText;
             }
 
@@ -1013,50 +1013,51 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
             });
 
             var formSubmitText = 'Share with Everyone';
-            if (globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.allSharingSubmitText) {
+            if (globalPebl && globalPebl.extension && globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.allSharingSubmitText) {
                 formSubmitText = globalPebl.extension.config.dataEntry.allSharingSubmitText;
             }
 
             var formSubmit = jQuery('<button class="dataEntryFormSubmit edit">' + formSubmitText + '</button>');
             formSubmit.on('click', function () {
-                globalPebl.user.isLoggedIn(function(isLoggedIn) {
-                    if (!isLoggedIn) {
-                        if (globalConfiguration && globalConfiguration.useLinkedIn && globalLightbox && globalLightbox.linkedInSignIn) {
-                            globalLightbox.linkedInSignIn();
-                        }
-                    } else {
-                        var message = dataEntry.getFormData(formElement, newDataEntry, '');
-
-                        if (message != null) {
-                            var finalMessage = {
-                                "prompt": "DataEntry",
-                                "thread": dataEntryID,
-                                "text": JSON.stringify(message),
-                                "access": 'all'
+                if (globalPebl)
+                    globalPebl.user.isLoggedIn(function(isLoggedIn) {
+                        if (!isLoggedIn) {
+                            if (globalConfiguration && globalConfiguration.useLinkedIn && globalLightbox && globalLightbox.linkedInSignIn) {
+                                globalLightbox.linkedInSignIn();
                             }
+                        } else {
+                            var message = dataEntry.getFormData(formElement, newDataEntry, '');
 
-                            if (globalPebl)
-                                globalPebl.emitEvent(globalPebl.events.newMessage,
-                                    finalMessage);
+                            if (message != null) {
+                                var finalMessage = {
+                                    "prompt": "DataEntry",
+                                    "thread": dataEntryID,
+                                    "text": JSON.stringify(message),
+                                    "access": 'all'
+                                }
 
-                            // If useConfig is true, call the function defined in the config
-                            if (useConfig && useConfig === 'true') {
-                                if (globalPebl && globalPebl.extension.config && globalPebl.extension.config.dataEntry) {
-                                    var dataEntryConfig = globalPebl.extension.config.dataEntry;
-                                    if (dataEntryConfig.onSubmit && typeof dataEntryConfig.onSubmit === 'function') {
-                                        dataEntryConfig.onSubmit();
+                                if (globalPebl)
+                                    globalPebl.emitEvent(globalPebl.events.newMessage,
+                                        finalMessage);
+
+                                // If useConfig is true, call the function defined in the config
+                                if (useConfig && useConfig === 'true') {
+                                    if (globalPebl && globalPebl.extension.config && globalPebl.extension.config.dataEntry) {
+                                        var dataEntryConfig = globalPebl.extension.config.dataEntry;
+                                        if (dataEntryConfig.onSubmit && typeof dataEntryConfig.onSubmit === 'function') {
+                                            dataEntryConfig.onSubmit();
+                                        }
                                     }
                                 }
-                            }
 
-                            newDataEntry.viewMode();
+                                newDataEntry.viewMode();
+                            }
                         }
-                    }
-                });
+                    });
             });
 
             var formSubmitPrivateText = 'Submit Privately';
-            if (sharing === 'private' && globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.privateSharingSubmitText) {
+            if (sharing === 'private' && globalPebl && globalPebl.extension && globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.privateSharingSubmitText) {
                 formSubmitPrivateText = globalPebl.extension.config.dataEntry.privateSharingSubmitText;
             }
 
@@ -1211,7 +1212,7 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
 
             var privateViewModeButtonIcon = document.createElement('span');
             privateViewModeButtonIcon.textContent = 'View Private Responses';
-            if (sharing === 'private' && globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.privateSharingViewText) {
+            if (sharing === 'private' && globalPebl && globalPebl.extension && globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.privateSharingViewText) {
                 privateViewModeButtonIcon.textContent = globalPebl.extension.config.dataEntry.privateSharingViewText;
             }
             privateViewModeButton.appendChild(privateViewModeButtonIcon);
@@ -1244,7 +1245,7 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
 
             var viewModeButtonIcon = document.createElement('span');
             viewModeButtonIcon.textContent = 'View Responses';
-            if (sharing === 'team' && globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.teamSharingViewText) {
+            if (sharing === 'team' && globalPebl && globalPebl.extension && globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.teamSharingViewText) {
                 viewModeButtonIcon.textContent = globalPebl.extension.config.dataEntry.teamSharingViewText;
             } else if (sharing === 'private+all' && globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.privateAndAllSharingViewText) {
                 viewModeButtonIcon.textContent = globalPebl.extension.config.dataEntry.privateAndAllSharingViewText;
@@ -1260,16 +1261,16 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
 
             var editModeButtonIcon = document.createElement('span');
             editModeButtonIcon.textContent = 'Participate';
-            if (sharing === 'all' && globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.allSharingEditText) {
+            if (sharing === 'all' && globalPebl && globalPebl.extension && globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.allSharingEditText) {
                 editModeButtonIcon.textContent = globalPebl.extension.config.dataEntry.allSharingEditText;
-            } else if (sharing === 'private' && globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.privateSharingEditText) {
+            } else if (sharing === 'private' && globalPebl && globalPebl.extension && globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.privateSharingEditText) {
                 editModeButtonIcon.textContent = globalPebl.extension.config.dataEntry.privateSharingEditText;
-            } else if (sharing === 'team' && globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.teamSharingEditText) {
+            } else if (sharing === 'team' && globalPebl && globalPebl.extension && globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.teamSharingEditText) {
                 editModeButtonIcon.textContent = globalPebl.extension.config.dataEntry.teamSharingEditText;
             }
 
             // Polling overrides previous choice
-            if (polling === 'true' && globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.pollEditText) {
+            if (polling === 'true' && globalPebl && globalPebl.extension && globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.pollEditText) {
                 editModeButtonIcon.textContent = globalPebl.extension.config.dataEntry.pollEditText;
             } 
 
@@ -1283,7 +1284,7 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
 
             var officialModeButtonIcon = document.createElement('span');
             officialModeButtonIcon.textContent = 'View Official Responses';
-            if (sharing === 'team' && globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.teamSharingViewOfficialText) {
+            if (sharing === 'team' && globalPebl && globalPebl.extension && globalPebl.extension.config && globalPebl.extension.config.dataEntry && globalPebl.extension.config.dataEntry.teamSharingViewOfficialText) {
                 officialModeButtonIcon.textContent = globalPebl.extension.config.dataEntry.teamSharingViewOfficialText;
             }
 
@@ -1366,7 +1367,7 @@ dataEntry.createDataEntry = function (insertID, question, id, forms, sharing, di
             if (sharing === 'team' && (group || (userProfile.currentClass && userProfile.currentTeam))) {
                 header.appendChild(officialModeButton);
                 //TODO: Use the specific permission that lets you make official submissions
-                if ((group && group.role === 'owner') || (globalPebl.extension.config && globalPebl.extension.config.userRoles && globalPebl.extension.config.userRoles[userProfile.identity] && globalPebl.extension.config.userRoles[userProfile.identity] === 'owner')) {
+                if ((group && group.role === 'owner') || (globalPebl && globalPebl.extension && globalPebl.extension.config && globalPebl.extension.config.userRoles && globalPebl.extension.config.userRoles[userProfile.identity] && globalPebl.extension.config.userRoles[userProfile.identity] === 'owner')) {
                     jQuery(formFooter).append(formSubmitOfficial);
                     // Don't show the inline make official in viewOnly mode
                     if (!displayMode || displayMode !== 'viewOnly') {
